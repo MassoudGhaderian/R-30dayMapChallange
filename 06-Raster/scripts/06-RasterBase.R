@@ -16,7 +16,7 @@ library(grid)
 
 
 # Load DSM file
-dsm <- raster("D:/R-WorkSpace/30DayMapChallenge2024 by Rbanism/06-Raster-02/data/DSM5m.tif")
+dsm <- raster("D:/R-WorkSpace/R-30dayMapChallange/06-Raster/data/DSM5m.tif")
 
 #review and check DSM file
 # Review Raster -----------------------------------------------------------

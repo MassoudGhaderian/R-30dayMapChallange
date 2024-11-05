@@ -12,7 +12,7 @@ library(magick)
 library(grid)
 
 # Load the DSM raster
-raster_data <- raster("/R-WorkSpace/R-30dayMapChallange/06-Raster/data/Raster/DSM5m.tif")
+raster_data <- raster("D:/R-WorkSpace/30DayMapChallenge2024 by Rbanism/RbanismWorkspace/Raster/data/DSM5m.tif")
 
 # Review Raster -----------------------------------------------------------
 
@@ -38,7 +38,7 @@ writeRaster(dsm_corrected, "06-Raster/outputs/TUDSM", format = "GTiff", overwrit
 # Convert the raster to a data frame for ggplot
 dsm_df <- as.data.frame(dsm_corrected, xy = TRUE)
 names(dsm_df)[3] <- "elevation"
-
+str(dsm_df)
 
 rbanism_logo <- image_read('https://rbanism.org/assets/imgs/about/vi_l.jpg') # Download  logo
 
@@ -63,4 +63,4 @@ grid.raster(rbanism_logo, x = 0.9, y=0.9,  # x and y determine the position of t
             width = unit(100, "points"))   # width determines the size of 
 
 # Save the plot as a PNG file
-ggsave("tu_delft_campus.png", plot = p, width = 10, height = 8, dpi = 120)
+ggsave("tu_delft_campus.png", plot = p, width = 10, height = 8, dpi = 50)
