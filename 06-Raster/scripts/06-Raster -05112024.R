@@ -53,7 +53,7 @@ ggplot(dsm_df, aes(x = x, y = y, fill = elevation)) +
         y = NULL,  # Remove y-axis title
         caption = "#30DayMapChallenge| Data Source: PDOK-DSM | Map by Massoud Ghaderian, 2024")+
   theme(
-    legend.position = "right", # Move legend below the plot
+    legend.position = "bottom", # Move legend below the plot
     axis.text = element_text(size = 8), # Customize axis text
     panel.grid = element_blank(), # Remove grid lines
     plot.title = element_text(face = "bold", size = 14, hjust = 0.5, margin = margin(b = 0.5)), # Center title
@@ -67,4 +67,3 @@ grid.raster(rbanism_logo, x = 0.9, y=0.9,  # x and y determine the position of t
 
 # Save the plot as a PNG file
 ggsave("TUDelftDSM.png", width = 10, height = 8, dpi = 120)
-
