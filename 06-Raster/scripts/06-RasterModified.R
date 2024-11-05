@@ -12,7 +12,7 @@ library(magick)
 library(grid)
 
 # Load the DSM raster
-raster_data <- raster("D:/R-WorkSpace/30DayMapChallenge2024 by Rbanism/RbanismWorkspace/Raster/data/DSM5m.tif")
+raster_data <- raster("D:/R-WorkSpace/R-30dayMapChallange/06-Raster/data/DSM5m.tif")
 
 # Review Raster -----------------------------------------------------------
 
@@ -58,6 +58,7 @@ p <- ggplot(dsm_df, aes(x = x, y = y, fill = elevation)) +
   ) +
   coord_equal()
 
+p
 
 grid.raster(rbanism_logo, x = 0.9, y=0.9,  # x and y determine the position of the logo (top right)
             width = unit(100, "points"))   # width determines the size of 
