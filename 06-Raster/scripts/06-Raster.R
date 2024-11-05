@@ -8,17 +8,16 @@ install.packages(c("raster","ggplot2","magick","grid"))
 ## for raster mapping
 library(raster)
 library(ggplot2)
+library(dplyr)
+
 ## for logo
 library(magick)
 library(grid)
 
 # Step 2: Load the DSM Raster Data ----------------------------------------
 
-
-# Load DSM file
 dsm <- raster("D:/R-WorkSpace/R-30dayMapChallange/06-Raster/data/DSM5m.tif")
 
-#review and check DSM file
 # Review Raster -----------------------------------------------------------
 
 res(dsm) # Cell size
@@ -27,24 +26,18 @@ extent(dsm) # Extent
 crs(dsm)# Coordinate Reference System
 ncell(dsm)# Number of cells
 summary(dsm)
-# Step 3: Plot a Basic Map ------------------------------------------------
 
+# Step 3: Plot  Map ------------------------------------------------
 
-#Using plot:
-plot(dsm, main = "DSM - Elevation Map", col = terrain.colors(100))
-
-
-#Using ggplot2:
 # Convert DSM raster to a data frame for ggplot
 dsm_df <- as.data.frame(dsm, xy = TRUE)
 colnames(dsm_df) <- c("x", "y", "elevation")
 
-# Plot with ggplot2
 
-rbanism_logo <- image_read('https://rbanism.org/assets/imgs/about/vi_l.jpg') # Download our logo
-
-
-custom_bins <- c(-10,-5, 0, 5,10,20,30,50, 100)
+# Define custom color palette and bins
+custom_colors <- c("black","white", "lightblue","deepskyblue","blue",
+                    "orange", "red", "darkred")         
+custom_bins <- c(100,50,30,20,10,5,0,-5,-10)
 
 dsm_df <- dsm_df %>%
   mutate(fct_elevation_cb = cut(`elevation`, breaks = custom_bins))
@@ -52,11 +45,11 @@ dsm_df <- dsm_df %>%
 levels(dsm_df$fct_elevation_cb)
 
 
-terrain.colors(8)
+rbanism_logo <- image_read('https://rbanism.org/assets/imgs/about/vi_l.jpg') # Download our logo
 
-
+#plotting by ggplot
 ggplot(dsm_df, aes(x = x, y = y, fill = fct_elevation_cb)) +
-  scale_fill_manual(values = terrain.colors(8)) +
+  scale_fill_manual(values = custom_colors) +
   geom_raster() +
   theme_minimal() +
   labs( title = "Elevation Map of TU Delft by Digital Surface Model (DSM) ",
@@ -78,5 +71,5 @@ grid.raster(rbanism_logo, x = 0.9, y=0.9,  # x and y determine the position of t
 
 
 # Save the plot as a PNG file
-ggsave("TUDelftDSM.png", width = 10, height = 8, dpi = 120)
+ggsave("TUDelftDSM.pdf", width =  8.27 , height = 10, dpi = 600)
 
