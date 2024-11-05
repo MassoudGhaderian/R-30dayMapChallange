@@ -21,12 +21,12 @@ dsm <- raster("D:/R-WorkSpace/R-30dayMapChallange/06-Raster/data/DSM5m.tif")
 #review and check DSM file
 # Review Raster -----------------------------------------------------------
 
-print(res(dsm)) # Cell size
-print(dim(dsm))# Dimensions
-print(extent(dsm)) # Extent
-print(crs(dsm))# Coordinate Reference System
-print(ncell(dsm))# Number of cells
-
+res(dsm) # Cell size
+dim(dsm)# Dimensions
+extent(dsm) # Extent
+crs(dsm)# Coordinate Reference System
+ncell(dsm)# Number of cells
+summary(dsm)
 # Step 3: Plot a Basic Map ------------------------------------------------
 
 
@@ -43,9 +43,21 @@ colnames(dsm_df) <- c("x", "y", "elevation")
 
 rbanism_logo <- image_read('https://rbanism.org/assets/imgs/about/vi_l.jpg') # Download our logo
 
-ggplot(dsm_df, aes(x = x, y = y, fill = elevation)) +
+
+custom_bins <- c(-10,-5, 0, 5,10,20,30,50, 100)
+
+dsm_df <- dsm_df %>%
+  mutate(fct_elevation_cb = cut(`elevation`, breaks = custom_bins))
+
+levels(dsm_df$fct_elevation_cb)
+
+
+terrain.colors(8)
+
+
+ggplot(dsm_df, aes(x = x, y = y, fill = fct_elevation_cb)) +
+  scale_fill_manual(values = terrain.colors(8)) +
   geom_raster() +
-  scale_fill_viridis_c() +
   theme_minimal() +
   labs( title = "Elevation Map of TU Delft by Digital Surface Model (DSM) ",
         fill = "Elevation (m)",
