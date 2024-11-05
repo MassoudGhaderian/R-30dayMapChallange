@@ -3,7 +3,7 @@
 # libraries and packages --------------------------------------------------
 
 
-install.packages(c("ggplot2", "sf", "tmap"))
+install.packages(c("ggplot2", "sf"))
 
 library(ggplot2)
 library(sf)  # for working with spatial data
