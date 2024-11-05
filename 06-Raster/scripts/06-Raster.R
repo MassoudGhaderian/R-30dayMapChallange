@@ -47,7 +47,19 @@ ggplot(dsm_df, aes(x = x, y = y, fill = elevation)) +
   geom_raster() +
   scale_fill_viridis_c() +
   theme_minimal() +
-  labs(title = "Digital Surface Model (DSM)", fill = "Elevation (m)")
+  labs( title = "Elevation Map of TU Delft by Digital Surface Model (DSM) ",
+        fill = "Elevation (m)",
+        x = NULL,  # Remove x-axis title
+        y = NULL,  # Remove y-axis title
+        caption = "#30DayMapChallenge| Data Source: PDOK-DSM | Map by Massoud Ghaderian, 2024")+
+  theme(
+    legend.position = "bottom", # Move legend below the plot
+    axis.text = element_text(size = 8), # Customize axis text
+    panel.grid = element_blank(), # Remove grid lines
+    plot.title = element_text(face = "bold", size = 14, hjust = 0.5, margin = margin(b = 0.5)), # Center title
+    plot.caption = element_text(hjust = 0.5, size = 10, color = "gray40"), # Center caption
+    plot.margin = margin(t = 5, r = 5, b = 5, l = 5) # Adjust margins
+  )
 
 grid.raster(rbanism_logo, x = 0.9, y=0.9,  # x and y determine the position of the logo (top right)
             width = unit(100, "points"))   # width determines the size of the logo

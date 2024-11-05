@@ -21,12 +21,16 @@ summary(DSM_TUD)
 
 summary(values(DSM_TUD))
 
+# Reproject if needed
+DSM_TUD <- project(DSM_TUD, "EPSG:4326")
 
 DSM_TUD_df <- as.data.frame(DSM_TUD, xy=TRUE)
 str(DSM_TUD_df)
+colnames(DSM_TUD_df)
 
 
 ggplot() +
-  geom_raster(data = DSM_TUD_df , aes(x = x, y = y, fill = `DSM5m`)) +
-  scale_fill_viridis_c(option = "H") +  # `option = "H"` provides a contrasting colour scale
-  coord_quickmap() 
+  geom_raster(data = DSM_TUD_df , aes(x = x, y = y, fill = `DSM5m`)) + # Use actual column name if different
+  scale_fill_viridis_c(option = "H") +
+  coord_quickmap()
+
