@@ -1,6 +1,4 @@
 
-
-
 # Step 1: Load Required Libraries ----------------------------------------
 #install libraries
 install.packages(c("raster","ggplot2","magick","grid"))   
@@ -60,7 +58,7 @@ ggplot(dsm_df, aes(x = x, y = y, fill = fct_elevation_cb)) +
         caption = "#30DayMapChallenge| Data Source: PDOK-DSM | Map by Massoud Ghaderian, 2024")+
   theme(
     legend.position = "right", # Move legend below the plot
-    axis.text = element_text(size = 8), # Customize axis text
+    axis.text = element_text(size = 10), # Customize axis text
     panel.grid = element_blank(), # Remove grid lines
     plot.title = element_text(face = "bold", size = 14, hjust = 0.5, margin = margin(b = 0.5)), # Center title
     plot.caption = element_text(hjust = 0.5, size = 10, color = "black"), # Center caption
