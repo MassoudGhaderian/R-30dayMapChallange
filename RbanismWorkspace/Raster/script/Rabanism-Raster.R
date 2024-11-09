@@ -31,6 +31,7 @@ colnames(DSM_TUD_df)
 
 
 
+
 ggplot() +
   geom_raster(data = DSM_TUD_df , aes(x = x, y = y, fill = `elevation`)) + # Use actual column name if different
   scale_fill_viridis_c(option = "H") +
