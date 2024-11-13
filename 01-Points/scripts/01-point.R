@@ -16,7 +16,7 @@ library(here)
 
 # molens_path <-"D:/R-WorkSpace/30DayMapChallenge2024 by Rbanism/01-Points/shp/Molens.shp"
 #molens_path <-"F:/R-WorkSpaces/R-30dayMapChallange/01-Points/data/shp/Molens.shp"
-molens_path <-here("/R-WorkSpaces/R-30dayMapChallange/01-Points/data/shp/Molens.shp")
+molens_path <-here("F:/R-WorkSpaces/R-30dayMapChallange/01-Points/data/shp/Molens.shp")
 
 molens <- st_read(molens_path)
 
