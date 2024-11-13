@@ -15,7 +15,7 @@ library(grid)
 
 # Step 2: Load the DSM Raster Data ----------------------------------------
 
-dsm <- raster("D:/R-WorkSpace/R-30dayMapChallange/06-Raster/data/DSM5m.tif")
+dsm <- raster("F:/R-WorkSpaces/R-30dayMapChallange/06-Raster/data/DSM5m.tif")
 
 # Review Raster -----------------------------------------------------------
 
@@ -70,5 +70,5 @@ grid.raster(rbanism_logo, x = 0.9, y=0.9,  # x and y determine the position of t
 
 
 # Save the plot as a PNG file
-ggsave("TUDelftDSM.pdf", width =  8.27 , height = 10, dpi = 600)
-
+ggsave("TUDelftDSM.pdf", width =  8.27 , height = 10, dpi = 600 , path="06-Raster/outputs/")
+?ggsave
