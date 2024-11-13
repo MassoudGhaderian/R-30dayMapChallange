@@ -3,23 +3,23 @@
 # libraries and packages --------------------------------------------------
 
 
-install.packages(c("ggplot2", "sf"))
+#install.packages(c("ggplot2", "sf"))
+install.packages("here")
 
 library(ggplot2)
 library(sf)  # for working with spatial data
 library(tmap)   # for thematic maps
-
+library(here)
 
 
 # basic map ----------------------------------------------------------
 
 # molens_path <-"D:/R-WorkSpace/30DayMapChallenge2024 by Rbanism/01-Points/shp/Molens.shp"
-molens_path <-"D:/R-WorkSpace/R-30dayMapChallange/01-Points/data/shp/Molens.shp"
-
+molens_path <-"F:/R-WorkSpaces/R-30dayMapChallange/01-Points/data/shp/Molens.shp"
 molens <- st_read(molens_path)
 
-head(molens)
 colnames(molens)
+head(molens)
 st_as_sf(molens)
 
 #add data
