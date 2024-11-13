@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # install libraries
 
 install.packages(c("ggplot2","rasterVis")) # for mapping
@@ -13,7 +13,7 @@ library(magick)
 library(grid)
 
 # Load the DSM raster
-raster_data <- raster("D:/R-WorkSpace/R-30dayMapChallange/06-Raster/data/DSM5m.tif")
+raster_data <- raster("f:/R-WorkSpaces/R-30dayMapChallange/06-Raster/data/DSM5m.tif")
 
 # Review Raster -----------------------------------------------------------
 
@@ -65,8 +65,7 @@ grid.raster(rbanism_logo, x = 0.9, y=0.9,  # x and y determine the position of t
             width = unit(100, "points"))   # width determines the size of 
 
 # Save the plot as a PNG file
-ggsave("tu_delft_campus.png", plot = p, width = 10, height = 8, dpi = 50)
-=======
+ggsave("tu_delft_campus.png", plot = p, width = 10, height = 8, dpi = 50, path=here("06-Raster/outputs/"))
 
 
 # Step 1: Load Required Libraries ----------------------------------------
@@ -85,7 +84,7 @@ library(grid)
 
 
 # Load DSM file
-dsm <- raster("D:/R-WorkSpace/R-30dayMapChallange/06-Raster/data/DSM5m.tif")
+dsm <- raster("f:/R-WorkSpace/R-30dayMapChallange/06-Raster/data/DSM5m.tif")
 
 #review and check DSM file
 # Review Raster -----------------------------------------------------------
@@ -123,5 +122,5 @@ grid.raster(rbanism_logo, x = 0.9, y=0.9,  # x and y determine the position of t
 
 
 # Save the plot as a PNG file
-ggsave("TUDelftDSM.png", width = 10, height = 8, dpi = 120)
->>>>>>> 1d6e4466c436c7ab56bf2417a149245a83e5924a
+ggsave("TUDelftDSM.png", width = 10, height = 8, dpi = 120, path = here("06-Raster/outputs/"))
+
