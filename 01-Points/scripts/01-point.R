@@ -15,7 +15,9 @@ library(here)
 # basic map ----------------------------------------------------------
 
 # molens_path <-"D:/R-WorkSpace/30DayMapChallenge2024 by Rbanism/01-Points/shp/Molens.shp"
-molens_path <-"F:/R-WorkSpaces/R-30dayMapChallange/01-Points/data/shp/Molens.shp"
+#molens_path <-"F:/R-WorkSpaces/R-30dayMapChallange/01-Points/data/shp/Molens.shp"
+molens_path <-here("/R-WorkSpaces/R-30dayMapChallange/01-Points/data/shp/Molens.shp")
+
 molens <- st_read(molens_path)
 
 colnames(molens)
@@ -43,33 +45,33 @@ ggplot(data = molens) +
 
 
 #add surface water in Netherlands
-oppervlaktewater <- st_read("D:/R-WorkSpace/R-30dayMapChallange/01-Points/data/shp/oppervlaktewater.shp")
+oppervlaktewater <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/01-Points/data/shp/oppervlaktewater.shp")
 head(oppervlaktewater)
 
 
 #add populated places
-populated_palces <- st_read("D:/R-WorkSpace/R-30dayMapChallange/01-Points/data/shp/populated_places.shp")
+populated_palces <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/01-Points/data/shp/populated_places.shp")
 head(populated_palces)
 
 #add provinces
-provinces <- st_read("D:/R-WorkSpace/R-30dayMapChallange/01-Points/data/shp/provinces.shp")
+provinces <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/01-Points/data/shp/provinces.shp")
 head(populated_palces)
 
 # add sea
-NorthSea <- st_read("D:/R-WorkSpace/R-30dayMapChallange/01-Points/data/shp/NorthSea.shp")
+NorthSea <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/01-Points/data/shp/NorthSea.shp")
 
 
 #add border
-nl_border <- st_read("D:/R-WorkSpace/R-30dayMapChallange/01-Points/data/shp/netherlands_border.shp")
+nl_border <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/01-Points/data/shp/netherlands_border.shp")
 
 #add Netherlands boundry
-NL0 <- st_read("D:/R-WorkSpace/R-30dayMapChallange/01-Points/data/shp/gadm41_NLD_shp/gadm41_NLD_0.shp")
+NL0 <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/01-Points/data/shp/gadm41_NLD_shp/gadm41_NLD_0.shp")
 
 #add stats boundry
-NL1 <- st_read("D:/R-WorkSpace/R-30dayMapChallange/01-Points/data/shp/gadm41_NLD_shp/gadm41_NLD_1.shp")
+NL1 <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/01-Points/data/shp/gadm41_NLD_shp/gadm41_NLD_1.shp")
 
 #add cities boundry
-NL2 <- st_read("D:/R-WorkSpace/R-30dayMapChallange/01-Points/data/shp/gadm41_NLD_shp/gadm41_NLD_2.shp")
+NL2 <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/01-Points/data/shp/gadm41_NLD_shp/gadm41_NLD_2.shp")
 
 ggplot() +
   geom_sf(data=oppervlaktewater)+
