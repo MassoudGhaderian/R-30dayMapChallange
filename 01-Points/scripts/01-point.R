@@ -27,17 +27,17 @@ st_as_sf(molens)
 #add data
 
 ggplot(data = molens) +
-  geom_sf()+
-  theme_minimal()+
-  labs(title="Basic Map Of Molens")
+  geom_sf () +
+  theme_minimal() + 
+  labs(title = "Basic Map Of Molens")
 
 
 #basic map(color full)
 
 ggplot(data = molens) +
-  geom_sf(fill="blue", color="red")+ # Sets fill and border color
-  theme_minimal()+
-  labs(title="Basic Map Of Molens")
+  geom_sf(fill = "blue", color = "red") + # Sets fill and border color
+  theme_minimal() +
+  labs(title = "Basic Map Of Molens")
 
 
 
