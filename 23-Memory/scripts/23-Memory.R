@@ -1,77 +1,72 @@
-
-
-# libraries and packages --------------------------------------------------
-
-
-#install.packages(c("ggplot2", "sf"))
-install.packages("here")
-
+# Load libraries
 library(ggplot2)
-library(sf)  # for working with spatial data
-library(tmap)   # for thematic maps
-library(here)
+library(sf)      # For working with spatial data
+library(tmap)    # For thematic maps
+library(here)    # For managing file paths
+
+# Define paths to shapefiles
+existing_molen <- here("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/Molens.shp")
+disappeared_molen <- here("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/verdwenenmolens.shp")
+
+# Read shapefiles
+molen <- st_read(existing_molen)
+ex_molen <- st_read(disappeared_molen)
 
 
-# basic map ----------------------------------------------------------
+# Check CRS
+st_crs(molen )
+st_crs(ex_molen)
 
-# molens_path <-"D:/R-WorkSpace/30DayMapChallenge2024 by Rbanism/01-Points/shp/Molens.shp"
-#molens_path <-"F:/R-WorkSpaces/R-30dayMapChallange/01-Points/data/shp/Molens.shp"
-molens_path <-here("F:/R-WorkSpaces/R-30dayMapChallange/01-Points/data/shp/Molens.shp")
+# Check geometry
+st_geometry_type(molen)
+st_geometry_type(ex_molen)
 
-molens <- st_read(molens_path)
+# Inspect data
+colnames(molen)
+colnames(ex_molen)
 
-colnames(molens)
-head(molens)
-st_as_sf(molens)
-
-#add data
-
-ggplot(data = molens) +
-  geom_sf () +
-  theme_minimal() + 
-  labs(title = "Basic Map Of Molens")
+head(molen)
+head(ex_molen)
 
 
-#basic map(color full)
-
-ggplot(data = molens) +
-  geom_sf(fill = "blue", color = "red") + # Sets fill and border color
+# Plot the map using ggplot2
+ggplot() +
+  geom_sf(data = molen, fill = "blue", color = "red") +
+  geom_sf(data = ex_molen, fill = "brown", color = "red") +
   theme_minimal() +
-  labs(title = "Basic Map Of Molens")
-
-
+  labs(title = "Basic Map of Molens")
 
 # add other bases  shape file ---------------------------------------------
 
 
 #add surface water in Netherlands
-oppervlaktewater <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/01-Points/data/shp/oppervlaktewater.shp")
+oppervlaktewater <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/oppervlaktewater.shp")
 head(oppervlaktewater)
 
 
 #add populated places
-populated_palces <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/01-Points/data/shp/populated_places.shp")
+populated_palces <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/populated_places.shp")
 head(populated_palces)
 
 #add provinces
-provinces <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/01-Points/data/shp/provinces.shp")
+provinces <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/provinces.shp")
 head(populated_palces)
 
 # add sea
-NorthSea <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/01-Points/data/shp/NorthSea.shp")
+NorthSea <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/NorthSea.shp")
 
 
 #add border
-nl_border <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/01-Points/data/shp/netherlands_border.shp")
+nl_border <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/netherlands_border.shp")
 
 #add Netherlands boundry
-NL0 <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/01-Points/data/shp/gadm41_NLD_shp/gadm41_NLD_0.shp")
+NL0 <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/gadm41_NLD_shp/gadm41_NLD_0.shp")
 
 #add stats boundry
-NL1 <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/01-Points/data/shp/gadm41_NLD_shp/gadm41_NLD_1.shp")
+NL1 <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/gadm41_NLD_shp/gadm41_NLD_1.shp")
 
 #add cities boundry
-NL2 <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/01-Points/data/shp/gadm41_NLD_shp/gadm41_NLD_2.shp")
+NL2 <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/gadm41_NLD_shp/gadm41_NLD_2.shp")
 
 ggplot() +
   geom_sf(data=oppervlaktewater)+
