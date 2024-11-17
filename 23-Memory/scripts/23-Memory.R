@@ -7,7 +7,7 @@ library(here)    # For managing file paths
 # Define paths to shapefiles
 existing_molen <- ("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/Molens.shp")
 #disappeared_molen <- ("D:/GISWorkSpace/Nederland/input/Living With Water/verdwenenmolens.shp")
-disappeared_molen <- ("D:/GISWorkSpace/Nederland/input/Living With Water/verdwenenmolens/verdwenenmolens.shp")
+disappeared_molen <- ("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/1/verdwenenmolens/verdwenenmolensPoint.shp")
 
 
 # Read shapefiles
@@ -49,6 +49,31 @@ ggplot() +
   geom_sf(data = ex_molen, fill = "brown", color = "red") +
   theme_minimal() +
   labs(title = "Basic Map of Molens")
+
+
+
+
+# Convert molen to sf object using x and y coordinates
+molen_sf <- st_as_sf(molen, coords = c("x", "y"), crs = 4326)  # Replace 4326 with your CRS if different
+
+# Convert ex_molen to sf object using x and y coordinates
+ex_molen_sf <- st_as_sf(ex_molen, coords = c("x", "y"), crs = 4326)
+
+
+
+st_geometry_type(molen_sf)
+st_geometry_type(ex_molen_sf)
+
+# Plot both datasets
+ggplot() +
+  geom_sf(data = molen_sf, aes(color = "Existing Molens"), size = 2) +
+  geom_sf(data = ex_molen_sf, aes(color = "Disappeared Molens"), size = 2) +
+  theme_minimal() +
+  labs(title = "Basic Map of Molens", color = "Legend") +
+  scale_color_manual(values = c("Existing Molens" = "blue", "Disappeared Molens" = "brown"))
+
+
+
 
 # add other bases  shape file ---------------------------------------------
 
