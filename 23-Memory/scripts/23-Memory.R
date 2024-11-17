@@ -5,13 +5,21 @@ library(tmap)    # For thematic maps
 library(here)    # For managing file paths
 
 # Define paths to shapefiles
-existing_molen <- here("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/Molens.shp")
-disappeared_molen <- here("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/verdwenenmolens.shp")
+existing_molen <- ("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/Molens.shp")
+#disappeared_molen <- ("D:/GISWorkSpace/Nederland/input/Living With Water/verdwenenmolens.shp")
+disappeared_molen <- ("D:/GISWorkSpace/Nederland/input/Living With Water/verdwenenmolens/verdwenenmolens.shp")
+
 
 # Read shapefiles
 molen <- st_read(existing_molen)
 ex_molen <- st_read(disappeared_molen)
 
+
+if (st_crs(molen) == st_crs(ex_molen)) {
+  print("Yes,same coordinate system")
+} else {
+  print("No")
+}
 
 # Check CRS
 st_crs(molen )
@@ -28,6 +36,12 @@ colnames(ex_molen)
 head(molen)
 head(ex_molen)
 
+# Plot the ex_molens
+
+ggplot(data = ex_molen) +
+  geom_sf () +
+  theme_minimal() + 
+  labs(title = "Basic Map Of Molens")
 
 # Plot the map using ggplot2
 ggplot() +
