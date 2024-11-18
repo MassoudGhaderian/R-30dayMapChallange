@@ -1,75 +1,39 @@
-# Load libraries
+
+#loading libraries
 library(ggplot2)
-library(sf)      # For working with spatial data
-library(tmap)    # For thematic maps
-library(here)    # For managing file paths
+library(here)
+library(sf)
 
-# Define paths to shapefiles
-existing_molen <- ("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/Molens.shp")
-disappeared_molen <- ("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/1/verdwenenmolens/verdwenenmolensPoint.shp")
+# Load CSV
+existing_molen_csv <- here("23-Memory/data/ExportedCSV/Molens.csv")
+disappeared_molen_csv <- here("23-Memory/data/ExportedCSV/verdwenenmolens.csv")
 
+molen <- read.csv(existing_molen_csv)
+ex_molen <- read.csv(disappeared_molen_csv)
 
-# Read shapefiles
-molen <- st_read(existing_molen)
-ex_molen <- st_read(disappeared_molen)
-
-
-if (st_crs(molen) == st_crs(ex_molen)) {
-  print("Yes,same coordinate system")
-} else {
-  print("No")
-}
-
-# Check CRS
-st_crs(molen )
-st_crs(ex_molen)
-
-# Check geometry
-st_geometry_type(molen)
-st_geometry_type(ex_molen)
-
-# Inspect data
-colnames(molen)
-colnames(ex_molen)
-
+#inspect data
 head(molen)
 head(ex_molen)
 
-# Plot the ex_molens
-
-ggplot(data = ex_molen) +
-  geom_sf () +
-  theme_minimal() + 
-  labs(title = "Basic Map Of Molens")
-
-# Plot the map using ggplot2
-ggplot() +
-  geom_sf(data = molen, fill = "blue", color = "red") +
-  geom_sf(data = ex_molen, fill = "brown", color = "red") +
-  theme_minimal() +
-  labs(title = "Basic Map of Molens")
-
-
-
-
-# Convert molen to sf object using x and y coordinates
-molen_sf <- st_as_sf(molen, coords = c("x", "y"), crs = 4326)  # Replace 4326 with your CRS if different
-
-# Convert ex_molen to sf object using x and y coordinates
+# Convert to sf object
+molen_sf <- st_as_sf(ex_molen, coords = c("x", "y"), crs = 4326)
 ex_molen_sf <- st_as_sf(ex_molen, coords = c("x", "y"), crs = 4326)
 
 
+#exploring type of disappeared mils
+ggplot(data = ex_molen_sf) +
+  geom_sf(aes(color = type), size = 1) +
+  labs(title = "Existing and Disappeared Mills in the Netherlands",
+       subtitle = "With locations of existing and disappeared mills") +
+  theme_minimal()
 
-st_geometry_type(molen_sf)
-st_geometry_type(ex_molen_sf)
 
-# Plot both datasets
+
+# Plot
 ggplot() +
-  geom_sf(data = molen_sf, aes(color = "Existing Molens"), size = 2) +
-  geom_sf(data = ex_molen_sf, aes(color = "Disappeared Molens"), size = 2) +
-  theme_minimal() +
-  labs(title = "Basic Map of Molens", color = "Legend") +
-  scale_color_manual(values = c("Existing Molens" = "blue", "Disappeared Molens" = "brown"))
-
+  geom_sf(data = ex_molen_sf, color="red") +
+  geom_sf(data = molen_sf, color="green") +
+  theme_minimal() + 
+  labs(title = "Basic Map Of Molens")
 
 
