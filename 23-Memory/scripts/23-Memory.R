@@ -28,6 +28,15 @@ ggplot(data = ex_molen_sf) +
   theme_minimal()
 
 
+#exploring type of exsiting mils
+ggplot(data = molen_sf) +
+  geom_sf(aes(color = type), size = 1) +
+  labs(title = "Existing and Disappeared Mills in the Netherlands",
+       subtitle = "With locations of existing and disappeared mills") +
+  theme_minimal()
+
+
+
 
 # Plot
 ggplot() +
