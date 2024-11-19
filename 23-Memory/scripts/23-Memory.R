@@ -1,15 +1,20 @@
-
-#loading libraries
+# Load libraries
 library(ggplot2)
-library(here)
-library(sf)
+library(sf)      # For working with spatial data
+library(tmap)    # For thematic maps
+library(here)    # For managing file paths
 
-# Load CSV
-existing_molen_csv <- here("23-Memory/data/ExportedCSV/Molens.csv")
-disappeared_molen_csv <- here("23-Memory/data/ExportedCSV/verdwenenmolens.csv")
+# Define paths to shapefiles
+disappeared_molen <- ("23-Memory/data/shp/verdwenenmolens.shp")
+existing_molen <- ("23-Memory/data/shp/Molens.shp")
 
-molen <- read.csv(existing_molen_csv)
-ex_molen <- read.csv(disappeared_molen_csv)
+nl <- st_read("23-Memory/data/shp/gadm41_NLD_shp/gadm41_NLD_0.shp")
+head(nl)
+ex_molen <- st_read(here(disappeared_molen)) |> 
+  st_transform(crs = st_crs(nl)) |> 
+  st_crop(sf::st_bbox(nl))
+
+molen <- st_read(existing_molen)
 
 
 #inspect data
@@ -20,28 +25,38 @@ head(ex_molen)
 summary(molen)
 summary(ex_molen)
 
-# Convert to sf object
-molen_sf <- st_as_sf(ex_molen, coords = c("x", "y"), crs = 4326)
-ex_molen_sf <- st_as_sf(ex_molen, coords = c("x", "y"), crs = 4326)
+
+ggplot() +
+  geom_sf(data = ex_molen) +
+  theme_minimal() + 
+  coord_sf(datum = NA) +
+  labs(title = "Basic Map Of Molens")
 
 
 #exploring type of disappeared mils
-ggplot(data = ex_molen_sf) +
+ggplot(data = ex_molen) +
   geom_sf(aes(color = type), size = 1) +
-  labs(title = "Existing and Disappeared Mills in the Netherlands",
+  labs(title = "Disappeared Mills in the Netherlands",
        subtitle = "With locations of existing and disappeared mills") +
   theme_minimal()
 
+ggplot() +
+  geom_sf(data =molen) +
+  theme_minimal() + 
+  coord_sf(datum = NA) +
+  labs(title = "Basic Map Of Molens")
 
-#exploring type of exsiting mils
-ggplot(data = molen_sf) +
-  geom_sf(size = 1) +
-  labs(title = "Existing and Disappeared Mills in the Netherlands",
-       subtitle = "With locations of existing and disappeared mills") +
-  theme_minimal()
+#exploring existing and disappeared mils
 
-
-
+ggplot() +
+  geom_sf(data = nl, fill = "lightblue", color = "black", alpha = 0.3) +
+  geom_sf(data = molen, color = "blue", size = 0.5) +
+  geom_sf(data = ex_molen , color ="brown", size = 0.5) +
+  theme_minimal() +
+  labs(
+    title = "Existing and disappeared Mills in the Netherlands",
+    subtitle = "Only windmills within the Netherlands boundary"
+  )
 
 
 
