@@ -9,7 +9,8 @@ disappeared_molen <- ("23-Memory/data/shp/verdwenenmolens.shp")
 existing_molen <- ("23-Memory/data/shp/Molens.shp")
 
 nl <- st_read("23-Memory/data/shp/gadm41_NLD_shp/gadm41_NLD_0.shp")
-head(nl)
+
+
 ex_molen <- st_read(here(disappeared_molen)) |> 
   st_transform(crs = st_crs(nl)) |> 
   st_crop(sf::st_bbox(nl))
@@ -21,9 +22,17 @@ molen <- st_read(existing_molen)
 head(molen)
 head(ex_molen)
 
+colnames(molen)
+colnames(ex_molen)
 
 summary(molen)
 summary(ex_molen)
+
+nrow(ex_molen)
+nrow(molen)
+
+ncol(ex_molen)
+ncol(molen)
 
 
 ggplot() +
