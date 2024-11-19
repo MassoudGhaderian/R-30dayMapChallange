@@ -11,9 +11,14 @@ disappeared_molen_csv <- here("23-Memory/data/ExportedCSV/verdwenenmolens.csv")
 molen <- read.csv(existing_molen_csv)
 ex_molen <- read.csv(disappeared_molen_csv)
 
+
 #inspect data
 head(molen)
 head(ex_molen)
+
+
+summary(molen)
+summary(ex_molen)
 
 # Convert to sf object
 molen_sf <- st_as_sf(ex_molen, coords = c("x", "y"), crs = 4326)
@@ -30,7 +35,7 @@ ggplot(data = ex_molen_sf) +
 
 #exploring type of exsiting mils
 ggplot(data = molen_sf) +
-  geom_sf(aes(color = type), size = 1) +
+  geom_sf(size = 1) +
   labs(title = "Existing and Disappeared Mills in the Netherlands",
        subtitle = "With locations of existing and disappeared mills") +
   theme_minimal()
@@ -38,11 +43,5 @@ ggplot(data = molen_sf) +
 
 
 
-# Plot
-ggplot() +
-  geom_sf(data = ex_molen_sf, color="red") +
-  geom_sf(data = molen_sf, color="green") +
-  theme_minimal() + 
-  labs(title = "Basic Map Of Molens")
 
 
