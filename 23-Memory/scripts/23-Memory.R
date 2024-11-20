@@ -68,4 +68,8 @@ ggplot() +
   )
 
 
+head(ex_molen)
+
+ggplot(data=ex_molen ,aes(x=verdwenen1))+
+  geom_histogram()
 
