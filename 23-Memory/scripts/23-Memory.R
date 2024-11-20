@@ -67,9 +67,5 @@ ggplot() +
     subtitle = "Only windmills within the Netherlands boundary"
   )
 
-
-head(ex_molen)
-
-ggplot(data=ex_molen ,aes(x=verdwenen1))+
-  geom_histogram()
+#چطور اعدا رو ااضفه کنیم به صفحه و چطور دو نقشه را بزاریم کنار هم 
 
