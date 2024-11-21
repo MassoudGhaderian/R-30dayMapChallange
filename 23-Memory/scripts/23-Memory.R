@@ -39,15 +39,20 @@ nrow(molen)
 
 main_plot <- ggplot() +
   geom_sf(data = nl, color = "black", alpha = 0.3) +
-  geom_sf(data = molen, aes(color = "Existing Mills"), size = 0.5) +
   geom_sf(data = ex_molen , aes(color = "Disappeared Mills"), size = 0.5) +
+  geom_sf(data = molen, aes(color = "Existing Mills"), size = 0.5)+
   scale_color_manual(
     name = "Mills Legend",  # Legend title
-    values = c("Existing Mills" = "blue", "Disappeared Mills" = "brown")
+    values = c("Existing Mills" = "#993404", "Disappeared Mills" = "#fec44f")
+  ) +
+  guides(
+    color = guide_legend(
+      override.aes = list(size = 3)  # Set the size of shapes in the legend
+    )
   ) +
   labs(
-    title = "Existing and disappeared Mills in the Netherlands",
-    subtitle = "Only windmills within the Netherlands boundary",
+    title = " Mills in the Netherlands",
+    subtitle = "Existing and disappeared",
     caption = "#30DayMapChallenge| Data Source: PDOK-DSM | Map by Massoud Ghaderian, 2024",
     x = NULL,  # Remove x-axis title
     y = NULL,  # Remove y-axis title
@@ -83,13 +88,33 @@ main_plot <- ggplot() +
     ),
     # Moving axis labels inside the plot
     axis.text.x = element_text(
-      size = 7, hjust = 0.5, vjust = 12  # Move x-axis labels to the right (hjust = 1)
+      size = 7, hjust = 0.5, vjust = 1  # Move x-axis labels to the right (hjust = 1)
     ),
     axis.text.y = element_text(
       size = 7, hjust = 1, vjust = 0.5  # Move y-axis labels up (vjust = 1.5)
     ),
 
     
+  ) +
+  
+  # Add a north arrow
+  annotation_north_arrow(
+    location = "bl",  # Position: 'tl' = top-left, 'tr' = top-right, etc.
+    which_north = "true",  # "true" for true north, "grid" for grid north
+    style = north_arrow_fancy_orienteering(),  # Choose a style for the north arrow
+    height = unit(1, "cm"),  # Adjust size
+    width = unit(1, "cm") ,
+    pad_x = unit(1.7, "cm"),       # Horizontal padding
+    pad_y = unit(0.5, "cm")       # Vertical padding# Adjust size
+  ) +
+  # Add a scale bar
+  annotation_scale(
+    location = "bl",         # Position: 'bl' = bottom-left
+    width_hint = 0.4,        # Adjust the width relative to the map
+    line_width = 1,
+    height = unit(0.1, "cm"), # Adjust the height of the scale bar
+    pad_x = unit(0.25, "cm"),
+    pad_y = unit(0.25, "cm")
   )
 
 
