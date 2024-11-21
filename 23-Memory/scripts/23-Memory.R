@@ -19,6 +19,8 @@ disappeared_molen <- ("23-Memory/data/shp/verdwenenmolens.shp")
 existing_molen <- ("23-Memory/data/shp/Molens.shp")
 
 north_sea <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/NorthSea.shp")
+gr_border <- st_read("23-Memory/data/shp/GR.shp")
+bl_border <- st_read("23-Memory/data/shp/BG.shp")
 nl_border <- st_read("23-Memory/data/shp/gadm41_NLD_shp/gadm41_NLD_0.shp")
 nl_stats_border <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/gadm41_NLD_shp/gadm41_NLD_1.shp")
 nl_cities_border <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/gadm41_NLD_shp/gadm41_NLD_2.shp")
@@ -50,10 +52,12 @@ bbox <- st_bbox(nl_border)
 #plotting 
 
 main_plot <- ggplot() +
-  geom_sf(data= north_sea,, fill="lightblue", color=NA, alpha = 0.3)+
-  geom_sf(data = nl_stats_border,fill = "gray",color=NA, alpha = 0.3) +
+  geom_sf(data= north_sea, fill="lightblue", color=NA, alpha = 0.5)+
+  geom_sf(data=gr_border, color=NA, alpha = 0.5)+
+  geom_sf(data=bl_border, color=NA, alpha = 0.5)+
+  geom_sf(data = nl_stats_border,fill = NA ,color="white") +
   geom_sf(data = nl_border, fill = "black",color=NA, alpha = 0.3) +
-  geom_sf(data=oppervlaktewater, fill="lightblue", color=NA, alpha = 0.3)+
+  geom_sf(data=oppervlaktewater, fill="lightblue", color=NA)+
   geom_sf(data = ex_molen , aes(color = "Disappeared Mills"), size = 0.5) +
   geom_sf(data = molen, aes(color = "Existing Mills"), size = 0.5)+
   geom_sf(data = nl_populated_palces, aes(shape = "circle"), size = 2,show.legend = FALSE)+
@@ -65,7 +69,7 @@ main_plot <- ggplot() +
   #           color = "black",  # Label color
   #           fontface = "bold",  # Font style
   #           check_overlap = TRUE) +  # Prevent overlap of labels
-
+  
   scale_color_manual(
     name = "Mills Legend",  # Legend title
     values = c("Existing Mills" = "#993404", "Disappeared Mills" = "#fec44f")
@@ -78,7 +82,7 @@ main_plot <- ggplot() +
   labs(
     title = "▪ Mills in the Netherlands",
     subtitle = "▪ Existing and disappeared",
-    caption = "▪ #30DayMapChallenge| Data Source: PDOK-DSM | Map by Massoud Ghaderian, 2024",
+    caption = "▪ #30DayMapChallenge| Data Source: www.molendatabase.org | Map by Massoud Ghaderian, 2024",
     x = NULL,  # Remove x-axis title
     y = NULL,  # Remove y-axis title
   )+
@@ -111,7 +115,7 @@ main_plot <- ggplot() +
       size = 7,  # Change font size of numbers
       color = "gray",  # Change font color
       face = "italic",  # Make numbers bold (optional)
-      family = "Arial"  # Set font family (optional)
+      family = "sans"  # Set font family (optional)
     ),
     # Moving axis labels inside the plot
     axis.text.x = element_text(
@@ -120,7 +124,7 @@ main_plot <- ggplot() +
     axis.text.y = element_text(
       size = 7, hjust = 1, vjust = 0.5  # Move y-axis labels up (vjust = 1.5)
     ),
-
+    
     
   ) +
   
@@ -158,12 +162,12 @@ rbanism_logo_raster <- grid::rasterGrob(rbanism_logo, interpolate = TRUE)
 
 # Combine the plot and logo using cowplot::ggdraw
 final_plot <- ggdraw(main_plot) +
-  draw_grob(rbanism_logo_raster, x = 0.75, y = 0.65, width = 0.20, height = 0.20)
+  draw_grob(rbanism_logo_raster, x = 0.76, y = 0.75, width = 0.20, height = 0.20)
 
 final_plot
 
 # Save the combined plot
-ggsave("Molen_with_logo.pdf", plot = final_plot, 
+ggsave("Molen_ex.pdf", plot = final_plot, 
        width = 8.27, height = 10, dpi = 600, 
        path = "/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/")
 
