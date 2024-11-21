@@ -4,6 +4,10 @@ library(sf)      # For working with spatial data
 library(tmap)    # For thematic maps
 library(here)    # For managing file paths
 
+
+
+setwd("F:/R-WorkSpaces/R-30dayMapChallange/")
+
 # Define paths to shapefiles
 disappeared_molen <- ("23-Memory/data/shp/verdwenenmolens.shp")
 existing_molen <- ("23-Memory/data/shp/Molens.shp")
@@ -68,5 +72,18 @@ ggplot() +
     subtitle = "Only windmills within the Netherlands boundary"
   )
 
+
+
 #چطور اعدا رو ااضفه کنیم به صفحه و چطور دو نقشه را بزاریم کنار هم 
+#exploring existing and disappeared mils
+
+ggplot() +
+  geom_sf(data = nl, fill = "lightblue", color = "black", alpha = 0.3) +
+  geom_sf(data = molen, color = "blue", size = 0.5) +
+  geom_sf(data = ex_molen , color ="brown", size = 0.5) +
+  theme_minimal() +
+  labs(
+    title = "Existing and disappeared Mills in the Netherlands",
+    subtitle = "Only windmills within the Netherlands boundary"
+  )
 
