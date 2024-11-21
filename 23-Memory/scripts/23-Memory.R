@@ -35,22 +35,28 @@ nrow(molen)
 
 main_plot <- ggplot() +
   geom_sf(data = nl, fill = "lightblue", color = "black", alpha = 0.3) +
-  geom_sf(data = molen, color = "blue", size = 0.5) +
-  geom_sf(data = ex_molen , color ="brown", size = 0.5) +
-  
+  geom_sf(data = molen, aes(color = "Existing Mills"), size = 0.5) +
+  geom_sf(data = ex_molen , aes(color = "Disappeared Mills"), size = 0.5) +
+  scale_color_manual(
+    name = "Mills Legend",  # Legend title
+    values = c("Existing Mills" = "blue", "Disappeared Mills" = "brown")
+  ) +
   labs(
     title = "Existing and disappeared Mills in the Netherlands",
     subtitle = "Only windmills within the Netherlands boundary",
     caption = "#30DayMapChallenge| Data Source: PDOK-DSM | Map by Massoud Ghaderian, 2024",
     x = NULL,  # Remove x-axis title
     y = NULL,  # Remove y-axis title
-
   )+
   theme_minimal()+
   theme(
-    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"), # Center title
-    plot.subtitle = element_text(hjust = 0.5, size = 12, margin = margin(b = 10)), # Add spacing below
-    plot.caption = element_text(hjust = 0, size = 10, face = "italic", margin = margin(t = 10)) # Left-align caption
+    plot.title = element_text(hjust = 0.5, size = 16, face = "bold", margin = margin(b = 20)),
+    plot.subtitle = element_text(hjust = 0.5, size = 12, margin = margin(b = 10)),
+    plot.caption = element_text(hjust = 0, size = 10, face = "italic", margin = margin(t = 15)),
+    plot.margin = margin(t = 30, r = 20, b = 50, l = 20),
+    # legend.position = c(1, 0.1),   # Position legend at top-left (relative coordinates)
+    legend.justification = c("left", "bottom"),  # Adjust alignment of the legend box
+    # legend.box = "horizontal"   # Legend items in horizontal layout (optional)
   )
 # theme(
 #   plot.title = element_text(hjust = 0.5, size = 16, face = "bold", margin = margin(b = 20)),
