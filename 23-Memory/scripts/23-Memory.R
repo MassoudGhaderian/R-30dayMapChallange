@@ -3,7 +3,9 @@ library(ggplot2)
 library(sf)      # For working with spatial data
 library(tmap)    # For thematic maps
 library(here)    # For managing file paths
-
+## for logo
+library(magick)
+library(grid)
 
 
 setwd("F:/R-WorkSpaces/R-30dayMapChallange/")
@@ -73,9 +75,7 @@ ggplot() +
   )
 
 
-
-#چطور اعدا رو ااضفه کنیم به صفحه و چطور دو نقشه را بزاریم کنار هم 
-#exploring existing and disappeared mils
+rbanism_logo <- image_read('https://rbanism.org/assets/imgs/about/vi_l.jpg') # Download our logo
 
 ggplot() +
   geom_sf(data = nl, fill = "lightblue", color = "black", alpha = 0.3) +
@@ -86,4 +86,12 @@ ggplot() +
     title = "Existing and disappeared Mills in the Netherlands",
     subtitle = "Only windmills within the Netherlands boundary"
   )
+
+grid.raster(rbanism_logo, x = 0.9, y=0.9,  # x and y determine the position of the logo (top right)
+            width = unit(100, "points"))   # width determines the size of the logo
+
+
+# Save the plot as a PNG file
+ggsave("Molen.pdf", width =  8.27 , height = 10, dpi = 600 , path="/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/")
+
 
