@@ -6,9 +6,11 @@ library(here)    # For managing file paths
 ## for logo
 library(magick)
 library(grid)
+library(cowplot)
 
 # Define paths to shapefiles
 setwd("F:/R-WorkSpaces/R-30dayMapChallange/")
+
 disappeared_molen <- ("23-Memory/data/shp/verdwenenmolens.shp")
 existing_molen <- ("23-Memory/data/shp/Molens.shp")
 
@@ -32,14 +34,15 @@ nrow(molen)
 #plotting 
 rbanism_logo <- image_read('https://rbanism.org/assets/imgs/about/vi_l.jpg') # Download our logo
 
-ggplot() +
+main_plot <- ggplot() +
   geom_sf(data = nl, fill = "lightblue", color = "black", alpha = 0.3) +
   geom_sf(data = molen, color = "blue", size = 0.5) +
   geom_sf(data = ex_molen , color ="brown", size = 0.5) +
   theme_minimal() +
   labs(
     title = "Existing and disappeared Mills in the Netherlands",
-    subtitle = "Only windmills within the Netherlands boundary"
+    subtitle = "Only windmills within the Netherlands boundary",
+    caption = "#30DayMapChallenge| Data Source: PDOK-DSM | Map by Massoud Ghaderian, 2024"
   )
 
 grid.raster(rbanism_logo, x = 0.9, y=0.9,  # x and y determine the position of the logo (top right)
@@ -47,6 +50,6 @@ grid.raster(rbanism_logo, x = 0.9, y=0.9,  # x and y determine the position of t
 
 
 # Save the plot as a PNG file
-ggsave("Molen.pdf", width =  8.27 , height = 10, dpi = 600 , path="/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/")
+ggsave("Molen.png", width =  8.27 , height = 10, dpi = 600 , path="/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/")
 
 
