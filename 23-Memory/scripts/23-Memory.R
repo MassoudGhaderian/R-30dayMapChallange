@@ -1,3 +1,6 @@
+install.packages("ggspatial")
+
+
 # Load libraries
 library(ggplot2)
 library(sf)      # For working with spatial data
@@ -7,6 +10,7 @@ library(here)    # For managing file paths
 library(magick)
 library(grid)
 library(cowplot)
+library(ggspatial)
 
 # Define paths to shapefiles
 setwd("F:/R-WorkSpaces/R-30dayMapChallange/")
@@ -68,7 +72,9 @@ main_plot <- ggplot() +
     panel.grid.major.y = element_line(color = "green", size = 0.7),   # Major grid lines for y-axis (latitude)
     
     # Ticks for axis (optional)
-    axis.ticks = element_line(color = "black", size = 1),  # Customize ticks
+    axis.ticks.x = element_line(color = "black", size = 1),  # Ticks for top
+    axis.ticks.y = element_line(color = "black", size = 1),  # Ticks for right
+    
     axis.text = element_text(
       size = 7,  # Change font size of numbers
       color = "gray",  # Change font color
@@ -77,7 +83,7 @@ main_plot <- ggplot() +
     ),
     # Moving axis labels inside the plot
     axis.text.x = element_text(
-      size = 7, hjust = 0.5, vjust = 10  # Move x-axis labels to the right (hjust = 1)
+      size = 7, hjust = 0.5, vjust = 12  # Move x-axis labels to the right (hjust = 1)
     ),
     axis.text.y = element_text(
       size = 7, hjust = 1, vjust = 0.5  # Move y-axis labels up (vjust = 1.5)
