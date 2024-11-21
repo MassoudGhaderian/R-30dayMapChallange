@@ -18,12 +18,16 @@ setwd("F:/R-WorkSpaces/R-30dayMapChallange/")
 disappeared_molen <- ("23-Memory/data/shp/verdwenenmolens.shp")
 existing_molen <- ("23-Memory/data/shp/Molens.shp")
 
-nl <- st_read("23-Memory/data/shp/gadm41_NLD_shp/gadm41_NLD_0.shp")
-NorthSea <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/01-Points/data/shp/NorthSea.shp")
-
+north_sea <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/NorthSea.shp")
+nl_border <- st_read("23-Memory/data/shp/gadm41_NLD_shp/gadm41_NLD_0.shp")
+nl_stats_border <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/gadm41_NLD_shp/gadm41_NLD_1.shp")
+nl_cities_border <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/gadm41_NLD_shp/gadm41_NLD_2.shp")
+oppervlaktewater <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/oppervlaktewater.shp")
+nl_populated_palces <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/populated_places.shp")
+head(nl_populated_palces )
 ex_molen <- st_read(here(disappeared_molen)) |> 
-  st_transform(crs = st_crs(nl)) |> 
-  st_crop(sf::st_bbox(nl))
+  st_transform(crs = st_crs(nl_border)) |> 
+  st_crop(sf::st_bbox(nl_border))
 
 molen <- st_read(existing_molen)
 
@@ -32,15 +36,36 @@ molen <- st_read(existing_molen)
 head(molen)
 head(ex_molen)
 
+summary(molen)
+summary(ex_molen)
+
+
 nrow(ex_molen)
 nrow(molen)
+
+
+# Get the bounding box of the shapefile
+bbox <- st_bbox(nl_border)
 
 #plotting 
 
 main_plot <- ggplot() +
-  geom_sf(data = nl, color = "black", alpha = 0.3) +
+  geom_sf(data= north_sea,, fill="lightblue", color=NA, alpha = 0.3)+
+  geom_sf(data = nl_stats_border,fill = "gray",color=NA, alpha = 0.3) +
+  geom_sf(data = nl_border, fill = "black",color=NA, alpha = 0.3) +
+  geom_sf(data=oppervlaktewater, fill="lightblue", color=NA, alpha = 0.3)+
   geom_sf(data = ex_molen , aes(color = "Disappeared Mills"), size = 0.5) +
   geom_sf(data = molen, aes(color = "Existing Mills"), size = 0.5)+
+  geom_sf(data = nl_populated_palces, aes(shape = "circle"), size = 2,show.legend = FALSE)+
+  # geom_text(data = nl_populated_palces, 
+  #           aes(label =name),  # Add city names as labels
+  #           size = 3,  # Adjust size of labels
+  #           nudge_y = 0.1,  # Adjust vertical position of labels if needed
+  #           nudge_x = 0.1,  # Adjust horizontal position of labels if needed
+  #           color = "black",  # Label color
+  #           fontface = "bold",  # Font style
+  #           check_overlap = TRUE) +  # Prevent overlap of labels
+
   scale_color_manual(
     name = "Mills Legend",  # Legend title
     values = c("Existing Mills" = "#993404", "Disappeared Mills" = "#fec44f")
@@ -51,17 +76,19 @@ main_plot <- ggplot() +
     )
   ) +
   labs(
-    title = " Mills in the Netherlands",
-    subtitle = "Existing and disappeared",
-    caption = "#30DayMapChallenge| Data Source: PDOK-DSM | Map by Massoud Ghaderian, 2024",
+    title = "▪ Mills in the Netherlands",
+    subtitle = "▪ Existing and disappeared",
+    caption = "▪ #30DayMapChallenge| Data Source: PDOK-DSM | Map by Massoud Ghaderian, 2024",
     x = NULL,  # Remove x-axis title
     y = NULL,  # Remove y-axis title
   )+
+  coord_sf(xlim = c(bbox["xmin"], bbox["xmax"]), 
+           ylim = c(bbox["ymin"], bbox["ymax"])) +  # Set the zoom extent to the bounding box
   theme_minimal()+
   theme(
-    plot.title = element_text(hjust = 0.5, size = 16, face = "bold", margin = margin(b = 0)),
-    plot.subtitle = element_text(hjust = 0.5, size = 12, margin = margin(t =0)),
-    plot.caption = element_text(hjust = 0, size = 10, face = "italic", margin = margin(t = 15)),
+    plot.title = element_text(hjust = -0.01 , size = 16, face = "bold", margin = margin(b = 0)),
+    plot.subtitle = element_text(hjust = -0.01, size = 12, margin = margin(t =0)),
+    plot.caption = element_text(hjust = -0.01, size = 10, face = "italic", margin = margin(t = 15)),
     plot.margin = margin(t = 30, r = 20, b = 50, l = 20),
     # legend.position = c(1, 0.1),   # Position legend at top-left (relative coordinates)
     legend.justification = c("left", "bottom"),  # Adjust alignment of the legend box
@@ -101,20 +128,24 @@ main_plot <- ggplot() +
   annotation_north_arrow(
     location = "bl",  # Position: 'tl' = top-left, 'tr' = top-right, etc.
     which_north = "true",  # "true" for true north, "grid" for grid north
-    style = north_arrow_fancy_orienteering(),  # Choose a style for the north arrow
+    style = north_arrow_fancy_orienteering(
+      fill = c ("white", "white"),
+      line_col = "black"
+    ),  # Choose a style for the north arrow
     height = unit(1, "cm"),  # Adjust size
     width = unit(1, "cm") ,
     pad_x = unit(1.7, "cm"),       # Horizontal padding
-    pad_y = unit(0.5, "cm")       # Vertical padding# Adjust size
+    pad_y = unit(1, "cm")       # Vertical padding# Adjust size
   ) +
   # Add a scale bar
   annotation_scale(
     location = "bl",         # Position: 'bl' = bottom-left
-    width_hint = 0.4,        # Adjust the width relative to the map
+    width_hint = 0.2,        # Adjust the width relative to the map
     line_width = 1,
     height = unit(0.1, "cm"), # Adjust the height of the scale bar
-    pad_x = unit(0.25, "cm"),
-    pad_y = unit(0.25, "cm")
+    pad_x = unit(1.25, "cm"),
+    pad_y = unit(.75, "cm"),
+    bar_cols = c("white", "white"),
   )
 
 
