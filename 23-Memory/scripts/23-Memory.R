@@ -39,8 +39,13 @@ ggplot() +
   geom_sf(data = ex_molen) +
   theme_minimal() + 
   coord_sf(datum = NA) +
-  labs(title = "Basic Map Of Molens")
+  labs(title = "Basic Map Of Disappeared Molens")
 
+ggplot() +
+  geom_sf(data =molen) +
+  theme_minimal() + 
+  coord_sf(datum = NA) +
+  labs(title = "Basic Map Of existing Molens")
 
 #exploring type of disappeared mils
 ggplot(data = ex_molen) +
@@ -49,11 +54,7 @@ ggplot(data = ex_molen) +
        subtitle = "With locations of existing and disappeared mills") +
   theme_minimal()
 
-ggplot() +
-  geom_sf(data =molen) +
-  theme_minimal() + 
-  coord_sf(datum = NA) +
-  labs(title = "Basic Map Of Molens")
+
 
 #exploring existing and disappeared mils
 
