@@ -61,6 +61,8 @@ molen <- st_read(existing_molen)
 # Inspect first few rows of each dataset
 head(molen)
 head(ex_molen)
+print(nl_populated_palces)
+head(nl_stats_border)
 
 # Summarize datasets
 summary(molen)
@@ -68,7 +70,9 @@ summary(ex_molen)
 
 # Count number of features in each dataset
 nrow(ex_molen)  # Count of disappeared mills
+num_disappeared_mills <- nrow(ex_molen)
 nrow(molen)     # Count of existing mills
+num_existing_mills <- nrow(molen)
 
 # Get the bounding box of the Netherlands shapefile
 bbox <- st_bbox(nl_border)
@@ -78,24 +82,43 @@ bbox <- st_bbox(nl_border)
 # SECTION 3: CREATE MAIN PLOT ---------------------------------------------
 
 main_plot <- ggplot() +
-  # Add geographic features
-  geom_sf(data = north_sea, fill = "lightblue", color = NA, alpha = 0.5) +  # North Sea
-  geom_sf(data = gr_border, color = NA, alpha = 0.5) +                     # Groningen border
-  geom_sf(data = bl_border, color = NA, alpha = 0.5) +                     # Friesland border
-  geom_sf(data = nl_stats_border, fill = NA, color = "white") +            # Province borders
+  
+  # Add geographic background features
+  geom_sf(data = north_sea, fill = "lightblue", color = NA, alpha = 0.5) + # North Sea
+  geom_sf(data = gr_border, color = NA, alpha = 0.5) +                     # Germany border
+  geom_sf(data = bl_border, color = NA, alpha = 0.5) +                     # Belgium border
+  geom_sf(data = nl_stats_border, fill = NA, color = "white") +            # Netherlands Province borders
   geom_sf(data = nl_border, fill = "black", color = NA, alpha = 0.3) +     # Netherlands national border
-  geom_sf(data = oppervlaktewater, fill = "lightblue", color = NA) +       # Surface water
+  geom_sf(data = nl_populated_palces, aes(shape = "circle"), size = 2, show.legend = FALSE) +
+  geom_sf(data = oppervlaktewater, fill = "lightblue", color = NA) +       # Surface water in Netherlands
+  
   # Add mills data
   geom_sf(data = ex_molen, aes(color = "Disappeared Mills"), size = 0.5) +  # Disappeared mills
   geom_sf(data = molen, aes(color = "Existing Mills"), size = 0.5) +        # Existing mills
   
-  # Add populated places
-  geom_sf(data = nl_populated_palces, aes(shape = "circle"), size = 2, show.legend = FALSE) +
+  # Addlabales
+  geom_text(data = nl_populated_palces, 
+            aes(x = st_coordinates(geometry)[, 1], 
+                y = st_coordinates(geometry)[, 2], 
+                label = name),  # Add city names as labels
+            size = 3,  # Adjust size of labels
+            nudge_y = 0.1,  # Adjust vertical position of labels to move them up
+            nudge_x = 0.1,  # Adjust horizontal position if needed
+            color = "black",  # Label color
+            fontface = "bold",  # Font style
+            check_overlap = TRUE) +  # Prevent overlap of labels
   
   # Customize color legend for mills
   scale_color_manual(
     name = "Mills Legend",  # Legend title
-    values = c("Existing Mills" = "#993404", "Disappeared Mills" = "#fec44f")
+    values = c(
+      "Existing Mills" = "#993404", 
+      "Disappeared Mills" = "#fec44f"
+    ),
+    labels = c(
+      paste0("Existing Mills \n (", num_existing_mills, ")"),
+      paste0("Disappeared Mills\n (", num_disappeared_mills, ")")
+    )
   ) +
   guides(
     color = guide_legend(override.aes = list(size = 3))  # Customize legend symbols
@@ -119,14 +142,14 @@ main_plot <- ggplot() +
   theme(
     plot.title = element_text(hjust = -0.01, size = 16, face = "bold", margin = margin(b = 0)),
     plot.subtitle = element_text(hjust = -0.01, size = 12, margin = margin(t = 0)),
-    plot.caption = element_text(hjust = -0.01, size = 10, face = "italic", margin = margin(t = 15)),
+    plot.caption = element_text(hjust = -0.01, size = 8, face = "italic", margin = margin(t = 15)),
     plot.margin = margin(t = 30, r = 20, b = 50, l = 20),
     # Move legend to bottom-right
     # legend.position = c(0.95, 0.05),  # x and y position (percent of plot)
     legend.justification = c("right", "bottom"),  # Align legend's bottom-right corner
     # legend.box.margin = margin(5, 5, 5, 5),  # Add some space around the legend
     legend.background = element_rect(fill = "white", color = "white", size = 0.5),  # Optional: Add background and border to legend
-    # Customizing minor grid lines (for finer latitude and longitude)
+    # Customizing  grid lines (for finer latitude and longitude)
     panel.grid.major = element_line(color = "lightgray", size = 0.5),  # Major grid lines: gray color, thickness 0.
     panel.grid.minor = element_line(color = "lightgray", size = 0.5),  # Minor grid lines: light gray, thinner
     
@@ -134,8 +157,22 @@ main_plot <- ggplot() +
     axis.ticks.x = element_line(color = "black", size = 1),  # Ticks for top
     axis.ticks.y = element_line(color = "black", size = 1),  # Ticks for right
     
+    axis.text = element_text(
+      size = 7,  # Change font size of numbers
+      color = "gray",  # Change font color
+      face = "italic",  # Make numbers bold (optional)
+      family = "sans"  # Set font family (optional)
+    ),
+    
+    # Moving axis labels inside the plot
+    axis.text.x = element_text(
+      size = 7, hjust = 0.5, vjust = 1  # Move x-axis labels to the right (hjust = 1)
+    ),
+    axis.text.y = element_text(
+      size = 7, hjust = 1, vjust = 0.5  # Move y-axis labels up (vjust = 1.5)
+    ),
+    
   ) +
-  
   # Add a north arrow
   annotation_north_arrow(
     location = "bl", # Position: 'tl' = top-left, 'tr' = top-right, etc.
