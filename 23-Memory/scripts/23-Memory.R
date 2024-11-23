@@ -43,9 +43,6 @@ nl_cities_border <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/
 oppervlaktewater <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/oppervlaktewater.shp")  # Surface water
 nl_populated_palces <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/populated_places.shp")  # Populated places
 
-# Inspect the first few rows of the populated places data
-head(nl_populated_palces)
-
 # Load and preprocess shapefiles for disappeared mills
 ex_molen <- st_read(here(disappeared_molen)) |> 
   st_transform(crs = st_crs(nl_border)) |> 
@@ -87,44 +84,46 @@ main_plot <- ggplot() +
   geom_sf(data = north_sea, fill = "lightblue", color = NA, alpha = 0.5) + # North Sea
   geom_sf(data = gr_border, color = NA, alpha = 0.5) +                     # Germany border
   geom_sf(data = bl_border, color = NA, alpha = 0.5) +                     # Belgium border
-  geom_sf(data = nl_stats_border, fill = NA, color = "white") +            # Netherlands Province borders
-  geom_sf(data = nl_border, fill = "black", color = NA, alpha = 0.3) +     # Netherlands national border
-  geom_sf(data = nl_populated_palces, aes(shape = "circle"), size = 2, show.legend = FALSE) +
-  geom_sf(data = oppervlaktewater, fill = "lightblue", color = NA) +       # Surface water in Netherlands
+  geom_sf(data = oppervlaktewater, fill = "lightblue", color = NA, alpha = 0.5) +       # Surface water in Netherlands
+  geom_sf(data = nl_border, fill = "black", color = NA, alpha = 0.3) +     # Netherlands national border (dark mode)
+  # geom_sf(data = nl_border, fill = NA, color = "black") +     # Netherlands national border (light mode)
+  geom_sf(data = nl_stats_border, fill = NA , color = NA) +            # Netherlands Province borders
   
   # Add mills data
   geom_sf(data = ex_molen, aes(color = "Disappeared Mills"), size = 0.5) +  # Disappeared mills
   geom_sf(data = molen, aes(color = "Existing Mills"), size = 0.5) +        # Existing mills
   
-  # Addlabales
+  geom_sf(data = nl_populated_palces, aes(shape = "circle"), size = 2, show.legend = FALSE) +
+  
+  # Add labels
   geom_text(data = nl_populated_palces, 
             aes(x = st_coordinates(geometry)[, 1], 
                 y = st_coordinates(geometry)[, 2], 
                 label = name),  # Add city names as labels
             size = 3,  # Adjust size of labels
-            nudge_y = 0.1,  # Adjust vertical position of labels to move them up
-            nudge_x = 0.1,  # Adjust horizontal position if needed
+            nudge_y = 0.05,  # Adjust vertical position of labels to move them up
+            nudge_x = 0,  # Adjust horizontal position if needed
             color = "black",  # Label color
-            fontface = "bold",  # Font style
-            check_overlap = TRUE) +  # Prevent overlap of labels
+            fontface ="bold",  # Font style
+            check_overlap = FALSE) +  # Prevent overlap of labels
   
   # Customize color legend for mills
   scale_color_manual(
-    name = "Mills Legend",  # Legend title
+    name = "▪ Legend",  # Legend title
     values = c(
-      "Existing Mills" = "#993404", 
-      "Disappeared Mills" = "#fec44f"
+      "Existing Mills" = "#993404",  # Darker brown for existing mills
+      "Disappeared Mills" = "#fec44f"  # Lighter yellow for disappeared mills
     ),
     labels = c(
-      paste0("Existing Mills \n (", num_existing_mills, ")"),
-      paste0("Disappeared Mills\n (", num_disappeared_mills, ")")
+      paste0("Disappeared Mills\n (", num_disappeared_mills, ")"),
+      paste0("Existing Mills \n (", num_existing_mills, ")")
     )
   ) +
   guides(
     color = guide_legend(override.aes = list(size = 3))  # Customize legend symbols
-  ) +
+  )+
   
-  # Add labels, title, and captions
+  # Add title, subtitle, and captions
   labs(
     title = "▪ Mills in the Netherlands",
     subtitle = "▪ Existing and disappeared",
@@ -214,7 +213,7 @@ final_plot <- ggdraw(main_plot) +
 final_plot
 
 # Save the final plot as a PDF
-ggsave("Molen_ex.pdf", plot = final_plot, 
+ggsave("Mills.pdf", plot = final_plot, 
        width = 8.27, height = 10, dpi = 600, 
        path = "/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/")
 
