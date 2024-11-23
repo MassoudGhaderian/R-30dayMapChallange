@@ -4,7 +4,7 @@ library(dplyr)
 library(ggplot2)
 
 # Load the DSM raster
-dsm <- raster("D:/R-WorkSpace/R-30dayMapChallange/06-Raster/data/DSM5m.tif")
+dsm <- raster("F:/R-WorkSpaces/R-30dayMapChallange/06-Raster/data/DSM5m.tif")
 
 # Convert DSM raster to a data frame for ggplot
 dsm_df <- as.data.frame(dsm, xy = TRUE)
