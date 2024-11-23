@@ -1,6 +1,16 @@
-# Install necessary package
-install.packages("ggspatial")  # For adding north arrows and scale bars to maps
 
+
+# SECTION 0: INSTALL NECESSARY PACKAGES -----------------------------------
+
+# List of required packages
+required_packages <- c("ggspatial", "ggplot2", "sf", "tmap", "here", "magick", "grid", "cowplot")
+
+# Install packages that are not already installed
+for (pkg in required_packages) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    install.packages(pkg)
+  }
+}
 # Load required libraries
 library(ggplot2)       # For creating plots
 library(sf)            # For working with spatial data
@@ -11,21 +21,25 @@ library(grid)          # For working with grid graphics
 library(cowplot)       # For combining plots and adding elements (e.g., logos)
 library(ggspatial)     # For scale bars and north arrows in ggplot maps
 
+           
+
+# SECTION 1: DEFINE PATHS AND LOAD SPATIAL DATA ---------------------------
+
 # Set working directory (modify as needed)
 setwd("F:/R-WorkSpaces/R-30dayMapChallange/")
 
-# SECTION 1: DEFINE PATHS AND LOAD SPATIAL DATA
+
 # Paths to shapefiles
 disappeared_molen <- "23-Memory/data/shp/verdwenenmolens.shp"  # Disappeared mills
 existing_molen <- "23-Memory/data/shp/Molens.shp"             # Existing mills
 
 # Read shapefiles for various spatial features
 north_sea <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/NorthSea.shp")
-gr_border <- st_read("23-Memory/data/shp/GR.shp")            # Groningen border
-bl_border <- st_read("23-Memory/data/shp/BG.shp")            # Friesland border
-nl_border <- st_read("23-Memory/data/shp/gadm41_NLD_shp/gadm41_NLD_0.shp")  # Netherlands national border
-nl_stats_border <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/gadm41_NLD_shp/gadm41_NLD_1.shp")  # Province borders
-nl_cities_border <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/gadm41_NLD_shp/gadm41_NLD_2.shp")  # City borders
+gr_border <- st_read("23-Memory/data/shp/GR.shp")            # Germany border
+bl_border <- st_read("23-Memory/data/shp/BG.shp")            # Belgium border
+nl_border <- st_read("23-Memory/data/shp/gadm41_NLD_shp/gadm41_NLD_0.shp")  #  national border
+nl_stats_border <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/gadm41_NLD_shp/gadm41_NLD_1.shp")  # Provinces borders
+nl_cities_border <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/gadm41_NLD_shp/gadm41_NLD_2.shp")  # Citis borders
 oppervlaktewater <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/oppervlaktewater.shp")  # Surface water
 nl_populated_palces <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/populated_places.shp")  # Populated places
 
@@ -40,7 +54,10 @@ ex_molen <- st_read(here(disappeared_molen)) |>
 # Load existing mills shapefile
 molen <- st_read(existing_molen)
 
-# SECTION 2: DATA INSPECTION
+
+
+# SECTION 2: DATA INSPECTION ----------------------------------------------
+
 # Inspect first few rows of each dataset
 head(molen)
 head(ex_molen)
@@ -56,7 +73,10 @@ nrow(molen)     # Count of existing mills
 # Get the bounding box of the Netherlands shapefile
 bbox <- st_bbox(nl_border)
 
-# SECTION 3: CREATE MAIN PLOT
+
+
+# SECTION 3: CREATE MAIN PLOT ---------------------------------------------
+
 main_plot <- ggplot() +
   # Add geographic features
   geom_sf(data = north_sea, fill = "lightblue", color = NA, alpha = 0.5) +  # North Sea
@@ -65,7 +85,6 @@ main_plot <- ggplot() +
   geom_sf(data = nl_stats_border, fill = NA, color = "white") +            # Province borders
   geom_sf(data = nl_border, fill = "black", color = NA, alpha = 0.3) +     # Netherlands national border
   geom_sf(data = oppervlaktewater, fill = "lightblue", color = NA) +       # Surface water
-  
   # Add mills data
   geom_sf(data = ex_molen, aes(color = "Disappeared Mills"), size = 0.5) +  # Disappeared mills
   geom_sf(data = molen, aes(color = "Existing Mills"), size = 0.5) +        # Existing mills
@@ -101,26 +120,40 @@ main_plot <- ggplot() +
     plot.title = element_text(hjust = -0.01, size = 16, face = "bold", margin = margin(b = 0)),
     plot.subtitle = element_text(hjust = -0.01, size = 12, margin = margin(t = 0)),
     plot.caption = element_text(hjust = -0.01, size = 10, face = "italic", margin = margin(t = 15)),
-    plot.margin = margin(t = 30, r = 20, b = 50, l = 20)
+    plot.margin = margin(t = 30, r = 20, b = 50, l = 20),
+    # Move legend to bottom-right
+    # legend.position = c(0.95, 0.05),  # x and y position (percent of plot)
+    legend.justification = c("right", "bottom"),  # Align legend's bottom-right corner
+    # legend.box.margin = margin(5, 5, 5, 5),  # Add some space around the legend
+    legend.background = element_rect(fill = "white", color = "white", size = 0.5),  # Optional: Add background and border to legend
+    # Customizing minor grid lines (for finer latitude and longitude)
+    panel.grid.major = element_line(color = "lightgray", size = 0.5),  # Major grid lines: gray color, thickness 0.
+    panel.grid.minor = element_line(color = "lightgray", size = 0.5),  # Minor grid lines: light gray, thinner
+    
+    # Ticks for axis (optional)
+    axis.ticks.x = element_line(color = "black", size = 1),  # Ticks for top
+    axis.ticks.y = element_line(color = "black", size = 1),  # Ticks for right
+    
   ) +
   
   # Add a north arrow
   annotation_north_arrow(
-    location = "bl",
-    which_north = "true",
-    style = north_arrow_fancy_orienteering(fill = c("white", "white"), line_col = "black"),
-    height = unit(1, "cm"),
+    location = "bl", # Position: 'tl' = top-left, 'tr' = top-right, etc.
+    which_north = "true", # "true" for true north, "grid" for grid north
+    style = north_arrow_fancy_orienteering(fill = c("white", "white"), line_col = "black"),# Choose a style for the north arrow
+     
+    height = unit(1, "cm"),  # Adjust size
     width = unit(1, "cm"),
-    pad_x = unit(1.7, "cm"),
-    pad_y = unit(1, "cm")
+    pad_x = unit(1.7, "cm"),# Horizontal padding
+    pad_y = unit(1, "cm")  # Vertical padding# Adjust size
   ) +
   
   # Add a scale bar
   annotation_scale(
-    location = "bl",
-    width_hint = 0.2,
+    location = "bl", # Position: 'bl' = bottom-left
+    width_hint = 0.2, # Adjust the width relative to the map
     line_width = 1,
-    height = unit(0.1, "cm"),
+    height = unit(0.1, "cm"), # Adjust the height of the scale bar
     pad_x = unit(1.25, "cm"),
     pad_y = unit(.75, "cm"),
     bar_cols = c("white", "white")
@@ -129,7 +162,9 @@ main_plot <- ggplot() +
 # Display the main plot
 main_plot
 
-# SECTION 4: ADD LOGO AND EXPORT FINAL PLOT
+
+# SECTION 4: ADD LOGO AND EXPORT FINAL PLOT -------------------------------
+
 # Read and convert logo to raster
 rbanism_logo <- image_read('https://rbanism.org/assets/imgs/about/vi_l.jpg')  # Download logo
 rbanism_logo_raster <- grid::rasterGrob(rbanism_logo, interpolate = TRUE)
@@ -145,3 +180,8 @@ final_plot
 ggsave("Molen_ex.pdf", plot = final_plot, 
        width = 8.27, height = 10, dpi = 600, 
        path = "/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/")
+
+
+
+# ایده ای برای نمودار های جذاب و بهتر با توجه به اطلاعات
+# ایده های برای نحوه ارایه آنلاین و اینتر اکتیو کردن آنها 
