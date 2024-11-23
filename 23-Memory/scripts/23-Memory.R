@@ -1,6 +1,5 @@
 install.packages("ggspatial")
 
-
 # Load libraries
 library(ggplot2)
 library(sf)      # For working with spatial data
@@ -102,10 +101,6 @@ main_plot <- ggplot() +
     
     # Customizing minor grid lines (for finer latitude and longitude)
     panel.grid.minor = element_line(color = "lightgray", size = 0.5),  # Minor grid lines: light gray, thinner
-    
-    # Optionally customize grid lines for x and y separately (longitude/latitude)
-    panel.grid.major.x = element_line(color = "blue", size = 0.7),    # Major grid lines for x-axis (longitude)
-    panel.grid.major.y = element_line(color = "green", size = 0.7),   # Major grid lines for y-axis (latitude)
     
     # Ticks for axis (optional)
     axis.ticks.x = element_line(color = "black", size = 1),  # Ticks for top
