@@ -217,7 +217,3 @@ ggsave("Mills.pdf", plot = final_plot,
        width = 8.27, height = 10, dpi = 600, 
        path = "/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/")
 
-
-
-# ایده ای برای نمودار های جذاب و بهتر با توجه به اطلاعات
-# ایده های برای نحوه ارایه آنلاین و اینتر اکتیو کردن آنها 
