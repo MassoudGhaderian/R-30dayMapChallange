@@ -37,9 +37,9 @@ existing_molen <- "23-Memory/data/shp/Molens.shp"             # Existing mills
 north_sea <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/NorthSea.shp")
 gr_border <- st_read("23-Memory/data/shp/GR.shp")            # Germany border
 bl_border <- st_read("23-Memory/data/shp/BG.shp")            # Belgium border
-nl_border <- st_read("23-Memory/data/shp/gadm41_NLD_shp/gadm41_NLD_0.shp")  #  national border
-nl_stats_border <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/gadm41_NLD_shp/gadm41_NLD_1.shp")  # Provinces borders
-nl_cities_border <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/gadm41_NLD_shp/gadm41_NLD_2.shp")  # Citis borders
+nl_border <- st_read("23-Memory/data/shp/gadm41_NLD_0.shp")  #  national border
+nl_stats_border <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/gadm41_NLD_1.shp")  # Provinces borders
+nl_cities_border <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/gadm41_NLD_2.shp")  # Citis borders
 oppervlaktewater <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/oppervlaktewater.shp")  # Surface water
 nl_populated_palces <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/populated_places.shp")  # Populated places
 
