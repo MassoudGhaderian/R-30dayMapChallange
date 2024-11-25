@@ -3,7 +3,7 @@
 # SECTION 0: INSTALL NECESSARY PACKAGES -----------------------------------
 
 # List of required packages
-required_packages <- c("ggspatial", "ggplot2", "sf", "tmap", "here", "magick", "grid", "cowplot" , "gganimate")
+required_packages <- c("ggspatial", "ggplot2", "sf", "tmap", "here", "magick", "grid", "cowplot" , "gganimate","gifski")
 
 # Install packages that are not already installed
 for (pkg in required_packages) {
@@ -233,30 +233,6 @@ ggsave("Mills.png", plot = final_plot,
 ##  PREPARE ANIMATION --------------------------------------------
 
 
-# # Paths to shapefiles of mills
-# disappeared_mills <- "23-Memory/data/shp/verdwenenmolens.shp"  # Disappeared (water and polder) mills
-# existing_mills <- "23-Memory/data/shp/Molens.shp"             # Existing (water and polder) mills 
-# other_mills <- "23-Memory/data/shp/weidemolens en windmotoren.shp"  # pasture and wind miles
-# 
-# # Read shapefiles for various spatial features
-# north_sea <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/NorthSea.shp")
-# gr_border <- st_read("23-Memory/data/shp/GR.shp")            # Germany border
-# bl_border <- st_read("23-Memory/data/shp/BG.shp")            # Belgium border
-# nl_border <- st_read("23-Memory/data/shp/gadm41_NLD_0.shp")  #  national border
-# nl_stats_border <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/gadm41_NLD_1.shp")  # Provinces borders
-# nl_cities_border <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/gadm41_NLD_2.shp")  # Citis borders
-# oppervlaktewater <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/oppervlaktewater.shp")  # Surface water
-# nl_populated_palces <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/populated_places.shp")  # Populated places
-# 
-# # Load and preprocess shapefiles for disappeared mills
-# ex_mills <- st_read(here(disappeared_mills)) |> 
-#   st_transform(crs = st_crs(nl_border)) |> 
-#   st_crop(sf::st_bbox(nl_border))  # Crop to Netherlands' bounding box
-# 
-# # Load existing mills shapefile
-# mills <- st_read(existing_mills)
-# other_mills <- st_read(other_mills)
-
 # Convert 'verdwenen1' to numeric for disappeared mills
 ex_mills$year <- as.numeric(ex_mills$verdwenen1)
 ex_mills$year
@@ -266,11 +242,6 @@ ex_mills$year
 mills$year <- as.numeric(mills$BOUWJAAR)
 mills$year 
 
-# Extract numeric year from 'bouwjaar' for other mills
-other_mills$year <- as.numeric(gsub("[^0-9]", "", other_mills$bouwjaar))
-other_mills$year
-
-
 # Add "year of disappearance" to disappeared mills
 ex_mills$type <- "Disappeared"
 ex_mills
@@ -279,30 +250,20 @@ ex_mills
 mills$type <- "Existing"
 ex_mills
 
-# Add "type" to other mills
-other_mills$type <- "Other"
-other_mills
-
-
 
 st_crs(ex_mills)
 st_crs(mills)
-st_crs(other_mills)
-
-
 mills <- st_transform(mills, st_crs(ex_mills))
-other_mills <- st_transform(other_mills, st_crs(ex_mills))
 
 
 # Combine datasets into one (keeping geometry intact)
 mills_combined <- rbind(
   st_drop_geometry(ex_mills)[, c("year", "type")],
-  st_drop_geometry(mills)[, c("year", "type")],
-  st_drop_geometry(other_mills)[, c("year", "type")]
+  st_drop_geometry(mills)[, c("year", "type")]
 )
 
 # Add the geometry column back
-mills_combined$geometry <- c(ex_mills$geometry, mills$geometry, other_mills$geometry)
+mills_combined$geometry <- c(ex_mills$geometry, mills$geometry)
 
 # Ensure mills_combined is an sf object
 mills_combined <- st_as_sf(mills_combined, crs = st_crs(ex_mills))
@@ -315,16 +276,17 @@ head(mills_combined)
 # Base plot setup (no animation yet)
 base_map <- ggplot() +
   geom_sf(data = mills_combined, aes(color = type), size = 1, alpha = 0.7) +
-  scale_color_manual(values = c("Disappeared" = "red", "Existing" = "blue", "Other" = "green")) +
+  scale_color_manual(values = c("Disappeared" = "red", "Existing" = "blue")) +
   labs(
     title = "Timeline of Mills in the Netherlands: {frame_time}",
-    subtitle = "Red: Disappeared | Blue: Existing | Green: Other",
+    subtitle = "Red: Disappeared | Blue: Existing",
     color = "Type",
     x = "Longitude",
     y = "Latitude"
   ) +
   theme_minimal()
 
+#show static map
 base_map
 
 # Now we set up the animation using gganimate
@@ -334,6 +296,8 @@ library(gganimate)
 animated_map <- base_map +
   transition_time(year) +          # Transition over years (animation)
   ease_aes('linear')               # Ensure smooth transition between years
+
+animated_map
 
 # Render the animation, adjust parameters for resolution and FPS
 animated_map_output <- animate(animated_map, width = 800, height = 600, fps = 10, duration = 20, renderer = gifski_renderer())
