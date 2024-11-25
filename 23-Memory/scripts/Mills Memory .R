@@ -227,56 +227,63 @@ ggsave("Mills.png", plot = final_plot,
 
 
 
-# SECTION 4 :  "YEAR OF DISAPPEARANCE" ANIMATION --------------------------
+# SECTION 4 : ANIMATION of  "YEAR OF DISAPPEARANCE"  --------------------------
 
 
 ##  PREPARE ANIMATION --------------------------------------------
 
+head(ex_mills)
+st_crs(ex_mills)
 
 # Convert 'verdwenen1' to numeric for disappeared mills
-ex_mills$year <- as.numeric(ex_mills$verdwenen1)
+ex_mills <- ex_mills[ex_mills$verdwenen1 != 0, ] #to reject 0 values 
+ex_mills$year <- as.numeric(ex_mills$verdwenen1)  #to reject NA and invalid values
 ex_mills$year
+summary(ex_mills$year)
 
 
-# Convert 'BOUWJAAR' to numeric for existing mills
-mills$year <- as.numeric(mills$BOUWJAAR)
-mills$year 
 
-# Add "year of disappearance" to disappeared mills
-ex_mills$type <- "Disappeared"
-ex_mills
+#-------1. Boxplot Method (Visual Inspection)
 
-# Add "year of appearance" to existing mills
-mills$type <- "Existing"
-ex_mills
+# Boxplot to check for outliers
+boxplot(ex_mills$year, main = "Boxplot of Year", ylab = "Year")
 
 
-st_crs(ex_mills)
-st_crs(mills)
-mills <- st_transform(mills, st_crs(ex_mills))
+#------ 2. IQR Method to Print Outliers
 
 
-# Combine datasets into one (keeping geometry intact)
-mills_combined <- rbind(
-  st_drop_geometry(ex_mills)[, c("year", "type")],
-  st_drop_geometry(mills)[, c("year", "type")]
-)
+# Calculate IQR (Interquartile Range)
+Q1 <- quantile(ex_mills$year, 0.25)
+Q3 <- quantile(ex_mills$year, 0.75)
+IQR_value <- Q3 - Q1
 
-# Add the geometry column back
-mills_combined$geometry <- c(ex_mills$geometry, mills$geometry)
+# Define outliers as values outside 1.5 * IQR
+lower_bound <- Q1 - 1.5 * IQR_value
+upper_bound <- Q3 + 1.5 * IQR_value
 
-# Ensure mills_combined is an sf object
-mills_combined <- st_as_sf(mills_combined, crs = st_crs(ex_mills))
+# Find outliers
+outliers <- ex_mills$year[ex_mills$year < lower_bound | ex_mills$year > upper_bound]
 
-# Check the structure
-str(mills_combined)
-head(mills_combined)
+# Print outliers
+print(outliers)
+
+
+#-------3. Z-Score Method to Print Outliers
+# Calculate Z-scores
+z_scores <- scale(ex_mills$year)
+
+# Identify outliers with Z-scores greater than 3 or less than -3
+outliers_z <- ex_mills$year[abs(z_scores) > 3]
+
+# Print outliers
+print(outliers_z)
+
+
 
 
 # Base plot setup (no animation yet)
 base_map <- ggplot() +
-  geom_sf(data = mills_combined, aes(color = type), size = 1, alpha = 0.7) +
-  scale_color_manual(values = c("Disappeared" = "red", "Existing" = "blue")) +
+  geom_sf(data = ex_mills, size = 1, alpha = 0.7) +
   labs(
     title = "Timeline of Mills in the Netherlands: {frame_time}",
     subtitle = "Red: Disappeared | Blue: Existing",
@@ -297,10 +304,15 @@ animated_map <- base_map +
   transition_time(year) +          # Transition over years (animation)
   ease_aes('linear')               # Ensure smooth transition between years
 
-animated_map
+# Render the animation as a video (MP4 format)
+animated_map_output <- animate(
+  animated_map, 
+  width = 800, 
+  height = 600, 
+  fps = 10, 
+  duration = 20, 
+  renderer = av_renderer()  # Use av_renderer to create a video
+)
 
-# Render the animation, adjust parameters for resolution and FPS
-animated_map_output <- animate(animated_map, width = 800, height = 600, fps = 10, duration = 20, renderer = gifski_renderer())
-
-# Optionally, save the animation as a GIF file
-anim_save("mills_timeline.gif", animated_map_output)
+# Optionally, save the animation as an MP4 file
+anim_save("mills_timeline.mp4", animated_map_output)
