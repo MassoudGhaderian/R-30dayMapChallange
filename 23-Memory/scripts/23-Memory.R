@@ -213,7 +213,7 @@ final_plot <- ggdraw(main_plot) +
 final_plot
 
 # Save the final plot as a PDF
-ggsave("Mills.pdf", plot = final_plot, 
+ggsave("Mills.png", plot = final_plot, 
        width = 8.27, height = 10, dpi = 600, 
        path = "/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/")
 
