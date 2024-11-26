@@ -230,10 +230,12 @@ ggsave("Mills.png", plot = final_plot,
 # SECTION 4 : ANIMATION of  "YEAR OF DISAPPEARANCE"  --------------------------
 
 
-##  PREPARE ANIMATION --------------------------------------------
+##  Data Preparation  --------------------------------------------
 
 head(ex_mills)
 st_crs(ex_mills)
+num_disappeared_mills <- nrow(ex_mills)
+cat("Total disappeared mills:", num_disappeared_mills, "\n")
 
 # Convert 'verdwenen1' to numeric for disappeared mills
 ex_mills <- ex_mills[ex_mills$verdwenen1 != 0, ] #to reject 0 values 
@@ -241,45 +243,55 @@ ex_mills$year <- as.numeric(ex_mills$verdwenen1)  #to reject NA and invalid valu
 ex_mills$year
 summary(ex_mills$year)
 
+##  outliers checking and histogram --------------------------------------------
 
-
-#-------1. Boxplot Method (Visual Inspection)
-
-# Boxplot to check for outliers
+# Boxplot to check for outliers in general
 boxplot(ex_mills$year, main = "Boxplot of Year", ylab = "Year")
 
 
-#------ 2. IQR Method to Print Outliers
-
-
-# Calculate IQR (Interquartile Range)
-Q1 <- quantile(ex_mills$year, 0.25)
-Q3 <- quantile(ex_mills$year, 0.75)
-IQR_value <- Q3 - Q1
-
-# Define outliers as values outside 1.5 * IQR
-lower_bound <- Q1 - 1.5 * IQR_value
-upper_bound <- Q3 + 1.5 * IQR_value
-
-# Find outliers
-outliers <- ex_mills$year[ex_mills$year < lower_bound | ex_mills$year > upper_bound]
-
-# Print outliers
-print(outliers)
-
-
-#-------3. Z-Score Method to Print Outliers
 # Calculate Z-scores
 z_scores <- scale(ex_mills$year)
 
 # Identify outliers with Z-scores greater than 3 or less than -3
-outliers_z <- ex_mills$year[abs(z_scores) > 3]
-
-# Print outliers
-print(outliers_z)
+outliers_Z <- ex_mills$year[abs(z_scores) > 3]
+outliers_Z
 
 
+# Plot histogram of 'year' and highlight outliers
+hist(ex_mills$year, main = "Histogram of Year and numbers of Disapperance", 
+     xlab = "Year", col = "#fec44f", breaks = 30, 
+     xlim = c(min(ex_mills$year) - 10, max(ex_mills$year) + 10),
+     border = NA)  # Change the border color  
 
+# Highlight the outliers
+points(outliers_Z, rep(0, length(outliers_Z)), col = "#fec44f", pch = 19)
+
+
+# Plot histogram zoomed in on a specific range
+hist(ex_mills$year, main = "Zoomed-In Histogram", 
+     xlab = "Year", col = "#fec44f", breaks = 30, 
+     xlim = c(1800, 2000),  # Focus on years between 1800 and 2000
+     border = NA)
+
+
+
+# Calculate the frequency of each year
+year_freq <- table(ex_mills$year)
+year_freq
+# Find the year(s) with the maximum frequency
+max_freq <- max(year_freq)
+max_freq
+max_years <- names(year_freq[year_freq == max_freq])
+max_years
+
+sum_freq <- sum(year_freq)
+print(sum_freq)
+
+# Add text annotations to the histogram for the years with maximum frequency
+text(x = as.numeric(max_years), y = max_freq, labels = max_years, 
+     col = "blue", pos = 3, cex = 0.8)  # Add text above the bars
+
+##  Plotting--------------------------------------------
 
 # Base plot setup (no animation yet)
 base_map <- ggplot() +
