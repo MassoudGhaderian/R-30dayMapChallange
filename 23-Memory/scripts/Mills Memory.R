@@ -310,7 +310,7 @@ base_map
 
 # Now we set up the animation using gganimate
 library(gganimate)
-
+? gganimate
 # Add transition for animation using the 'year' field for time-based animation
 animated_map <- base_map +
   transition_time(year) +          # Transition over years (animation)
