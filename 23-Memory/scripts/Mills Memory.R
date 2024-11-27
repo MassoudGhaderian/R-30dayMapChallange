@@ -1,6 +1,6 @@
 
 
-# SECTION 0: Install Necessary Packages -----------------------------------
+# SECTION 0:  Necessary Packages -----------------------------------
 
 # List of required packages
 required_packages <- c("ggspatial", "ggplot2", "sf", "tmap", "here", "magick",
@@ -25,7 +25,7 @@ library(leaflet)
 library(leaflet.extras)
 
 
-# SECTION 1: Define Paths and Load Spatial Data ---------------------------
+# SECTION 1: Load Spatial Data ---------------------------
 
 # Set working directory (modify as needed)
 setwd("F:/R-WorkSpaces/R-30dayMapChallange/")
@@ -86,7 +86,7 @@ bbox <- st_bbox(nl_border)
 
 
 
-# SECTION 3: Existing and  Disappeared Mills ---------------------------------------------
+# SECTION 3: Existing and  Disappeared Mills Maps ---------------------------------------------
 
 main_plot <- ggplot() +
   
@@ -227,7 +227,7 @@ ggsave("Mills.png", plot = final_plot,
 
 
 
-# SECTION 4 : Interactive Map of Disappeared Mills"  --------------------------
+# SECTION 4 : Interactive Map of Disappeared Mills --------------------------
 
 # Load the necessary libraries
 library(leaflet)
@@ -262,7 +262,7 @@ library(htmlwidgets)
 saveWidget(leaflet_map, "23-Memory/outputs/mills.html")
 
 
-# SECTION 5 : ANIMATION of  "YEAR OF DISAPPEARANCE"  --------------------------
+# SECTION 5 : Animation of  "Year OF Disappearance"  --------------------------
 
 
 ##  Data Preparation  --------------------------------------------
