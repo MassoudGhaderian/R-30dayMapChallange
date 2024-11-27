@@ -1,10 +1,10 @@
 
 
-# SECTION 0: INSTALL NECESSARY PACKAGES -----------------------------------
+# SECTION 0: Install Necessary Packages -----------------------------------
 
 # List of required packages
 required_packages <- c("ggspatial", "ggplot2", "sf", "tmap", "here", "magick",
-                       "grid", "cowplot" , "gganimate","gifski","leaflet")
+                       "grid", "cowplot" , "gganimate","gifski","leaflet","leaflet.extras")
 
 # Install packages that are not already installed
 for (pkg in required_packages) {
@@ -22,10 +22,10 @@ library(grid)          # For working with grid graphics
 library(cowplot)       # For combining plots and adding elements (e.g., logos)
 library(ggspatial)     # For scale bars and north arrows in ggplot maps
 library(leaflet)
+library(leaflet.extras)
 
 
-
-# SECTION 1: DEFINE PATHS AND LOAD SPATIAL DATA ---------------------------
+# SECTION 1: Define Paths and Load Spatial Data ---------------------------
 
 # Set working directory (modify as needed)
 setwd("F:/R-WorkSpaces/R-30dayMapChallange/")
@@ -56,7 +56,7 @@ mills <- st_read(existing_mills)
 other_mills <- st_read(other_mills)
 
 
-# SECTION 2: DATA INSPECTION ----------------------------------------------
+# SECTION 2: Data Inspection ----------------------------------------------
 
 # Inspect first few rows of each data set
 head(mills)
@@ -86,7 +86,7 @@ bbox <- st_bbox(nl_border)
 
 
 
-# SECTION 3: CREATE MAIN PLOT OF EXISTING AND DISAPPEARED MILDS ---------------------------------------------
+# SECTION 3: Existing and  Disappeared Mills ---------------------------------------------
 
 main_plot <- ggplot() +
   
@@ -229,9 +229,37 @@ ggsave("Mills.png", plot = final_plot,
 
 # SECTION 4 : Interactive Map of Disappeared Mills"  --------------------------
 
+# Load the necessary libraries
+library(leaflet)
+library(sf)
+
+head(ex_mills) 
+
+main_plot <- ggplot() +
+  # Add mills data
+  geom_sf(data = ex_mills, aes(color = "Disappeared Mills"), size = 0.5)   # Disappeared mills
+
+main_plot  
+  
+  # Create the map
+leaflet_map <- leaflet(data = ex_mills) %>%
+  addTiles() %>%
+  addCircleMarkers(
+    lat = ~st_coordinates(ex_mills)[, 2],   # Latitude from geometry
+    lng = ~st_coordinates(ex_mills)[, 1],   # Longitude from geometry
+    color = "#fec44f",                          # Circle color
+    radius = 2,                             # Size of the circle
+    popup = ~paste("<b>", molen_naam, "</b><br>",  # Show the name of the mill
+                   "<a href='", infolink, "' target='_blank'>Click here for more info</a>")  # Link to website
+  )
+
+# Display the map
+leaflet_map
 
 
-
+# Save the map as an HTML file
+library(htmlwidgets)
+saveWidget(leaflet_map, "23-Memory/outputs/mills.html")
 
 
 # SECTION 5 : ANIMATION of  "YEAR OF DISAPPEARANCE"  --------------------------
