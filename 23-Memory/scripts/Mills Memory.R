@@ -4,7 +4,8 @@
 
 # List of required packages
 required_packages <- c("ggspatial", "ggplot2", "sf", "tmap", "here", "magick",
-                       "grid", "cowplot" , "gganimate","gifski","leaflet","leaflet.extras")
+                       "grid", "cowplot" , "gganimate","gifski","leaflet",
+                       "leaflet.extras", "viridis")
 
 # Install packages that are not already installed
 for (pkg in required_packages) {
@@ -23,9 +24,10 @@ library(cowplot)       # For combining plots and adding elements (e.g., logos)
 library(ggspatial)     # For scale bars and north arrows in ggplot maps
 library(leaflet)
 library(leaflet.extras)
+library(viridis)   # For a visually appealing color scale
 
 
-# SECTION 1: Load Spatial Data ---------------------------
+# SECTION 00: Load Spatial Data ---------------------------
 
 # Set working directory (modify as needed)
 setwd("F:/R-WorkSpaces/R-30dayMapChallange/")
@@ -56,7 +58,7 @@ mills <- st_read(existing_mills)
 other_mills <- st_read(other_mills)
 
 
-# SECTION 2: Data Inspection ----------------------------------------------
+# SECTION 000: Data Inspection ----------------------------------------------
 
 # Inspect first few rows of each data set
 head(mills)
@@ -86,7 +88,7 @@ bbox <- st_bbox(nl_border)
 
 
 
-# SECTION 3: Existing and  Disappeared Mills Maps ---------------------------------------------
+# SECTION 1: Existing and  Disappeared Mills Maps ---------------------------------------------
 
 main_plot <- ggplot() +
   
@@ -227,7 +229,7 @@ ggsave("Mills.png", plot = final_plot,
 
 
 
-# SECTION 4 : Interactive Map of Disappeared Mills --------------------------
+# SECTION 2 : Interactive Map of Disappeared Mills --------------------------
 
 # Load the necessary libraries
 library(leaflet)
@@ -262,7 +264,46 @@ library(htmlwidgets)
 saveWidget(leaflet_map, "23-Memory/outputs/mills.html")
 
 
-# SECTION 5 : Animation of  "Year OF Disappearance"  --------------------------
+
+# SECTION 3 : AHeat map of "Disappearanced milles"  --------------------------
+
+# Load necessary libraries
+library(sf)        # For spatial data handling
+library(ggplot2)   # For visualization
+library(viridis)   # For a visually appealing color scale
+
+# Load your disappeared mills dataset (already in `ex_mills` as an sf object)
+# Make sure it is projected for spatial analysis (e.g., EPSG: 3857 for meters)
+ex_mills <- st_transform(ex_mills, crs = 3857) 
+
+# Load the Netherlands border shapefile
+# Replace "path_to_netherlands_shapefile" with the actual path to your shapefile
+netherlands_border <- st_read("23-Memory/data/shp/gadm41_NLD_0.shp")
+netherlands_border <- st_transform(netherlands_border, crs = 3857)
+
+# Extract coordinates for disappeared mills
+mills_coords <- st_coordinates(ex_mills)
+
+# Convert mills to a data frame for ggplot2
+mills_df <- data.frame(x = mills_coords[, 1], y = mills_coords[, 2])
+
+# Create the heatmap with the Netherlands border
+heatmap_plot <- ggplot() +
+  # Add the heatmap
+  stat_density_2d(data = mills_df, aes(x = x, y = y, fill = ..density..), geom = "raster", contour = FALSE) +
+  scale_fill_viridis(option = "magma", name = "Density") +  # Use a magma color palette
+  # Add the Netherlands border
+  geom_sf(data = netherlands_border, fill = NA, color = "white", size = 0.5) +
+  labs(title = "Density Heatmap of Disappeared Mills with Netherlands Border",
+       x = "Longitude (projected)",
+       y = "Latitude (projected)") +
+  theme_minimal()
+
+# Display the heatmap
+print(heatmap_plot)
+
+
+# SECTION 4 : Animation of  "Year OF Disappearance"  --------------------------
 
 
 ##  Data Preparation  --------------------------------------------
@@ -438,3 +479,9 @@ animated_map_output <- animate(
 
 # Save the Animation
 anim_save("/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/mills_timeline.mp4", animated_map_output)
+
+
+
+
+# SECTION 5 : Typology of Existing Mills  --------------------------
+
