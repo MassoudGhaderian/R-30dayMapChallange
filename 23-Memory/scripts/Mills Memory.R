@@ -319,8 +319,6 @@ animated_map <- base_map +
 animated_map
 
 
-
-
 # Render the animation as a video (MP4 format)
 animated_map_output <- animate(
   animated_map, 
