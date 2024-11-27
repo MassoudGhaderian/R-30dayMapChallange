@@ -3,7 +3,8 @@
 # SECTION 0: INSTALL NECESSARY PACKAGES -----------------------------------
 
 # List of required packages
-required_packages <- c("ggspatial", "ggplot2", "sf", "tmap", "here", "magick", "grid", "cowplot" , "gganimate","gifski")
+required_packages <- c("ggspatial", "ggplot2", "sf", "tmap", "here", "magick",
+                       "grid", "cowplot" , "gganimate","gifski","leaflet")
 
 # Install packages that are not already installed
 for (pkg in required_packages) {
@@ -20,6 +21,7 @@ library(magick)        # For image manipulation (logo)
 library(grid)          # For working with grid graphics
 library(cowplot)       # For combining plots and adding elements (e.g., logos)
 library(ggspatial)     # For scale bars and north arrows in ggplot maps
+library(leaflet)
 
 
 
@@ -225,9 +227,14 @@ ggsave("Mills.png", plot = final_plot,
 
 
 
+# SECTION 4 : Interactive Map of Disappeared Mills"  --------------------------
 
 
-# SECTION 4 : ANIMATION of  "YEAR OF DISAPPEARANCE"  --------------------------
+
+
+
+
+# SECTION 5 : ANIMATION of  "YEAR OF DISAPPEARANCE"  --------------------------
 
 
 ##  Data Preparation  --------------------------------------------
