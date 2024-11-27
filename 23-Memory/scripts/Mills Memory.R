@@ -483,5 +483,131 @@ anim_save("/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/mills_timeline.mp
 
 
 
-# SECTION 5 : Typology of Existing Mills  --------------------------
+# SECTION 5 : Function of Existing Mills  --------------------------
+
+# Load necessary libraries
+library(sf)        # For spatial data handling
+library(ggplot2)   # For visualization
+
+# Ensure your dataset (`mills`) is loaded as an sf object and projected correctly
+mills <- st_transform(mills, crs = 3857)  # Transform to a projected CRS for spatial visualization
+
+head(mills)
+# Check the unique mill types
+unique(mills$FUNCTIE)
+
+# Create a map to visualize the types of existing mills
+mill_function_map <- ggplot(data = mills) +
+  geom_sf(aes(color = FUNCTIE), size = 2) +  # Use 'FUNCTIE' column to color the mills
+  scale_color_brewer(palette = "Set3", name = "Mill Type") +  # Use a color palette
+  labs(title = "function of Existing Mills in the Netherlands",
+       x = "Longitude (projected)",
+       y = "Latitude (projected)") +
+  theme_minimal()
+
+# Display the map
+print(mill_function_map)
+
+
+# Save the final plot as a PDF
+ggsave("Mills.png", plot = mill_function_map, 
+       width = 8.27, height = 10, dpi = 600, 
+       path = "/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/")
+
+
+# SECTION 6  : existing mill on DSM  --------------------------
+
+library(terra)
+library(sf)
+library(rayshader)
+
+# Load the mills data
+mills <- st_read("23-Memory/data/shp/Molens.shp")
+
+# Get the bounding box of the mills (expand it slightly for better context)
+mills_bbox <- st_bbox(mills)
+expanded_bbox <- mills_bbox + c(-0.01, -0.01, 0.01, 0.01)  # Expand by 0.01 degrees
+
+# WCS API call to fetch DSM for the bounding box
+wcs_url <- "https://service.pdok.nl/rws/ahn/wms/v1_0?SERVICE=WMS&request=GetCapabilities&version=1.3.0"
+dsm <- rast(paste0(
+  wcs_url,
+  "?SERVICE=WCS&VERSION=2.0.1&REQUEST=GetCoverage",
+  "&COVERAGEID=layer_name",  # Replace with specific layer name
+  "&FORMAT=image/tiff",
+  "&SUBSET=Lat(", expanded_bbox["ymin"], ",", expanded_bbox["ymax"], ")",
+  "&SUBSET=Long(", expanded_bbox["xmin"], ",", expanded_bbox["xmax"], ")"
+))
+
+# Convert DSM raster to a matrix for rayshader
+dsm_matrix <- as.matrix(dsm, wide = TRUE)
+
+# Render the 3D map
+dsm_matrix %>%
+  rayshader::height_shade() %>%
+  rayshader::plot_3d(heightmap = ., zscale = 10, windowsize = c(1000, 800))
+
+# Overlay mills (optional: convert coordinates to match DSM matrix)
+mills_coords <- st_coordinates(mills)
+points3d(mills_coords[, 1], mills_coords[, 2], col = "blue", size = 5)
+
+# Adjust the view
+rayshader::render_camera(theta = 45, phi = 30, zoom = 0.8)
+
+
+# SECTION 6  : existing mill on DSM  --------------------------
+
+# Load required libraries
+library(leaflet)
+library(sf)
+library(raster)
+
+
+# Define the WMS URL for DSM
+wms_url <- "https://service.pdok.nl/rws/ahn/wms/v1_0?SERVICE=WMS&request=GetCapabilities&version=1.3.0"
+
+# Define the WMS layer parameters
+wms_params <- list(
+  service = "WMS",
+  request = "GetMap",
+  version = "1.3.0",
+  layers = "ahn3_05m_dsm",  # Specify DSM layer (make sure this is correct)
+  format = "image/png",  # Image format
+  transparent = "TRUE",
+  styles = "",  # Default style
+  crs = "EPSG:4326",  # Use geographic coordinates (WGS 84)
+  width = 800,  # Image width
+  height = 600,  # Image height
+  bbox = "-180,-90,180,90"  # Bounding box (modify according to your region)
+)
+
+
+
+# Load mill locations (replace with your file path)
+mills_shapefile <- st_read("23-Memory/data/shp/Molens.shp")
+
+# Check the structure
+head(mills_shapefile)
+
+
+# Create a leaflet map
+leaflet() %>%
+  # Add WMS basemap
+  addTiles() %>%
+  addWMSTiles(wms_url, layers = "ahn3_05m_dsm", options = WMSTileOptions(format = "image/png", transparent = TRUE)) %>%
+  # Add existing mills as points
+  addCircleMarkers(data = mills_shapefile, 
+                   color = "red", 
+                   radius = 5, 
+                   popup = ~NAAM,  # Pop-up with the name of the mill
+                   fillOpacity = 0.8) %>%
+  # Customize map view (adjust zoom level and center)
+  setView(lng = 5, lat = 52.3, zoom = 10)  # Adjust as per your region's location
+
+
+
+
+
+
+
 
