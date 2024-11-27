@@ -239,9 +239,11 @@ cat("Total disappeared mills:", num_disappeared_mills, "\n")
 
 # Convert 'verdwenen1' to numeric for disappeared mills
 ex_mills <- ex_mills[ex_mills$verdwenen1 != 0, ] #to reject 0 values 
-ex_mills$year <- as.numeric(ex_mills$verdwenen1)  #to reject NA and invalid values
+ex_mills$year <- as.integer(ex_mills$verdwenen1)  #to reject NA and invalid values
 ex_mills$year
 summary(ex_mills$year)
+
+
 
 ##  outliers checking and histogram --------------------------------------------
 
@@ -295,7 +297,8 @@ text(x = as.numeric(max_years), y = max_freq, labels = max_years,
 
 # Base plot setup (no animation yet)
 base_map <- ggplot() +
-  geom_sf(data = ex_mills, size = 1,col = "#fec44f") +
+  geom_sf(data = nl_border, fill = "black", color = NA, alpha = 0.8) +     # Netherlands national border (dark mode)
+  geom_sf(data = ex_mills, size = 0.7 ,col = "#fec44f") +
   labs(
     title = "Timeline of Mills in the Netherlands: {frame_time}",
     subtitle = "Red: Disappeared | Blue: Existing",
@@ -308,9 +311,14 @@ base_map <- ggplot() +
 #show static map
 base_map
 
+
+##  animation 1 --------------------------------------------
+
+
 # Now we set up the animation using gganimate
 library(gganimate)
-? gganimate
+
+
 # Add transition for animation using the 'year' field for time-based animation
 animated_map <- base_map +
   transition_time(year) +          # Transition over years (animation)
@@ -324,10 +332,74 @@ animated_map_output <- animate(
   animated_map, 
   width = 800, 
   height = 600, 
-  fps = 10, 
-  duration = 20, 
+  fps = 15, 
+  duration = 40, 
   renderer = av_renderer()  # Use av_renderer to create a video
 )
 
 # Optionally, save the animation as an MP4 file
-anim_save("mills_timeline.mp4", animated_map_output)
+anim_save("/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/mills_timeline.mp4", animated_map_output)
+
+
+##  animation 2 --------------------------------------------
+# Load Required Libraries
+library(tidyverse)
+library(sf)
+library(gganimate)
+
+# Prepare Cumulative Data
+str(ex_mills)
+head(ex_mills)
+ex_mills
+# Create a sequence of years
+years <- seq(min(ex_mills$year, na.rm = TRUE), max(ex_mills$year, na.rm = TRUE))
+
+years
+# Expand data for each mill and year
+expanded_data <- expand.grid(mill_id = 1:nrow(ex_mills), year = years) %>%
+  left_join(ex_mills %>% mutate(mill_id = row_number()), by = "mill_id") %>%
+  mutate(
+    year = as.integer(year),  # Explicitly convert 'year' to integer
+    disappeared_year = as.integer(verdwenen1),  # Ensure 'verdwenen1' is numeric
+    visible = ifelse(year < verdwenen1, TRUE, FALSE)  # Visibility logic
+  )
+
+head(expanded_data)
+
+# Base Map Setup
+base_map <- ggplot() +
+  geom_sf(data = nl_border, fill = "black", color = NA, alpha = 0.8) +  # Netherlands border
+  geom_sf(data = expanded_data %>% filter(visible), 
+          aes(geometry = geometry, group = mill_id), 
+          size = 0.7, col = "#fec44f") +
+  labs(
+    title = "Timeline of Mills in the Netherlands: {closest_state}",
+    subtitle = "Yellow: Mills Visible Before Disappearance",
+    x = "Longitude",
+    y = "Latitude"
+  ) +
+  theme_minimal()
+
+# Add Animation Transition
+animated_map <- base_map +
+  transition_states(
+    states = year,                  # Transition over years
+    transition_length = 2,          # Adjust transition speed
+    state_length = 1                # Pause per year
+  ) +
+  ease_aes('linear')                # Smooth transitions
+
+animated_map
+
+# Render Animation
+animated_map_output <- animate(
+  animated_map, 
+  width = 800, 
+  height = 600, 
+  fps = 10,                         # Frames per second
+  duration = length(years) * 2,     # Total duration
+  renderer = av_renderer()
+)
+
+# Save the Animation
+anim_save("/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/mills_timeline.mp4", animated_map_output)
