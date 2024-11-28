@@ -18,37 +18,40 @@ library(ggplot2)       # For creating plots
 library(sf)            # For working with spatial data
 library(tmap)          # For thematic mapping
 library(here)          # For managing file paths
-library(magick)        # For image manipulation (logo)
+library(magick)        # For image manipulation 
 library(grid)          # For working with grid graphics
 library(cowplot)       # For combining plots and adding elements (e.g., logos)
 library(ggspatial)     # For scale bars and north arrows in ggplot maps
-library(leaflet)
-library(leaflet.extras)
-library(viridis)   # For a visually appealing color scale
+library(leaflet)       # For building interactive maps
+library(leaflet.extras)# For Extends the capabilities of leaflet 
+library(viridis)       # For a visually appealing colors
 
 
 # SECTION 00: Load Spatial Data ---------------------------
 
-# Set working directory (modify as needed)
-setwd("F:/R-WorkSpaces/R-30dayMapChallange/")
+
+# loading Disappeared (water and polder) mills shape file 
+disappeared_mills <- here("23-Memory", "data", "shp", "verdwenenmolens.shp")  
+# loading Existing (water and Polder) mills shape file 
+existing_mills <- here("23-Memory", "data", "shp", "Molens.shp")  
+# loading Existing (water and Polder) mills shape file 
+other_mills <- here("23-Memory", "data", "shp", "weidemolens en windmotoren.shp") 
+
+# Read shape files for various spatial features
+north_sea <- st_read(here("23-Memory", "data", "shp", "NorthSea.shp"))
+# Netherlands, Germany and Belgium border shape file reading
+gr_border <- st_read(here("23-Memory", "data", "shp", "GR.shp"))
+bl_border <- st_read(here("23-Memory", "data", "shp", "BG.shp"))
+nl_border <- st_read(here("23-Memory", "data", "shp", "gadm41_NLD_0.shp"))
+#border of stats and cities in Netherlands shape file reading
+nl_stats_border <- st_read(here("23-Memory", "data", "shp", "gadm41_NLD_1.shp"))
+nl_cities_border <- st_read(here("23-Memory", "data", "shp", "gadm41_NLD_2.shp"))
+#Surface water and Populated places shape file in Netherlands shape file reading
+oppervlaktewater <- st_read(here("23-Memory", "data", "shp", "oppervlaktewater.shp"))
+nl_populated_palces <- st_read(here("23-Memory", "data", "shp", "populated_places.shp"))
 
 
-# Paths to shapefiles of mills
-disappeared_mills <- "23-Memory/data/shp/verdwenenmolens.shp"  # Disappeared (water and polder) mills
-existing_mills <- "23-Memory/data/shp/Molens.shp"             # Existing (water and polder) mills 
-other_mills <- "23-Memory/data/shp/weidemolens en windmotoren.shp"  # pasture and wind miles
-
-# Read shapefiles for various spatial features
-north_sea <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/NorthSea.shp")
-gr_border <- st_read("23-Memory/data/shp/GR.shp")            # Germany border
-bl_border <- st_read("23-Memory/data/shp/BG.shp")            # Belgium border
-nl_border <- st_read("23-Memory/data/shp/gadm41_NLD_0.shp")  #  national border
-nl_stats_border <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/gadm41_NLD_1.shp")  # Provinces borders
-nl_cities_border <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/gadm41_NLD_2.shp")  # Citis borders
-oppervlaktewater <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/oppervlaktewater.shp")  # Surface water
-nl_populated_palces <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/populated_places.shp")  # Populated places
-
-# Load and preprocess shapefiles for disappeared mills
+# Load and preprocess shape files for disappeared mills
 ex_mills <- st_read(here(disappeared_mills)) |> 
   st_transform(crs = st_crs(nl_border)) |> 
   st_crop(sf::st_bbox(nl_border))  # Crop to Netherlands' bounding box
