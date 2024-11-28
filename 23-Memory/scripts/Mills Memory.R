@@ -77,24 +77,21 @@ summary(ex_mills)
 summary(other_mills)
 
 # Count number of features in each data set
-
 num_disappeared_mills <- nrow(ex_mills)
-num_existing_mills <- nrow(mills)
-num_other_mills <- nrow(other_mills)
-
 cat("Total disappeared mills:", num_disappeared_mills, "\n")
+num_existing_mills <- nrow(mills)
 cat("Total existing mills:", num_existing_mills, "\n")
+num_other_mills <- nrow(other_mills)
 cat("Total other mills:", num_other_mills, "\n")
+
+
+# SECTION 1: Existing and  Disappeared Mills Maps ---------------------------------------------
 
 # Get the bounding box of the Netherlands shape file
 bbox <- st_bbox(nl_border)
 
 
-
-# SECTION 1: Existing and  Disappeared Mills Maps ---------------------------------------------
-
 main_plot <- ggplot() +
-  
   # Add geographic background features
   geom_sf(data = north_sea, fill = "lightblue", color = NA, alpha = 0.5) + # North Sea
   geom_sf(data = gr_border, color = NA, alpha = 0.5) +                     # Germany border
@@ -103,13 +100,11 @@ main_plot <- ggplot() +
   geom_sf(data = nl_border, fill = "black", color = NA, alpha = 0.3) +     # Netherlands national border (dark mode)
   # geom_sf(data = nl_border, fill = NA, color = "black") +     # Netherlands national border (light mode)
   geom_sf(data = nl_stats_border, fill = NA , color = NA) +            # Netherlands Province borders
-  
   # Add mills data
   geom_sf(data = ex_mills, aes(color = "Disappeared Mills"), size = 0.5) +  # Disappeared mills
   geom_sf(data = mills, aes(color = "Existing Mills"), size = 0.5) +        # Existing mills
-  
+  # Add populated cities 
   geom_sf(data = nl_populated_palces, aes(shape = "circle"), size = 2, show.legend = FALSE) +
-  
   # Add labels
   geom_text(data = nl_populated_palces, 
             aes(x = st_coordinates(geometry)[, 1], 
@@ -121,7 +116,6 @@ main_plot <- ggplot() +
             color = "black",  # Label color
             fontface ="bold",  # Font style
             check_overlap = FALSE) +  # Prevent overlap of labels
-  
   # Customize color legend for mills
   scale_color_manual(
     name = "▪ Legend",  # Legend title
@@ -137,12 +131,11 @@ main_plot <- ggplot() +
   guides(
     color = guide_legend(override.aes = list(size = 3))  # Customize legend symbols
   )+
-  
   # Add title, subtitle, and captions
   labs(
-    title = "▪ Mills in the Netherlands",
-    subtitle = "▪ Existing and disappeared",
-    caption = "▪ #30DayMapChallenge| Data Source: www.molendatabase.org | Map by Massoud Ghaderian, 2024",
+    title = "▪ Mills' Memory",
+    subtitle = "▪ Existing and Disappeared Mills in Netherlands",
+    caption = "▪ Data Source: www.molendatabase.org | Map by Massoud Ghaderian, 2024",
     x = NULL,  # Remove x-axis label
     y = NULL   # Remove y-axis label
   ) +
@@ -163,6 +156,7 @@ main_plot <- ggplot() +
     legend.justification = c("right", "bottom"),  # Align legend's bottom-right corner
     # legend.box.margin = margin(5, 5, 5, 5),  # Add some space around the legend
     legend.background = element_rect(fill = "white", color = "white", size = 0.5),  # Optional: Add background and border to legend
+    
     # Customizing  grid lines (for finer latitude and longitude)
     panel.grid.major = element_line(color = "lightgray", size = 0.5),  # Major grid lines: gray color, thickness 0.
     panel.grid.minor = element_line(color = "lightgray", size = 0.5),  # Minor grid lines: light gray, thinner
@@ -185,7 +179,6 @@ main_plot <- ggplot() +
     axis.text.y = element_text(
       size = 7, hjust = 1, vjust = 0.5  # Move y-axis labels up (vjust = 1.5)
     ),
-    
   ) +
   # Add a north arrow
   annotation_north_arrow(
@@ -198,7 +191,6 @@ main_plot <- ggplot() +
     pad_x = unit(1.7, "cm"),# Horizontal padding
     pad_y = unit(1, "cm")  # Vertical padding# Adjust size
   ) +
-  
   # Add a scale bar
   annotation_scale(
     location = "bl", # Position: 'bl' = bottom-left
@@ -226,7 +218,7 @@ final_plot <- ggdraw(main_plot) +
 final_plot
 
 # Save the final plot as a PDF
-ggsave("Mills.png", plot = final_plot, 
+ggsave("Mills.jpg", plot = final_plot, 
        width = 8.27, height = 10, dpi = 600, 
        path = "/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/")
 
