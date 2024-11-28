@@ -562,52 +562,137 @@ library(leaflet)
 library(sf)
 library(raster)
 
-
 # Define the WMS URL for DSM
 wms_url <- "https://service.pdok.nl/rws/ahn/wms/v1_0?SERVICE=WMS&request=GetCapabilities&version=1.3.0"
-
-# Define the WMS layer parameters
-wms_params <- list(
-  service = "WMS",
-  request = "GetMap",
-  version = "1.3.0",
-  layers = "ahn3_05m_dsm",  # Specify DSM layer (make sure this is correct)
-  format = "image/png",  # Image format
-  transparent = "TRUE",
-  styles = "",  # Default style
-  crs = "EPSG:4326",  # Use geographic coordinates (WGS 84)
-  width = 800,  # Image width
-  height = 600,  # Image height
-  bbox = "-180,-90,180,90"  # Bounding box (modify according to your region)
-)
-
-
 
 # Load mill locations (replace with your file path)
 mills_shapefile <- st_read("23-Memory/data/shp/Molens.shp")
 
-# Check the structure
+# Check the structure of the shapefile (optional)
 head(mills_shapefile)
 
+# Transform the CRS to match WGS 84 (EPSG:4326)
+mills_shapefile <- st_transform(mills_shapefile, crs = 4326)
+
+# Verify mill locations by plotting them (optional)
+plot(st_geometry(mills_shapefile))
 
 # Create a leaflet map
 leaflet() %>%
-  # Add WMS basemap
-  addTiles() %>%
-  addWMSTiles(wms_url, layers = "ahn3_05m_dsm", options = WMSTileOptions(format = "image/png", transparent = TRUE)) %>%
-  # Add existing mills as points
-  addCircleMarkers(data = mills_shapefile, 
-                   color = "red", 
-                   radius = 5, 
-                   popup = ~NAAM,  # Pop-up with the name of the mill
-                   fillOpacity = 0.8) %>%
-  # Customize map view (adjust zoom level and center)
-  setView(lng = 5, lat = 52.3, zoom = 10)  # Adjust as per your region's location
+  # Add WMS basemap for DSM using the defined parameters
+  addWMSTiles(
+    url = wms_url,
+    layers = "ahn3_05m_dsm",   # Ensure this layer name is correct
+    options = WMSTileOptions(
+      format = "image/png", 
+      transparent = TRUE
+    ),
+    # Set bounding box for Netherlands area
+    bbox = c(3.3, 50.8, 7.3, 53.7), # Adjust the bounding box if necessary
+    crs = "EPSG:4326",
+    version = "1.3.0"
+  ) %>%
+  # Add existing mills as points (use the correct CRS)
+  addCircleMarkers(
+    data = mills_shapefile,
+    color = "red",
+    radius = 5,
+    popup = ~NAAM,  # Pop-up with the name of the mill
+    fillOpacity = 0.8
+  ) %>%
+  # Customize map view (adjust zoom level and center to fit your area)
+  setView(lng = 5, lat = 52.3, zoom = 10)  # Centered on the Netherlands
 
 
 
 
+# SECTION 6  : existing mill on DSM  --------------------------
+# Load required libraries
+library(leaflet)
+library(sf)
+library(raster)
+
+# Define the WMS URL for DSM
+wms_url <- "https://service.pdok.nl/rws/ahn/wms/v1_0?SERVICE=WMS&request=GetCapabilities&version=1.3.0"
+
+# Load mill locations (replace with your file path)
+mills_shapefile <- st_read("23-Memory/data/shp/Molens.shp")
+
+# Check the structure of the shapefile (optional)
+head(mills_shapefile)
+
+# Transform the CRS to match WGS 84 (EPSG:4326)
+mills_shapefile <- st_transform(mills_shapefile, crs = 4326)
+
+# Verify mill locations by plotting them (optional)
+plot(st_geometry(mills_shapefile))
+
+# Create a leaflet map
+leaflet() %>%
+  # Add WMS basemap for DSM using the defined parameters
+  addWMSTiles(
+    wms_url,
+    layers = "ahn3_05m_dsm",   # Ensure this layer name is correct
+    options = WMSTileOptions(
+      format = "image/png", 
+      transparent = TRUE
+    )
+  ) %>%
+  # Add existing mills as points (use the correct CRS)
+  addCircleMarkers(
+    data = mills_shapefile,
+    color = "red",
+    radius = 5,
+    popup = ~NAAM,  # Pop-up with the name of the mill
+    fillOpacity = 0.8
+  ) %>%
+  # Customize map view (adjust zoom level and center to fit your area)
+  setView(lng = 5, lat = 52.3, zoom = 10)  # Centered on the Netherlands
 
 
+# SECTION 6  : existing mill on DSM in amsterdam --------------------------
+# Load required libraries
+library(leaflet)
+library(sf)
+library(raster)
 
+# Define the WMS URL for DSM
+wms_url <- "https://service.pdok.nl/rws/ahn/wms/v1_0?SERVICE=WMS&request=GetCapabilities&version=1.3.0"
+
+# Load mill locations (replace with your file path)
+mills_shapefile <- st_read("23-Memory/data/shp/Molens.shp")
+
+# Check the structure of the shapefile (optional)
+head(mills_shapefile)
+
+# Transform the CRS to match WGS 84 (EPSG:4326)
+mills_shapefile <- st_transform(mills_shapefile, crs = 4326)
+
+# Verify mill locations by plotting them (optional)
+plot(st_geometry(mills_shapefile))
+
+# Define the bounding box for Amsterdam area (this will not be passed directly to the WMS)
+bbox_amsterdam <- c(4.75, 52.25, 5.05, 52.45)  # Approximate bbox for Amsterdam
+
+# Create a leaflet map
+leaflet() %>%
+  # Add WMS basemap for DSM using the defined parameters
+  addWMSTiles(
+    wms_url,
+    layers = "ahn3_05m_dsm",  # Ensure this layer name is correct
+    options = WMSTileOptions(
+      format = "image/png", 
+      transparent = TRUE
+    )
+  ) %>%
+  # Add existing mills as points (use the correct CRS)
+  addCircleMarkers(
+    data = mills_shapefile,
+    color = "red",
+    radius = 5,
+    popup = ~NAAM,  # Pop-up with the name of the mill
+    fillOpacity = 0.8
+  ) %>%
+  # Customize map view (adjust zoom level and center to Amsterdam)
+  setView(lng = 4.9041, lat = 52.3676, zoom = 12)  # Centered on Amsterdam
 
