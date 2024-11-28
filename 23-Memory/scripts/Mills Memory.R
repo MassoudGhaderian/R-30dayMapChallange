@@ -248,8 +248,13 @@ ggsave("Exiting and Disappeared Mills.jpg", plot = final_plot,
 library(leaflet)
 library(sf)
 
+# Load and preprocess shape files for disappeared mills
+ex_mills <- st_read(here(disappeared_mills)) |> 
+  st_transform(crs = st_crs(nl_border)) |> 
+  st_crop(sf::st_bbox(nl_border))  # Crop to Netherlands' bounding box
 head(ex_mills) 
 
+#plotting map
 main_plot <- ggplot() +
   # Add mills data
   geom_sf(data = ex_mills, aes(color = "Disappeared Mills"), size = 0.5)   # Disappeared mills
@@ -262,11 +267,19 @@ leaflet_map <- leaflet(data = ex_mills) %>%
   addCircleMarkers(
     lat = ~st_coordinates(ex_mills)[, 2],   # Latitude from geometry
     lng = ~st_coordinates(ex_mills)[, 1],   # Longitude from geometry
-    color = "#fec44f",                          # Circle color
-    radius = 2,                             # Size of the circle
+    color = "#fec44f",                      # Circle color (yellow)
+    radius = 8,                            # Size of the yellow circle
     popup = ~paste("<b>", molen_naam, "</b><br>",  # Show the name of the mill
                    "<a href='", infolink, "' target='_blank'>Click here for more info</a>")  # Link to website
+  ) %>%
+  addCircleMarkers(
+    lat = ~st_coordinates(ex_mills)[, 2],   # Latitude for black point
+    lng = ~st_coordinates(ex_mills)[, 1],   # Longitude for black point
+    color = "black",                        # Color of the small black point
+    radius = 1,                             # Smaller size of the black point
+    opacity = 1
   )
+
 
 # Display the map
 leaflet_map
@@ -274,11 +287,11 @@ leaflet_map
 
 # Save the map as an HTML file
 library(htmlwidgets)
-saveWidget(leaflet_map, "23-Memory/outputs/mills.html")
+saveWidget(leaflet_map, "23-Memory/outputs/Disappeared Mills.html")
 
 
 
-# SECTION 3 : AHeat map of "Disappearanced milles"  --------------------------
+# SECTION 3 : A Heat map of "Disappearanced milles"  --------------------------
 
 # Load necessary libraries
 library(sf)        # For spatial data handling
