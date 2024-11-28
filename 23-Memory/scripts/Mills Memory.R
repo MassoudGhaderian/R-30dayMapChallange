@@ -30,11 +30,11 @@ library(viridis)       # For a visually appealing colors
 # SECTION 00: Load Spatial Data ---------------------------
 
 
-# loading Disappeared (water and polder) mills shape file 
+#  Disappeared (water and polder) mills shape file path
 disappeared_mills <- here("23-Memory", "data", "shp", "verdwenenmolens.shp")  
-# loading Existing (water and Polder) mills shape file 
+#  Existing (water and Polder) mills shape file  path
 existing_mills <- here("23-Memory", "data", "shp", "Molens.shp")  
-# loading Existing (water and Polder) mills shape file
+#  Existing (water and Polder) mills shape file path
 other_mills <- here("23-Memory", "data", "shp", "weidemolens en windmotoren.shp") 
 
 # Read shape files for various spatial features
@@ -84,11 +84,12 @@ cat("Total existing mills:", num_existing_mills, "\n")
 num_other_mills <- nrow(other_mills)
 cat("Total other mills:", num_other_mills, "\n")
 
+bbox <- st_bbox(nl_border)
 
 # SECTION 1: Existing and  Disappeared Mills Maps ---------------------------------------------
 
 # Get the bounding box of the Netherlands shape file
-bbox <- st_bbox(nl_border)
+
 
 main_plot <- ggplot() +
   # Add geographic background features
@@ -293,12 +294,6 @@ saveWidget(leaflet_map, "23-Memory/outputs/Disappeared Mills.html")
 
 # SECTION 3 : A Heat map of "Disappearanced milles"  --------------------------
 
-# Load necessary libraries
-library(sf)        # For spatial data handling
-library(ggplot2)   # For visualization
-library(viridis)   # For a visually appealing color scale
-
-# Load your disappeared mills dataset (already in `ex_mills` as an sf object)
 # Make sure it is projected for spatial analysis (e.g., EPSG: 3857 for meters)
 ex_mills <- st_transform(ex_mills, crs = 3857) 
 
@@ -318,11 +313,26 @@ heatmap_plot <- ggplot() +
   # Add the heatmap
   stat_density_2d(data = mills_df, aes(x = x, y = y, fill = ..density..), geom = "raster", contour = FALSE) +
   scale_fill_viridis(option = "magma", name = "Density") +  # Use a magma color palette
-  # Add the Netherlands border
+  # Add the  border of Netherlands and Province
   geom_sf(data = netherlands_border, fill = NA, color = "white", size = 0.5) +
+  geom_sf(data = nl_stats_border, fill = NA , color = "white") +    
+  #Add populated cites and their labels 
+  geom_sf(data = nl_populated_palces, aes(shape = "circle"), size = 2,color="white", show.legend = FALSE) +
   labs(title = "Density Heatmap of Disappeared Mills with Netherlands Border",
        x = "Longitude (projected)",
        y = "Latitude (projected)") +
+  geom_text(data = nl_populated_palces,                     #white labeling
+            aes(x = st_coordinates(geometry)[, 1],
+                y = st_coordinates(geometry)[, 2],
+                label = name),
+            size = 3,  # Adjust size of halo text
+            color = "white",  # Halo color
+            fontface = "bold",
+            nudge_y = 1,  # Adjust vertical position
+            nudge_x = 0,
+            check_overlap = TRUE,
+            family = "sans",
+            alpha = 1) +  # Slight transparency for halo effect
   theme_minimal()
 
 # Display the heatmap
