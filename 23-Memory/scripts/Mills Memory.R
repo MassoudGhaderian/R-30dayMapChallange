@@ -90,7 +90,6 @@ cat("Total other mills:", num_other_mills, "\n")
 # Get the bounding box of the Netherlands shape file
 bbox <- st_bbox(nl_border)
 
-
 main_plot <- ggplot() +
   # Add geographic background features
   geom_sf(data = north_sea, fill = "lightblue", color = NA, alpha = 0.5) + # North Sea
@@ -105,16 +104,29 @@ main_plot <- ggplot() +
   geom_sf(data = mills, aes(color = "Existing Mills"), size = 0.5) +        # Existing mills
   # Add populated cities 
   geom_sf(data = nl_populated_palces, aes(shape = "circle"), size = 2, show.legend = FALSE) +
-  # Add labels
+  # geom_text(data = nl_populated_palces,                     #white laabeling
+  #           aes(x = st_coordinates(geometry)[, 1], 
+  #               y = st_coordinates(geometry)[, 2], 
+  #               label = name),
+  #           size = 3.5,  # Adjust size of halo text
+  #           color = "white",  # Halo color
+  #           fontface = "bold", 
+  #           nudge_y = 0.05,  # Adjust vertical position
+  #           nudge_x = 0, 
+  #           check_overlap = TRUE,
+  #           family = "sans",
+  #           alpha = 0.7) +  # Slight transparency for halo effect
+  
+  # Add main text labels (smaller, black text on top)       #dark labaling
   geom_text(data = nl_populated_palces, 
             aes(x = st_coordinates(geometry)[, 1], 
                 y = st_coordinates(geometry)[, 2], 
-                label = name),  # Add city names as labels
-            size = 3,  # Adjust size of labels
-            nudge_y = 0.05,  # Adjust vertical position of labels to move them up
-            nudge_x = 0,  # Adjust horizontal position if needed
-            color = "black",  # Label color
-            fontface ="bold",  # Font style
+                label = name),
+            size = 3,  # Adjust size of label
+            color = "black",  # Main label color
+            fontface = "bold", 
+            nudge_y = 0.05,  # Adjust vertical position
+            nudge_x = 0, 
             check_overlap = FALSE) +  # Prevent overlap of labels
   # Customize color legend for mills
   scale_color_manual(
@@ -147,37 +159,43 @@ main_plot <- ggplot() +
   # Apply minimal theme with customizations
   theme_minimal() +
   theme(
-    plot.title = element_text(hjust = -0.01, size = 16, face = "bold", margin = margin(b = 0)),
-    plot.subtitle = element_text(hjust = -0.01, size = 12, margin = margin(t = 0)),
-    plot.caption = element_text(hjust = -0.01, size = 8, face = "italic", margin = margin(t = 15)),
+    #Plot Elements
+    plot.title = element_text(hjust = -0.01, size = 18, face = "bold", margin = margin(b = 0)),
+    plot.subtitle = element_text(hjust = -0.01, size = 14, margin = margin(t = 0)),
+    plot.caption = element_text(hjust = -0.01, size = 10, face = "italic", margin = margin(t = 15)),
     plot.margin = margin(t = 30, r = 20, b = 50, l = 20),
-    # Move legend to bottom-right
+   
+    #Legend settings
     # legend.position = c(0.95, 0.05),  # x and y position (percent of plot)
     legend.justification = c("right", "bottom"),  # Align legend's bottom-right corner
     # legend.box.margin = margin(5, 5, 5, 5),  # Add some space around the legend
     legend.background = element_rect(fill = "white", color = "white", size = 0.5),  # Optional: Add background and border to legend
+    legend.text = element_text(size = 10),  # Increase size to 10 (adjust as needed)
+    legend.title = element_text(size = 12),  # Increase legend title size
+    legend.spacing.y = unit(1, "cm"),  # Adjust vertical spacing
+    
     
     # Customizing  grid lines (for finer latitude and longitude)
     panel.grid.major = element_line(color = "lightgray", size = 0.5),  # Major grid lines: gray color, thickness 0.
     panel.grid.minor = element_line(color = "lightgray", size = 0.5),  # Minor grid lines: light gray, thinner
     
     # Ticks for axis (optional)
-    axis.ticks.x = element_line(color = "black", size = 1),  # Ticks for top
-    axis.ticks.y = element_line(color = "black", size = 1),  # Ticks for right
+    axis.ticks.x = element_line(color = "darkgray", size = 1),  # Ticks for top
+    axis.ticks.y = element_line(color = "darkgray", size = 1),  # Ticks for right
     
+    # change axis labels style
     axis.text = element_text(
       size = 7,  # Change font size of numbers
-      color = "gray",  # Change font color
+      color = "darkgray",  # Change font color
       face = "italic",  # Make numbers bold (optional)
       family = "sans"  # Set font family (optional)
     ),
-    
     # Moving axis labels inside the plot
     axis.text.x = element_text(
-      size = 7, hjust = 0.5, vjust = 1  # Move x-axis labels to the right (hjust = 1)
+      size = 5, hjust = 0.5, vjust = 1 ,margin = margin(t = -10),  # Move x-axis labels to the right (hjust = 1)
     ),
     axis.text.y = element_text(
-      size = 7, hjust = 1, vjust = 0.5  # Move y-axis labels up (vjust = 1.5)
+      size = 5, hjust = 0.5, vjust =0.5,margin = margin(r = -20),  # Move y-axis labels up (vjust = 1.5)
     ),
   ) +
   # Add a north arrow
@@ -188,7 +206,7 @@ main_plot <- ggplot() +
     
     height = unit(1, "cm"),  # Adjust size
     width = unit(1, "cm"),
-    pad_x = unit(1.7, "cm"),# Horizontal padding
+    pad_x = unit(2.5, "cm"),# Horizontal padding
     pad_y = unit(1, "cm")  # Vertical padding# Adjust size
   ) +
   # Add a scale bar
@@ -197,7 +215,7 @@ main_plot <- ggplot() +
     width_hint = 0.2, # Adjust the width relative to the map
     line_width = 1,
     height = unit(0.1, "cm"), # Adjust the height of the scale bar
-    pad_x = unit(1.25, "cm"),
+    pad_x = unit(1.7, "cm"),
     pad_y = unit(.75, "cm"),
     bar_cols = c("white", "white")
   )
@@ -212,15 +230,15 @@ rbanism_logo_raster <- grid::rasterGrob(rbanism_logo, interpolate = TRUE)
 
 # Combine main plot with logo using cowplot
 final_plot <- ggdraw(main_plot) +
-  draw_grob(rbanism_logo_raster, x = 0.76, y = 0.75, width = 0.20, height = 0.20)
+  draw_grob(rbanism_logo_raster, x = 0.80, y = 0.75, width = 0.20, height = 0.20)
 
 # Display the final plot
 final_plot
 
 # Save the final plot as a PDF
-ggsave("Mills.jpg", plot = final_plot, 
-       width = 8.27, height = 10, dpi = 600, 
-       path = "/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/")
+ggsave("Exiting and Disappeared Mills.jpg", plot = final_plot, 
+       width = 8.27, height = 10, dpi = 300, 
+       path = here("23-Memory/outputs"))
 
 
 
