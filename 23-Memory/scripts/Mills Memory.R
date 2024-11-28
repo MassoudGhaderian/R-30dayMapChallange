@@ -34,7 +34,7 @@ library(viridis)       # For a visually appealing colors
 disappeared_mills <- here("23-Memory", "data", "shp", "verdwenenmolens.shp")  
 # loading Existing (water and Polder) mills shape file 
 existing_mills <- here("23-Memory", "data", "shp", "Molens.shp")  
-# loading Existing (water and Polder) mills shape file 
+# loading Existing (water and Polder) mills shape file
 other_mills <- here("23-Memory", "data", "shp", "weidemolens en windmotoren.shp") 
 
 # Read shape files for various spatial features
