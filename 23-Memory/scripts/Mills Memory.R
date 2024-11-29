@@ -5,7 +5,7 @@
 # List of required packages
 required_packages <- c("ggspatial", "ggplot2", "sf", "tmap", "here", "magick",
                        "grid", "cowplot" , "gganimate","gifski","leaflet",
-                       "leaflet.extras", "viridis")
+                       "leaflet.extras", "viridis" ,"dplyr")
 
 # Install packages that are not already installed
 for (pkg in required_packages) {
@@ -25,6 +25,7 @@ library(ggspatial)     # For scale bars and north arrows in ggplot maps
 library(leaflet)       # For building interactive maps
 library(leaflet.extras)# For Extends the capabilities of leaflet 
 library(viridis)       # For a visually appealing colors
+library(dplyr)
 
 
 # SECTION 00: Load Spatial Data ---------------------------
@@ -60,6 +61,12 @@ ex_mills <- st_read(here(disappeared_mills)) |>
 mills <- st_read(existing_mills)
 other_mills <- st_read(other_mills)
 
+# Calculate centroids for the borders for labling and other..
+nl_stats_border <- nl_stats_border %>%
+  mutate(
+    x = st_coordinates(st_centroid(geometry))[, 1],
+    y = st_coordinates(st_centroid(geometry))[, 2]
+  )
 
 # SECTION 000: Data Inspection ----------------------------------------------
 
@@ -85,7 +92,7 @@ num_other_mills <- nrow(other_mills)
 cat("Total other mills:", num_other_mills, "\n")
 
 bbox <- st_bbox(nl_border)
-
+bbox
 # SECTION 1: Existing and  Disappeared Mills Maps ---------------------------------------------
 
 # Get the bounding box of the Netherlands shape file
@@ -310,7 +317,7 @@ mills_df <- data.frame(x = mills_coords[, 1], y = mills_coords[, 2])
 # Create the heat map with the Netherlands border
 heatmap_plot <- ggplot() +
   # Add the heat map
-  stat_density_2d(data = mills_df, aes(x = x, y = y, fill = ..density..), geom = "raster", contour = FALSE) +
+  stat_density_2d(data = mills_df, aes(x = x, y = y, fill = ..density..), geom = "raster", contour = FALSE,alpha = .8) +
   scale_fill_viridis(option = "magma", name = "Density") +  # Use a magma color palette
   # Add the  border of Netherlands and Province
   geom_sf(data = netherlands_border, fill = NA, color = NA, size = 0.5) +
@@ -320,17 +327,17 @@ heatmap_plot <- ggplot() +
   # Add title, subtitle, and captions
   labs(title = "▪ Mills' Memory",
        subtitle = "▪ Density Heatmap of Disappeared Mills in Netherlands ",
-       caption = "▪ Data Source: www.molendatabase.org | Map by Massoud Ghaderian, 2024",
+       caption = "▪ Data Source: www.molendatabase.org | Map visualization by Massoud Ghaderian | 2024 | R Studio",
        x = NULL,
        y = NULL) +
   geom_text(data = nl_populated_palces,                     #white labeling
-            aes(x = st_coordinates(geometry)[, 1],
+            aes(x = st_coordinates(geometry)[, 1], 
                 y = st_coordinates(geometry)[, 2],
                 label = name),
             size = 3,  # Adjust size of halo text
             color = "white",  # Halo color
             fontface = "bold",
-            nudge_y = 1,  # Adjust vertical position
+            nudge_y = 5,  # Adjust vertical position
             nudge_x = 0,
             check_overlap = TRUE,
             family = "sans",
@@ -359,34 +366,37 @@ heatmap_plot <- ggplot() +
     
     
     # Customizing  grid lines (for finer latitude and longitude)
-    panel.grid.major = element_line(color = "lightgray", size = 0.5),  # Major grid lines: gray color, thickness 0.
-    panel.grid.minor = element_line(color = "lightgray", size = 0.5),  # Minor grid lines: light gray, thinner
+    panel.grid.major = element_line(color = "white", size = 0.5),  # Major grid lines: gray color, thickness 0.
+    panel.grid.minor = element_line(color = "white", size = 0.5),  # Minor grid lines: light gray, thinner
     
     # Ticks for axis (optional)
-    axis.ticks.x = element_line(color = "darkgray", size = 1),  # Ticks for top
-    axis.ticks.y = element_line(color = "darkgray", size = 1),  # Ticks for right
+    axis.ticks.x = element_line(color = "white", size = 1),  # Ticks for top
+    axis.ticks.y = element_line(color = "white", size = 1),  # Ticks for right
     
     # change axis labels style
     axis.text = element_text(
       size = 7,  # Change font size of numbers
-      color = "darkgray",  # Change font color
+      color = "white",  # Change font color
       face = "italic",  # Make numbers bold (optional)
       family = "sans"  # Set font family (optional)
     ),
     # Moving axis labels inside the plot
     axis.text.x = element_text(
-      size = 5, hjust = 0.5, vjust = 1 ,margin = margin(t = -10),  # Move x-axis labels to the right (hjust = 1)
+      size = 5, hjust = 0.5, vjust = 1 ,margin = margin(t = 0),  # Move x-axis labels to the right (hjust = 1)
     ),
     axis.text.y = element_text(
-      size = 5, hjust = 0.5, vjust =0.5,margin = margin(r = -20),  # Move y-axis labels up (vjust = 1.5)
+      size = 5, hjust = 0.5, vjust =0.5,margin = margin(r = 0),  # Move y-axis labels up (vjust = 1.5)
     ),
   ) +
   # Add a north arrow
   annotation_north_arrow(
     location = "bl", # Position: 'tl' = top-left, 'tr' = top-right, etc.
     which_north = "true", # "true" for true north, "grid" for grid north
-    style = north_arrow_fancy_orienteering(fill = c("white", "white"), line_col = "black"),# Choose a style for the north arrow
-    
+    style = north_arrow_fancy_orienteering(
+      fill = c("white", "white"), # Arrow fill colors
+      line_col = "black",         # Border color for arrows
+      text_col = "white"            # Set the color of the "N"
+    ),
     height = unit(1, "cm"),  # Adjust size
     width = unit(1, "cm"),
     pad_x = unit(2.5, "cm"),# Horizontal padding
@@ -400,7 +410,8 @@ heatmap_plot <- ggplot() +
     height = unit(0.1, "cm"), # Adjust the height of the scale bar
     pad_x = unit(1.7, "cm"),
     pad_y = unit(.75, "cm"),
-    bar_cols = c("white", "white")
+    bar_cols = c("white", "white"),
+    text_col = "white"  # Change the scale bar text color
     )
 
 # Display the heatmap
