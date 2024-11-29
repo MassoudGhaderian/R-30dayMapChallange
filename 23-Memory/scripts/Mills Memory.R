@@ -304,23 +304,25 @@ netherlands_border <- st_transform(netherlands_border, crs = 3857)
 
 # Extract coordinates for disappeared mills
 mills_coords <- st_coordinates(ex_mills)
-
 # Convert mills to a data frame for ggplot2
 mills_df <- data.frame(x = mills_coords[, 1], y = mills_coords[, 2])
 
-# Create the heatmap with the Netherlands border
+# Create the heat map with the Netherlands border
 heatmap_plot <- ggplot() +
-  # Add the heatmap
+  # Add the heat map
   stat_density_2d(data = mills_df, aes(x = x, y = y, fill = ..density..), geom = "raster", contour = FALSE) +
   scale_fill_viridis(option = "magma", name = "Density") +  # Use a magma color palette
   # Add the  border of Netherlands and Province
-  geom_sf(data = netherlands_border, fill = NA, color = "white", size = 0.5) +
+  geom_sf(data = netherlands_border, fill = NA, color = NA, size = 0.5) +
   geom_sf(data = nl_stats_border, fill = NA , color = "white") +    
   #Add populated cites and their labels 
   geom_sf(data = nl_populated_palces, aes(shape = "circle"), size = 2,color="white", show.legend = FALSE) +
-  labs(title = "Density Heatmap of Disappeared Mills with Netherlands Border",
-       x = "Longitude (projected)",
-       y = "Latitude (projected)") +
+  # Add title, subtitle, and captions
+  labs(title = "▪ Mills' Memory",
+       subtitle = "▪ Density Heatmap of Disappeared Mills in Netherlands ",
+       caption = "▪ Data Source: www.molendatabase.org | Map by Massoud Ghaderian, 2024",
+       x = NULL,
+       y = NULL) +
   geom_text(data = nl_populated_palces,                     #white labeling
             aes(x = st_coordinates(geometry)[, 1],
                 y = st_coordinates(geometry)[, 2],
