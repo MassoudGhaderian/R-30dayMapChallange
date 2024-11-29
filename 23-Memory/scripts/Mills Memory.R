@@ -337,19 +337,24 @@ heatmap_plot <- ggplot() +
             alpha = 1) +  # Slight transparency for halo effect
   theme_minimal() +
   theme(
+    #black background
+    plot.background = element_rect(fill = "black", color = NA),
+    # panel.background = element_rect(fill = "black", color = NA),
+    
+    
     #Plot Elements
-    plot.title = element_text(hjust = -0.01, size = 18, face = "bold", margin = margin(b = 0)),
-    plot.subtitle = element_text(hjust = -0.01, size = 14, margin = margin(t = 0)),
-    plot.caption = element_text(hjust = -0.01, size = 10, face = "italic", margin = margin(t = 15)),
+    plot.title = element_text(hjust = -0.01, size = 18, face = "bold", margin = margin(b = 0), color = "white"),
+    plot.subtitle = element_text(hjust = -0.01, size = 14, margin = margin(t = 0), color = "white"),
+    plot.caption = element_text(hjust = -0.01, size = 10, face = "italic", margin = margin(t = 15), color = "white"),
     plot.margin = margin(t = 30, r = 20, b = 50, l = 20),
     
     #Legend settings
     # legend.position = c(0.95, 0.05),  # x and y position (percent of plot)
     legend.justification = c("right", "bottom"),  # Align legend's bottom-right corner
     # legend.box.margin = margin(5, 5, 5, 5),  # Add some space around the legend
-    legend.background = element_rect(fill = "white", color = "white", size = 0.5),  # Optional: Add background and border to legend
-    legend.text = element_text(size = 10),  # Increase size to 10 (adjust as needed)
-    legend.title = element_text(size = 12),  # Increase legend title size
+    legend.background = element_rect(fill = "black", color = NA, size = 0.5),  # Optional: Add background and border to legend
+    legend.text = element_text(size = 10, color = "white"),  # Increase size to 10 (adjust as needed)
+    legend.title = element_text(size = 12, color = "white"),  # Increase legend title size
     legend.spacing.y = unit(1, "cm"),  # Adjust vertical spacing
     
     
