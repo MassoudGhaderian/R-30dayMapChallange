@@ -335,7 +335,68 @@ heatmap_plot <- ggplot() +
             check_overlap = TRUE,
             family = "sans",
             alpha = 1) +  # Slight transparency for halo effect
-  theme_minimal()
+  theme_minimal() +
+  theme(
+    #Plot Elements
+    plot.title = element_text(hjust = -0.01, size = 18, face = "bold", margin = margin(b = 0)),
+    plot.subtitle = element_text(hjust = -0.01, size = 14, margin = margin(t = 0)),
+    plot.caption = element_text(hjust = -0.01, size = 10, face = "italic", margin = margin(t = 15)),
+    plot.margin = margin(t = 30, r = 20, b = 50, l = 20),
+    
+    #Legend settings
+    # legend.position = c(0.95, 0.05),  # x and y position (percent of plot)
+    legend.justification = c("right", "bottom"),  # Align legend's bottom-right corner
+    # legend.box.margin = margin(5, 5, 5, 5),  # Add some space around the legend
+    legend.background = element_rect(fill = "white", color = "white", size = 0.5),  # Optional: Add background and border to legend
+    legend.text = element_text(size = 10),  # Increase size to 10 (adjust as needed)
+    legend.title = element_text(size = 12),  # Increase legend title size
+    legend.spacing.y = unit(1, "cm"),  # Adjust vertical spacing
+    
+    
+    # Customizing  grid lines (for finer latitude and longitude)
+    panel.grid.major = element_line(color = "lightgray", size = 0.5),  # Major grid lines: gray color, thickness 0.
+    panel.grid.minor = element_line(color = "lightgray", size = 0.5),  # Minor grid lines: light gray, thinner
+    
+    # Ticks for axis (optional)
+    axis.ticks.x = element_line(color = "darkgray", size = 1),  # Ticks for top
+    axis.ticks.y = element_line(color = "darkgray", size = 1),  # Ticks for right
+    
+    # change axis labels style
+    axis.text = element_text(
+      size = 7,  # Change font size of numbers
+      color = "darkgray",  # Change font color
+      face = "italic",  # Make numbers bold (optional)
+      family = "sans"  # Set font family (optional)
+    ),
+    # Moving axis labels inside the plot
+    axis.text.x = element_text(
+      size = 5, hjust = 0.5, vjust = 1 ,margin = margin(t = -10),  # Move x-axis labels to the right (hjust = 1)
+    ),
+    axis.text.y = element_text(
+      size = 5, hjust = 0.5, vjust =0.5,margin = margin(r = -20),  # Move y-axis labels up (vjust = 1.5)
+    ),
+  ) +
+  # Add a north arrow
+  annotation_north_arrow(
+    location = "bl", # Position: 'tl' = top-left, 'tr' = top-right, etc.
+    which_north = "true", # "true" for true north, "grid" for grid north
+    style = north_arrow_fancy_orienteering(fill = c("white", "white"), line_col = "black"),# Choose a style for the north arrow
+    
+    height = unit(1, "cm"),  # Adjust size
+    width = unit(1, "cm"),
+    pad_x = unit(2.5, "cm"),# Horizontal padding
+    pad_y = unit(1, "cm")  # Vertical padding# Adjust size
+  ) +
+  # Add a scale bar
+  annotation_scale(
+    location = "bl", # Position: 'bl' = bottom-left
+    width_hint = 0.2, # Adjust the width relative to the map
+    line_width = 1,
+    height = unit(0.1, "cm"), # Adjust the height of the scale bar
+    pad_x = unit(1.7, "cm"),
+    pad_y = unit(.75, "cm"),
+    bar_cols = c("white", "white")
+    )
 
 # Display the heatmap
 print(heatmap_plot)
