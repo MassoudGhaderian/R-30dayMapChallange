@@ -401,6 +401,11 @@ heatmap_plot <- ggplot() +
 # Display the heatmap
 print(heatmap_plot)
 
+# Save the final plot as a PDF
+ggsave("Heat Map of  Disappeared Mills.jpg", plot = heatmap_plot, 
+       width = 8.27, height = 10, dpi = 300, 
+       path = here("23-Memory/outputs"))
+
 
 # SECTION 4 : Animation of  "Year OF Disappearance"  --------------------------
 
