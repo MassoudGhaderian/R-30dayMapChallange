@@ -323,7 +323,9 @@ heatmap_plot <- ggplot() +
   geom_sf(data = netherlands_border, fill = NA, color = NA, size = 0.5) +
   geom_sf(data = nl_stats_border, fill = NA , color = "white") +    
   #Add populated cites and their labels 
-  geom_sf(data = nl_populated_palces, aes(shape = "circle"), size = 2,color="white", show.legend = FALSE) +
+  geom_sf(data = nl_populated_palces, aes(shape = "circle"),
+          size = 1,color="white",
+          show.legend = FALSE) +
   # Add title, subtitle, and captions
   labs(title = "▪ Mills' Memory",
        subtitle = "▪ Density Heatmap of Disappeared Mills in Netherlands ",
@@ -334,7 +336,7 @@ heatmap_plot <- ggplot() +
             aes(x = st_coordinates(geometry)[, 1], 
                 y = st_coordinates(geometry)[, 2],
                 label = name),
-            size = 3,  # Adjust size of halo text
+            size = 2,  # Adjust size of halo text
             color = "white",  # Halo color
             fontface = "bold",
             nudge_y = 5,  # Adjust vertical position
@@ -350,25 +352,28 @@ heatmap_plot <- ggplot() +
     
     
     #Plot Elements
-    plot.title = element_text(hjust = -0.01, size = 18, face = "bold", margin = margin(b = 0), color = "white"),
-    plot.subtitle = element_text(hjust = -0.01, size = 14, margin = margin(t = 0), color = "white"),
-    plot.caption = element_text(hjust = -0.01, size = 10, face = "italic", margin = margin(t = 15), color = "white"),
+    plot.title = element_text(hjust = -0.01, size = 18, face = "bold",
+                              margin = margin(b = 0), color = "white"),
+    plot.subtitle = element_text(hjust = -0.01, size = 14,
+                                 margin = margin(t = 0), color = "white"),
+    plot.caption = element_text(hjust = -0.01, size = 10, face = "italic",
+                                margin = margin(t = 15), color = "white"),
     plot.margin = margin(t = 30, r = 20, b = 50, l = 20),
     
     #Legend settings
     # legend.position = c(0.95, 0.05),  # x and y position (percent of plot)
     legend.justification = c("right", "bottom"),  # Align legend's bottom-right corner
     # legend.box.margin = margin(5, 5, 5, 5),  # Add some space around the legend
-    legend.background = element_rect(fill = "black", color = NA, size = 0.5),  # Optional: Add background and border to legend
-    legend.text = element_text(size = 10, color = "white"),  # Increase size to 10 (adjust as needed)
-    legend.title = element_text(size = 12, color = "white"),  # Increase legend title size
+    legend.background = element_rect(fill = "black", color = NA, size = 0.5),  
+    legend.text = element_text(size = 10, color = "white"),  
+    legend.title = element_text(size = 12, color = "white"),  
     legend.spacing.y = unit(1, "cm"),  # Adjust vertical spacing
     
     
     # Customizing  grid lines (for finer latitude and longitude)
-    panel.grid.major = element_line(color = "white", size = 0.5),  # Major grid lines: gray color, thickness 0.
-    panel.grid.minor = element_line(color = "white", size = 0.5),  # Minor grid lines: light gray, thinner
-    
+    panel.grid.major = element_line(color = "white", size = 0.5), 
+    panel.grid.minor = element_line(color = "white", size = 0.5),
+
     # Ticks for axis (optional)
     axis.ticks.x = element_line(color = "white", size = 1),  # Ticks for top
     axis.ticks.y = element_line(color = "white", size = 1),  # Ticks for right
@@ -382,10 +387,12 @@ heatmap_plot <- ggplot() +
     ),
     # Moving axis labels inside the plot
     axis.text.x = element_text(
-      size = 5, hjust = 0.5, vjust = 1 ,margin = margin(t = 0),  # Move x-axis labels to the right (hjust = 1)
+      size = 5, hjust = 0.5, vjust = 1 ,margin = margin(t = 0),
+      # Move x-axis labels to the right (hjust = 1)
     ),
     axis.text.y = element_text(
-      size = 5, hjust = 0.5, vjust =0.5,margin = margin(r = 0),  # Move y-axis labels up (vjust = 1.5)
+      size = 5, hjust = 0.5, vjust =0.5,margin = margin(r = 0),
+      # Move y-axis labels up (vjust = 1.5)
     ),
   ) +
   # Add a north arrow
