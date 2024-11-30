@@ -4,7 +4,7 @@
 
 # List of required packages
 required_packages <- c("ggspatial", "ggplot2", "sf", "tmap", "here", "magick",
-                       "grid", "cowplot" , "gganimate","gifski","leaflet",
+                       "grid", "cowplot" , "gganimate","gifski","leaflet","png",
                        "leaflet.extras", "viridis" ,"dplyr","wordcloud2","webshot")
 
 # Install packages that are not already installed
@@ -31,6 +31,7 @@ library(wordcloud2) # For word cloud
 library(dplyr)      # For data manipulation
 library(cowplot)    # For combining plots
 library(webshot)    # For saving wordcloud2 as an image
+library(png)        # For reading PNG images
 
 
 # SECTION 00: Load Spatial Data ---------------------------
@@ -431,7 +432,7 @@ ggsave("Heat Map of  Disappeared Mills.jpg", plot = heatmap_plot,
        path = here("23-Memory/outputs"))
 
 
-# SECTION 4 : " histogram of Disappearance Years"  --------------------------
+# SECTION 4 : Histogram of Disappearance Years --------------------------
 
 #Data Preparation 
 head(ex_mills)
@@ -683,36 +684,39 @@ anim_save("/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/mills_timeline.mp
 
 
 
-# SECTION 6 : Function of Existing Mills 1 --------------------------
+# SECTION 6 : Function of Existing Mills --------------------------
 
-
-
-# SECTION 6 : Function of Existing Mills 2 --------------------------
-
-# Load necessary libraries
-library(sf)         # For spatial data handling
-library(ggplot2)    # For visualization
-library(wordcloud2) # For word cloud
-library(dplyr)      # For data manipulation
-library(cowplot)    # For combining plots
-library(webshot)    # For saving wordcloud2 as an image
-
-# Ensure your dataset (`mills`) is loaded as an sf object and projected correctly
+# Ensure your dataset (mills) is loaded as an sf object and projected correctly
 mills <- st_transform(mills, crs = 3857)  # Transform to a projected CRS for spatial visualization
+head(mills)
+# Check the unique mill dunctions
+unique(mills$FUNCTIE)
+# Check the unique mill types
+unique(mills$TYPE)
 
 # Load the Netherlands boundary shapefile (assumed to be a shapefile)
 netherlands_shapefile <- st_read("23-Memory/data/shp/gadm41_NLD_0.shp")  # Adjust path accordingly
 netherlands <- st_transform(netherlands_shapefile, crs = 3857)  # Transform to the same CRS
 
+# # Generate the frequency of each mill function
+# head(mills)
+# mill_function_freq <- mills %>%
+#   count(FUNCTIE) %>%
+#   arrange(desc(n)) %>%
+#   rename(words = FUNCTIE, freq = n)
+
 # Generate the frequency of each mill function
+head(mills)
 mill_function_freq <- mills %>%
-  count(FUNCTIE) %>%
+  count(TYPE) %>%
   arrange(desc(n)) %>%
-  rename(words = FUNCTIE, freq = n)
+  rename(words = TYPE, freq = n)
 
 # Create a word cloud (first as an HTML file)
 wordcloud_html <- wordcloud2(data = mill_function_freq, 
-                             size = 0.5, color = "random-light", backgroundColor = "white")
+                             size = 0.3,  # Smaller font size to fit more words
+                             color = "random-light", 
+                             backgroundColor = "white")
 
 # Save the word cloud as HTML
 html_file <- "/R-WorkSpaces/R-30dayMapChallange/wordcloud.html"
@@ -720,30 +724,94 @@ htmlwidgets::saveWidget(wordcloud_html, file = html_file, selfcontained = TRUE)
 
 # Convert the HTML to PNG
 png_file <- "/R-WorkSpaces/R-30dayMapChallange/wordcloud.png"
-webshot(html_file, file = png_file, vwidth = 800, vheight = 600)
+webshot(html_file, file = png_file, vwidth = 1200, vheight = 1600)  # Larger width and height
 
-# Mask the word cloud with the Netherlands shape
-# Create the base map with the Netherlands boundary shape
+# Read the PNG image into R
+wordcloud_image <- png::readPNG(png_file)
+
+# Create a plot where the word cloud is surrounded by the Netherlands border
 wordcloud_map <- ggplot() +
-  geom_sf(data = netherlands, fill = "lightgrey", color = "black") +  # Add Netherlands boundary
-  geom_sf(data = mills, aes(color = FUNCTIE), size = 2, alpha = 0.6) +  # Plot the mills
-  scale_color_brewer(palette = "Set3", name = "Mill Type") +  # Color palette for mill types
-  labs(title = "Word Cloud of Mill Types in the Netherlands") +
+  annotation_raster(wordcloud_image, xmin = st_bbox(netherlands)[1], xmax = st_bbox(netherlands)[3],  # Stretch the word cloud to Netherlands boundary
+                    ymin = st_bbox(netherlands)[2], ymax = st_bbox(netherlands)[4]) +
+  geom_sf(data = netherlands, fill = "black", color = "black", alpha = 0) +  # Add Netherlands boundary (border)
+  # Add title, subtitle, and captions
+  labs(
+    title = "▪ Mills' Memory",
+    subtitle = "▪Typology Existing Mills in Netherlands",
+    caption = "▪ Data Source: www.molendatabase.org | Map visualization by Massoud Ghaderian | R Studio | 2024",
+    x = NULL,  # Remove x-axis label
+    y = NULL   # Remove y-axis label
+  ) +
   theme_minimal() +
-  theme(legend.position = "none")  # Remove the legend
+  theme(
+    #Plot Elements
+    plot.title = element_text(hjust = -0.01, size = 18, face = "bold", margin = margin(b = 0)),
+    plot.subtitle = element_text(hjust = -0.01, size = 14, margin = margin(t = 0)),
+    plot.caption = element_text(hjust = -0.01, size = 10, face = "italic", margin = margin(t = 15)),
+    plot.margin = margin(t = 30, r = 20, b = 50, l = 20),
+    
+    #Legend settings
+    # legend.position = c(0.95, 0.05),  # x and y position (percent of plot)
+    legend.justification = c("right", "bottom"),  # Align legend's bottom-right corner
+    # legend.box.margin = margin(5, 5, 5, 5),  # Add some space around the legend
+    legend.background = element_rect(fill = "white", color = "white", size = 0.5),  # Optional: Add background and border to legend
+    legend.text = element_text(size = 10),  # Increase size to 10 (adjust as needed)
+    legend.title = element_text(size = 12),  # Increase legend title size
+    legend.spacing.y = unit(1, "cm"),  # Adjust vertical spacing
+    
+    
+    # Customizing  grid lines (for finer latitude and longitude)
+    panel.grid.major = element_line(color = "lightgray", size = 0.5),  # Major grid lines: gray color, thickness 0.
+    panel.grid.minor = element_line(color = "lightgray", size = 0.5),  # Minor grid lines: light gray, thinner
+    
+    # Ticks for axis (optional)
+    axis.ticks.x = element_line(color = "darkgray", size = 1),  # Ticks for top
+    axis.ticks.y = element_line(color = "darkgray", size = 1),  # Ticks for right
+    
+    # change axis labels style
+    axis.text = element_text(
+      size = 7,  # Change font size of numbers
+      color = "darkgray",  # Change font color
+      face = "italic",  # Make numbers bold (optional)
+      family = "sans"  # Set font family (optional)
+    ),
+    # Moving axis labels inside the plot
+    axis.text.x = element_text(
+      size = 5, hjust = 0.5, vjust = 1 ,margin = margin(t = -10),  # Move x-axis labels to the right (hjust = 1)
+    ),
+    axis.text.y = element_text(
+      size = 5, hjust = 0.5, vjust =0.5,margin = margin(r = -20),  # Move y-axis labels up (vjust = 1.5)
+    ),
+  ) +
+  # Add a north arrow
+  annotation_north_arrow(
+    location = "bl", # Position: 'tl' = top-left, 'tr' = top-right, etc.
+    which_north = "true", # "true" for true north, "grid" for grid north
+    style = north_arrow_fancy_orienteering(fill = c("white", "white"), line_col = "black"),# Choose a style for the north arrow
+    
+    height = unit(1, "cm"),  # Adjust size
+    width = unit(1, "cm"),
+    pad_x = unit(2.5, "cm"),# Horizontal padding
+    pad_y = unit(1, "cm")  # Vertical padding# Adjust size
+  ) +
+  # Add a scale bar
+  annotation_scale(
+    location = "bl", # Position: 'bl' = bottom-left
+    width_hint = 0.2, # Adjust the width relative to the map
+    line_width = 1,
+    height = unit(0.1, "cm"), # Adjust the height of the scale bar
+    pad_x = unit(1.7, "cm"),
+    pad_y = unit(.75, "cm"),
+    bar_cols = c("white", "white")
+  )+
+  theme(legend.position = "none", axis.title = element_blank(), axis.text = element_blank())  # Remove axis and legend
 
-# Combine the word cloud map and word cloud image using cowplot
-final_plot <- cowplot::plot_grid(
-  wordcloud_map, 
-  cowplot::ggdraw() + cowplot::draw_image(png_file),  # Insert the saved wordcloud image
-  ncol = 1, rel_heights = c(3, 1)
-)
+wordcloud_map
 
-# Save the final combined plot
-ggsave("Mills_and_WordCloud_Masked.png", plot = final_plot, 
+# Save the final combined plot with the word cloud surrounded by the Netherlands boundary
+ggsave("Mills_WordCloud_Bordered_by_Netherlands.png", plot = wordcloud_map, 
        width = 8.27, height = 12, dpi = 600, 
        path = "/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/")
-
 
 # SECTION 7  : existing mill on DSM  --------------------------
 
