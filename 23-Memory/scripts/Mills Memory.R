@@ -5,7 +5,7 @@
 # List of required packages
 required_packages <- c("ggspatial", "ggplot2", "sf", "tmap", "here", "magick",
                        "grid", "cowplot" , "gganimate","gifski","leaflet",
-                       "leaflet.extras", "viridis" ,"dplyr")
+                       "leaflet.extras", "viridis" ,"dplyr","wordcloud2","webshot")
 
 # Install packages that are not already installed
 for (pkg in required_packages) {
@@ -25,7 +25,12 @@ library(ggspatial)     # For scale bars and north arrows in ggplot maps
 library(leaflet)       # For building interactive maps
 library(leaflet.extras)# For Extends the capabilities of leaflet 
 library(viridis)       # For a visually appealing colors
-library(dplyr)
+library(sf)         # For spatial data handling
+library(ggplot2)    # For visualization
+library(wordcloud2) # For word cloud
+library(dplyr)      # For data manipulation
+library(cowplot)    # For combining plots
+library(webshot)    # For saving wordcloud2 as an image
 
 
 # SECTION 00: Load Spatial Data ---------------------------
@@ -605,7 +610,7 @@ animated_map_output <- animate(
   height = 600, 
   fps = 30, 
   duration = 40, 
-  res =150
+  res =150,
   renderer = av_renderer()  # Use av_renderer to create a video
 )
 
@@ -678,40 +683,69 @@ anim_save("/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/mills_timeline.mp
 
 
 
+# SECTION 6 : Function of Existing Mills 1 --------------------------
 
-# SECTION 5 : Function of Existing Mills  --------------------------
+
+
+# SECTION 6 : Function of Existing Mills 2 --------------------------
 
 # Load necessary libraries
-library(sf)        # For spatial data handling
-library(ggplot2)   # For visualization
+library(sf)         # For spatial data handling
+library(ggplot2)    # For visualization
+library(wordcloud2) # For word cloud
+library(dplyr)      # For data manipulation
+library(cowplot)    # For combining plots
+library(webshot)    # For saving wordcloud2 as an image
 
 # Ensure your dataset (`mills`) is loaded as an sf object and projected correctly
 mills <- st_transform(mills, crs = 3857)  # Transform to a projected CRS for spatial visualization
 
-head(mills)
-# Check the unique mill types
-unique(mills$FUNCTIE)
+# Load the Netherlands boundary shapefile (assumed to be a shapefile)
+netherlands_shapefile <- st_read("23-Memory/data/shp/gadm41_NLD_0.shp")  # Adjust path accordingly
+netherlands <- st_transform(netherlands_shapefile, crs = 3857)  # Transform to the same CRS
 
-# Create a map to visualize the types of existing mills
-mill_function_map <- ggplot(data = mills) +
-  geom_sf(aes(color = FUNCTIE), size = 2) +  # Use 'FUNCTIE' column to color the mills
-  scale_color_brewer(palette = "Set3", name = "Mill Type") +  # Use a color palette
-  labs(title = "function of Existing Mills in the Netherlands",
-       x = "Longitude (projected)",
-       y = "Latitude (projected)") +
-  theme_minimal()
+# Generate the frequency of each mill function
+mill_function_freq <- mills %>%
+  count(FUNCTIE) %>%
+  arrange(desc(n)) %>%
+  rename(words = FUNCTIE, freq = n)
 
-# Display the map
-print(mill_function_map)
+# Create a word cloud (first as an HTML file)
+wordcloud_html <- wordcloud2(data = mill_function_freq, 
+                             size = 0.5, color = "random-light", backgroundColor = "white")
 
+# Save the word cloud as HTML
+html_file <- "/R-WorkSpaces/R-30dayMapChallange/wordcloud.html"
+htmlwidgets::saveWidget(wordcloud_html, file = html_file, selfcontained = TRUE)
 
-# Save the final plot as a PDF
-ggsave("Mills.png", plot = mill_function_map, 
-       width = 8.27, height = 10, dpi = 600, 
+# Convert the HTML to PNG
+png_file <- "/R-WorkSpaces/R-30dayMapChallange/wordcloud.png"
+webshot(html_file, file = png_file, vwidth = 800, vheight = 600)
+
+# Mask the word cloud with the Netherlands shape
+# Create the base map with the Netherlands boundary shape
+wordcloud_map <- ggplot() +
+  geom_sf(data = netherlands, fill = "lightgrey", color = "black") +  # Add Netherlands boundary
+  geom_sf(data = mills, aes(color = FUNCTIE), size = 2, alpha = 0.6) +  # Plot the mills
+  scale_color_brewer(palette = "Set3", name = "Mill Type") +  # Color palette for mill types
+  labs(title = "Word Cloud of Mill Types in the Netherlands") +
+  theme_minimal() +
+  theme(legend.position = "none")  # Remove the legend
+
+# Combine the word cloud map and word cloud image using cowplot
+final_plot <- cowplot::plot_grid(
+  wordcloud_map, 
+  cowplot::ggdraw() + cowplot::draw_image(png_file),  # Insert the saved wordcloud image
+  ncol = 1, rel_heights = c(3, 1)
+)
+
+# Save the final combined plot
+ggsave("Mills_and_WordCloud_Masked.png", plot = final_plot, 
+       width = 8.27, height = 12, dpi = 600, 
        path = "/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/")
 
 
-# SECTION 6  : existing mill on DSM  --------------------------
+# SECTION 7  : existing mill on DSM  --------------------------
 
 library(terra)
 library(sf)
