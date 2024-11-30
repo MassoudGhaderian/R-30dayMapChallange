@@ -155,7 +155,7 @@ main_plot <- ggplot() +
   labs(
     title = "▪ Mills' Memory",
     subtitle = "▪ Existing and Disappeared Mills in Netherlands",
-    caption = "▪ Data Source: www.molendatabase.org | Map visualization by Massoud Ghaderian | 2024 | R Studio",
+    caption = "▪ Data Source: www.molendatabase.org | Map visualization by Massoud Ghaderian | R Studio | 2024",
     x = NULL,  # Remove x-axis label
     y = NULL   # Remove y-axis label
   ) +
@@ -428,9 +428,7 @@ ggsave("Heat Map of  Disappeared Mills.jpg", plot = heatmap_plot,
 
 # SECTION 4 : " histogram of Disappearance Years"  --------------------------
 
-
-##  Data Preparation  --------------------------------------------
-
+#Data Preparation 
 head(ex_mills)
 st_crs(ex_mills)
 num_disappeared_mills <- nrow(ex_mills)
@@ -444,7 +442,7 @@ summary(ex_mills$year)
 
 
 
-##  outliers checking and histogram --------------------------------------------
+#outliers checking and histogram 
 
 # Boxplot to check for outliers in general
 boxplot(ex_mills$year, main = "Boxplot of Year", ylab = "Year")
@@ -492,27 +490,29 @@ print(sum_freq)
 text(x = as.numeric(max_years), y = max_freq, labels = max_years, 
      col = "blue", pos = 3, cex = 0.8)  # Add text above the bars
 
-# SECTION 4 : Animation of  "Year OF Disappearance"  --------------------------
+# SECTION 5 : Animation of  "Year OF Disappearance"  --------------------------
 
 # Base plot setup (no animation yet)
 base_map <- ggplot() +
-  geom_sf(data = nl_border, fill = "black", color = NA, alpha = 0.8) +     # Netherlands national border (dark mode)
+  # Netherlands national border (dark mode)
+  geom_sf(data = nl_border, fill = "black", color = NA, alpha = 0.9) +   
   geom_sf(data = ex_mills, size = 0.7 ,aes(color = "Disappeared Mills")) +
-  geom_sf(data = nl_populated_palces, aes(shape = "Populated Places"), size = 2, color = "white",show.legend = FALSE) +
+  geom_sf(data = nl_populated_palces, aes(shape = "Populated Places"),
+          size = 2, color = "white",show.legend = FALSE) +
   geom_text(data = nl_populated_palces, 
             aes(x = st_coordinates(geometry)[, 1], 
                 y = st_coordinates(geometry)[, 2], 
                 label = name),
-            size = 3,  # Adjust size of label
+            size = 2,  # Adjust size of label
             color = "white",  # Main label color
             fontface = "bold", 
             nudge_y = 0.05,  # Adjust vertical position
-            nudge_x = 0, 
+            nudge_x = .2, 
             check_overlap = FALSE) +  # Prevent overlap of labels
   labs(
     title = "▪ Mills' Memory",
-    subtitle = "▪ Timeline of Mills in the Netherlands: {frame_time}",
-    caption = "▪ Data Source: www.molendatabase.org | Map visualization by Massoud Ghaderian | 2024 | R Studio",
+    subtitle = "▪ Timeline of Disappeared Mills in Netherlands: {frame_time}",
+    caption = "▪ Data Source: www.molendatabase.org | Map visualization by Massoud Ghaderian | R Studio | 2024 ",
     x = NULL,  # Remove x-axis label
     y = NULL   # Remove y-axis label
   )+
@@ -521,10 +521,6 @@ base_map <- ggplot() +
     values = c("Disappeared Mills" = "#fec44f"),
     labels = c("Disappeared Mills")
   ) +
-  scale_shape_manual(
-    values = c("Populated Places" = 16),  # Circle shape
-    labels = c("Populated Places")
-  )+
   theme_minimal() +
   theme(
     #Plot Elements
@@ -534,18 +530,14 @@ base_map <- ggplot() +
     plot.margin = margin(t = 30, r = 20, b = 50, l = 20),
     
     #Legend settings
-    # legend.position = c(0.95, 0.05),  # x and y position (percent of plot)
     legend.justification = c("right", "bottom"),  # Align legend's bottom-right corner
-    # legend.box.margin = margin(5, 5, 5, 5),  # Add some space around the legend
     legend.background = element_rect(fill = "white", color = "white", size = 0.5),  # Optional: Add background and border to legend
     legend.text = element_text(size = 10),  # Increase size to 10 (adjust as needed)
     legend.title = element_text(size = 12),  # Increase legend title size
     legend.spacing.y = unit(1, "cm"),  # Adjust vertical spacing
     
-    
     # Customizing  grid lines (for finer latitude and longitude)
     panel.grid.major = element_line(color = "lightgray", size = 0.5),  # Major grid lines: gray color, thickness 0.
-    panel.grid.minor = element_line(color = "lightgray", size = 0.5),  # Minor grid lines: light gray, thinner
     
     # Ticks for axis (optional)
     axis.ticks.x = element_line(color = "darkgray", size = 1),  # Ticks for top
@@ -554,7 +546,7 @@ base_map <- ggplot() +
     # change axis labels style
     axis.text = element_text(
       size = 7,  # Change font size of numbers
-      color = "darkgray",  # Change font color
+      color = "black",  # Change font color
       face = "italic",  # Make numbers bold (optional)
       family = "sans"  # Set font family (optional)
     ),
@@ -571,7 +563,6 @@ base_map <- ggplot() +
     location = "bl", # Position: 'tl' = top-left, 'tr' = top-right, etc.
     which_north = "true", # "true" for true north, "grid" for grid north
     style = north_arrow_fancy_orienteering(fill = c("white", "white"), line_col = "black"),# Choose a style for the north arrow
-    
     height = unit(1, "cm"),  # Adjust size
     width = unit(1, "cm"),
     pad_x = unit(2.5, "cm"),# Horizontal padding
@@ -587,25 +578,20 @@ base_map <- ggplot() +
     pad_y = unit(.75, "cm"),
     bar_cols = c("white", "white")
   )
-
 #show static map
 base_map
 
-
-##  animation 1 --------------------------------------------
-
+##  Animation 1 --------------------------------------------
 
 # Now we set up the animation using gganimate
 library(gganimate)
-
 
 # Add transition for animation using the 'year' field for time-based animation
 animated_map <- base_map +
   transition_time(year) +          # Transition over years (animation)
   ease_aes('linear')               # Ensure smooth transition between years
-
+# Show the animation
 animated_map
-
 
 # Render the animation as a video (MP4 format)
 animated_map_output <- animate(
@@ -618,10 +604,10 @@ animated_map_output <- animate(
 )
 
 # Optionally, save the animation as an MP4 file
-anim_save("/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/mills_timeline.mp4", animated_map_output)
+anim_save("/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/ex_mills_timeline_Animation1.mp4", animated_map_output)
 
 
-##  animation 2 --------------------------------------------
+##  Animation 2 --------------------------------------------
 # Load Required Libraries
 library(tidyverse)
 library(sf)
