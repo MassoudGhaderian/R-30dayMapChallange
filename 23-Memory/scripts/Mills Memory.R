@@ -521,6 +521,11 @@ base_map <- ggplot() +
     values = c("Disappeared Mills" = "#fec44f"),
     labels = c("Disappeared Mills")
   ) +
+  guides(
+    color = guide_legend(
+      override.aes = list(size = 2)  # Change legend point size
+    )
+  ) +
   theme_minimal() +
   theme(
     #Plot Elements
@@ -598,8 +603,9 @@ animated_map_output <- animate(
   animated_map, 
   width = 800, 
   height = 600, 
-  fps = 15, 
+  fps = 30, 
   duration = 40, 
+  res =150
   renderer = av_renderer()  # Use av_renderer to create a video
 )
 
