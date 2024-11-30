@@ -448,18 +448,14 @@ ex_mills$year <- as.integer(ex_mills$verdwenen1)  #to reject NA and invalid valu
 ex_mills$year
 summary(ex_mills$year)
 
-
-
 #outliers checking and histogram 
 
 # Boxplot to check for outliers in general
 boxplot(ex_mills$year, main = "Boxplot of Year", ylab = "Year")
 
-
+# Identify outliers with Z-scores greater than 3 or less than -3
 # Calculate Z-scores
 z_scores <- scale(ex_mills$year)
-
-# Identify outliers with Z-scores greater than 3 or less than -3
 outliers_Z <- ex_mills$year[abs(z_scores) > 3]
 outliers_Z
 
@@ -469,7 +465,6 @@ hist(ex_mills$year, main = "Histogram of Year and numbers of Disapperance",
      xlab = "Year", col = "#fec44f", breaks = 30, 
      xlim = c(min(ex_mills$year) - 10, max(ex_mills$year) + 10),
      border = NA)  # Change the border color  
-
 # Highlight the outliers
 points(outliers_Z, rep(0, length(outliers_Z)), col = "#fec44f", pch = 19)
 
@@ -477,10 +472,8 @@ points(outliers_Z, rep(0, length(outliers_Z)), col = "#fec44f", pch = 19)
 # Plot histogram zoomed in on a specific range
 hist(ex_mills$year, main = "Zoomed-In Histogram", 
      xlab = "Year", col = "#fec44f", breaks = 30, 
-     xlim = c(1800, 2000),  # Focus on years between 1800 and 2000
+     xlim = c(1800, 2024),  # Focus on years between 1800 and 2000
      border = NA)
-
-
 
 # Calculate the frequency of each year
 year_freq <- table(ex_mills$year)
@@ -497,6 +490,38 @@ print(sum_freq)
 # Add text annotations to the histogram for the years with maximum frequency
 text(x = as.numeric(max_years), y = max_freq, labels = max_years, 
      col = "blue", pos = 3, cex = 0.8)  # Add text above the bars
+
+
+# Load necessary libraries
+library(ggplot2)
+
+# Assuming you have a data frame 'ex_mills_data' with columns 'Year' and 'Count'
+# ex_mills_data <- data.frame(Year = c(1850, 1900, 1950, ...), Count = c(1111, 800, 950, ...))
+
+# Create a line chart
+# Aggregate data to count the number of ex-mills per year
+ex_mills_data_aggregated <- ex_mills %>%
+  group_by(year) %>%
+  summarise(Count = n())  # Count the number of records per year
+
+Line_plot_ex_mills <-  ggplot(ex_mills_data_aggregated, aes(x = year, y = Count)) +
+  geom_line(color = "#fec44f", size = 1) +  # Line plot
+  geom_point(color = "red", size = 2) +  # Optional: Add points to show data points
+  labs(
+    title = "▪ Mills' Memory",
+    subtitle = "▪ Timeline of Disappeared Mills in Netherlands",
+    caption = "▪ Data Source: www.molendatabase.org | Map visualization by Massoud Ghaderian | R Studio | 2024 ",
+    x = NULL,  # Remove x-axis label
+    y = NULL)+ # Remove y-axis label 
+  theme_minimal()  # Optional: Use minimal theme for clean aesthetics
+
+Line_plot_ex_mills
+
+# Save the final plot
+ggsave("Lineplot ex_mills.jpg", plot =Line_plot_ex_mills, 
+       width = 10, height = 8, dpi = 300, 
+       path = here("23-Memory/outputs"))
+
 
 # SECTION 5 : Animation of  "Year OF Disappearance"  --------------------------
 
