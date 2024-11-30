@@ -155,7 +155,7 @@ main_plot <- ggplot() +
   labs(
     title = "▪ Mills' Memory",
     subtitle = "▪ Existing and Disappeared Mills in Netherlands",
-    caption = "▪ Data Source: www.molendatabase.org | Map by Massoud Ghaderian, 2024",
+    caption = "▪ Data Source: www.molendatabase.org | Map visualization by Massoud Ghaderian | 2024 | R Studio",
     x = NULL,  # Remove x-axis label
     y = NULL   # Remove y-axis label
   ) +
@@ -323,27 +323,23 @@ heatmap_plot <- ggplot() +
   geom_sf(data = netherlands_border, fill = NA, color = NA, size = 0.5) +
   geom_sf(data = nl_stats_border, fill = NA , color = "white") +    
   #Add populated cites and their labels 
-  geom_sf(data = nl_populated_palces, aes(shape = "circle"),
-          size = 1,color="white",
-          show.legend = FALSE) +
+  geom_sf(data = nl_populated_palces, aes(shape = "circle"), size = 2,color = "white" ,show.legend = FALSE) +
+  geom_text(data = nl_populated_palces, 
+            aes(x = st_coordinates(geometry)[, 1], 
+                y = st_coordinates(geometry)[, 2], 
+                label = name),
+            size = 3,  # Adjust size of label
+            color = "white",  # Main label color
+            fontface = "bold", 
+            nudge_y = 0.05,  # Adjust vertical position
+            nudge_x = 0, 
+            check_overlap = FALSE) +  # Prevent overlap of labels
   # Add title, subtitle, and captions
   labs(title = "▪ Mills' Memory",
        subtitle = "▪ Density Heatmap of Disappeared Mills in Netherlands ",
        caption = "▪ Data Source: www.molendatabase.org | Map visualization by Massoud Ghaderian | 2024 | R Studio",
        x = NULL,
        y = NULL) +
-  geom_text(data = nl_populated_palces,                     #white labeling
-            aes(x = st_coordinates(geometry)[, 1], 
-                y = st_coordinates(geometry)[, 2],
-                label = name),
-            size = 2,  # Adjust size of halo text
-            color = "white",  # Halo color
-            fontface = "bold",
-            nudge_y = 5,  # Adjust vertical position
-            nudge_x = 0,
-            check_overlap = TRUE,
-            family = "sans",
-            alpha = 1) +  # Slight transparency for halo effect
   theme_minimal() +
   theme(
     #black background
@@ -430,7 +426,7 @@ ggsave("Heat Map of  Disappeared Mills.jpg", plot = heatmap_plot,
        path = here("23-Memory/outputs"))
 
 
-# SECTION 4 : Animation of  "Year OF Disappearance"  --------------------------
+# SECTION 4 : " histogram of Disappearance Years"  --------------------------
 
 
 ##  Data Preparation  --------------------------------------------
@@ -496,20 +492,101 @@ print(sum_freq)
 text(x = as.numeric(max_years), y = max_freq, labels = max_years, 
      col = "blue", pos = 3, cex = 0.8)  # Add text above the bars
 
-##  Plotting--------------------------------------------
+# SECTION 4 : Animation of  "Year OF Disappearance"  --------------------------
 
 # Base plot setup (no animation yet)
 base_map <- ggplot() +
   geom_sf(data = nl_border, fill = "black", color = NA, alpha = 0.8) +     # Netherlands national border (dark mode)
-  geom_sf(data = ex_mills, size = 0.7 ,col = "#fec44f") +
+  geom_sf(data = ex_mills, size = 0.7 ,aes(color = "Disappeared Mills")) +
+  geom_sf(data = nl_populated_palces, aes(shape = "Populated Places"), size = 2, color = "white",show.legend = FALSE) +
+  geom_text(data = nl_populated_palces, 
+            aes(x = st_coordinates(geometry)[, 1], 
+                y = st_coordinates(geometry)[, 2], 
+                label = name),
+            size = 3,  # Adjust size of label
+            color = "white",  # Main label color
+            fontface = "bold", 
+            nudge_y = 0.05,  # Adjust vertical position
+            nudge_x = 0, 
+            check_overlap = FALSE) +  # Prevent overlap of labels
   labs(
-    title = "Timeline of Mills in the Netherlands: {frame_time}",
-    subtitle = "Red: Disappeared | Blue: Existing",
-    color = "Type",
-    x = "Longitude",
-    y = "Latitude"
+    title = "▪ Mills' Memory",
+    subtitle = "▪ Timeline of Mills in the Netherlands: {frame_time}",
+    caption = "▪ Data Source: www.molendatabase.org | Map visualization by Massoud Ghaderian | 2024 | R Studio",
+    x = NULL,  # Remove x-axis label
+    y = NULL   # Remove y-axis label
+  )+
+  scale_color_manual(
+    name = "▪ Legend",  # Legend title
+    values = c("Disappeared Mills" = "#fec44f"),
+    labels = c("Disappeared Mills")
   ) +
-  theme_minimal()
+  scale_shape_manual(
+    values = c("Populated Places" = 16),  # Circle shape
+    labels = c("Populated Places")
+  )+
+  theme_minimal() +
+  theme(
+    #Plot Elements
+    plot.title = element_text(hjust = -0.01, size = 18, face = "bold", margin = margin(b = 0)),
+    plot.subtitle = element_text(hjust = -0.01, size = 14, margin = margin(t = 0)),
+    plot.caption = element_text(hjust = -0.01, size = 10, face = "italic", margin = margin(t = 15)),
+    plot.margin = margin(t = 30, r = 20, b = 50, l = 20),
+    
+    #Legend settings
+    # legend.position = c(0.95, 0.05),  # x and y position (percent of plot)
+    legend.justification = c("right", "bottom"),  # Align legend's bottom-right corner
+    # legend.box.margin = margin(5, 5, 5, 5),  # Add some space around the legend
+    legend.background = element_rect(fill = "white", color = "white", size = 0.5),  # Optional: Add background and border to legend
+    legend.text = element_text(size = 10),  # Increase size to 10 (adjust as needed)
+    legend.title = element_text(size = 12),  # Increase legend title size
+    legend.spacing.y = unit(1, "cm"),  # Adjust vertical spacing
+    
+    
+    # Customizing  grid lines (for finer latitude and longitude)
+    panel.grid.major = element_line(color = "lightgray", size = 0.5),  # Major grid lines: gray color, thickness 0.
+    panel.grid.minor = element_line(color = "lightgray", size = 0.5),  # Minor grid lines: light gray, thinner
+    
+    # Ticks for axis (optional)
+    axis.ticks.x = element_line(color = "darkgray", size = 1),  # Ticks for top
+    axis.ticks.y = element_line(color = "darkgray", size = 1),  # Ticks for right
+    
+    # change axis labels style
+    axis.text = element_text(
+      size = 7,  # Change font size of numbers
+      color = "darkgray",  # Change font color
+      face = "italic",  # Make numbers bold (optional)
+      family = "sans"  # Set font family (optional)
+    ),
+    # Moving axis labels inside the plot
+    axis.text.x = element_text(
+      size = 5, hjust = 0.5, vjust = 1 ,margin = margin(t = -10),  # Move x-axis labels to the right (hjust = 1)
+    ),
+    axis.text.y = element_text(
+      size = 5, hjust = 0.5, vjust =0.5,margin = margin(r = -20),  # Move y-axis labels up (vjust = 1.5)
+    ),
+  ) +
+  # Add a north arrow
+  annotation_north_arrow(
+    location = "bl", # Position: 'tl' = top-left, 'tr' = top-right, etc.
+    which_north = "true", # "true" for true north, "grid" for grid north
+    style = north_arrow_fancy_orienteering(fill = c("white", "white"), line_col = "black"),# Choose a style for the north arrow
+    
+    height = unit(1, "cm"),  # Adjust size
+    width = unit(1, "cm"),
+    pad_x = unit(2.5, "cm"),# Horizontal padding
+    pad_y = unit(1, "cm")  # Vertical padding# Adjust size
+  ) +
+  # Add a scale bar
+  annotation_scale(
+    location = "bl", # Position: 'bl' = bottom-left
+    width_hint = 0.2, # Adjust the width relative to the map
+    line_width = 1,
+    height = unit(0.1, "cm"), # Adjust the height of the scale bar
+    pad_x = unit(1.7, "cm"),
+    pad_y = unit(.75, "cm"),
+    bar_cols = c("white", "white")
+  )
 
 #show static map
 base_map
