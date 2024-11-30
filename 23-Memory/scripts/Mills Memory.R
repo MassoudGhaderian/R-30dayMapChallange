@@ -99,6 +99,8 @@ cat("Total other mills:", num_other_mills, "\n")
 
 bbox <- st_bbox(nl_border)
 bbox
+# make ggpolot balck and waht just to check data ...
+
 # SECTION 1: Existing and  Disappeared Mills Maps ---------------------------------------------
 
 # Get the bounding box of the Netherlands shape file
@@ -678,14 +680,12 @@ animated_map_output <- animate(
   duration = length(years) * 2,     # Total duration
   renderer = av_renderer()
 )
-
 # Save the Animation
 anim_save("/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/mills_timeline.mp4", animated_map_output)
 
 
-
 # SECTION 6 : Function of Existing Mills --------------------------
-
+# بیان مسئله باید عوض شود ...می خواهیم لیبلگذاری کنیم با این شرط که عناوین مشابه اجماع شوند و سایزوشن بزرگتر شود
 # Ensure your dataset (mills) is loaded as an sf object and projected correctly
 mills <- st_transform(mills, crs = 3857)  # Transform to a projected CRS for spatial visualization
 head(mills)
@@ -712,19 +712,22 @@ mill_function_freq <- mills %>%
   arrange(desc(n)) %>%
   rename(words = TYPE, freq = n)
 
+my_colors <- c("#993404", "#fec44f")  # Shades of blue
+
 # Create a word cloud (first as an HTML file)
 wordcloud_html <- wordcloud2(data = mill_function_freq, 
-                             size = 0.3,  # Smaller font size to fit more words
-                             color = "random-light", 
-                             backgroundColor = "white")
+                             size = 0.5,  # Smaller font size to fit more words
+                             color = my_colors, 
+                             backgroundColor = "white" ,
+                             rotateRatio = 0 ) # Prevent rotation of words
 
 # Save the word cloud as HTML
-html_file <- "/R-WorkSpaces/R-30dayMapChallange/wordcloud.html"
+html_file <- "/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/wordcloud.html"
 htmlwidgets::saveWidget(wordcloud_html, file = html_file, selfcontained = TRUE)
 
 # Convert the HTML to PNG
-png_file <- "/R-WorkSpaces/R-30dayMapChallange/wordcloud.png"
-webshot(html_file, file = png_file, vwidth = 1200, vheight = 1600)  # Larger width and height
+png_file <- "/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/wordcloud.png"
+webshot(html_file, file = png_file, vwidth = 800, vheight = 600)  # Larger width and height
 
 # Read the PNG image into R
 wordcloud_image <- png::readPNG(png_file)
@@ -809,7 +812,7 @@ wordcloud_map <- ggplot() +
 wordcloud_map
 
 # Save the final combined plot with the word cloud surrounded by the Netherlands boundary
-ggsave("Mills_WordCloud_Bordered_by_Netherlands.png", plot = wordcloud_map, 
+ggsave("Mills WordCloud .jpg", plot = wordcloud_map, 
        width = 8.27, height = 12, dpi = 600, 
        path = "/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/")
 
