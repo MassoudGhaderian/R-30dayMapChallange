@@ -74,7 +74,7 @@ nl_stats_border <- nl_stats_border %>%
     y = st_coordinates(st_centroid(geometry))[, 2]
   )
 
-# SECTION 000: Data Inspection and exploring ----------------------------------------------
+# SECTION 000: Data Inspection and exploring -----------------------------------
 
 # Inspect first few rows of each data set
 head(mills)
@@ -113,23 +113,32 @@ external_labels <- data.frame(
 )
 # Define a base map with Netherlands' border and North Sea
 base_map <- ggplot() +
-  geom_sf(data = north_sea, fill = "darkgrey", color = "black", lwd = 0.5) + # North Sea
-  geom_sf(data = nl_border, fill = "white", color = "black", lwd = 0.5) + # Netherlands' border
-  geom_sf(data = gr_border, fill = "lightgrey", color = "black", lwd = 0.5) + # Germany' border
-  geom_sf(data = bl_border, fill = "lightgrey", color = "black", lwd = 0.5) + # Belgium' border
+  # North Sea,Netherlands',Germany' and Belgium' border
+  geom_sf(data = north_sea, fill = "darkgrey", color = "black", lwd = 0.5) + 
+  geom_sf(data = nl_border, fill = "white", color = "black", lwd = 0.5) + 
+  geom_sf(data = gr_border, fill = "lightgrey", color = "black", lwd = 0.5) + 
+  geom_sf(data = bl_border, fill = "lightgrey", color = "black", lwd = 0.5) + 
   theme_minimal() +
   labs(title = "Overview of Mills data and Key Features for data check")
 # Add other spatial features to the map
 full_map <- base_map +
-  geom_sf(data = nl_stats_border, color = "black", fill = NA, linetype = "dotted") + # Province borders
-  geom_sf(data = nl_cities_border, color = "black", fill = NA, linetype = "dashed") + # City borders
-  geom_sf(data = oppervlaktewater, color = "blue", fill = NA, lwd = 0.3) + # Surface water
-  geom_sf(data = other_mills, color = "lightgray", size = 0.8, shape = 17) + # Other mills
-  geom_sf(data = ex_mills, color = "gray", size = 0.8, shape = 15) + # Disappeared mills
-  geom_sf(data = mills, color = "black", size = 0.8) + # Existing mills
-  geom_sf(data = nl_populated_palces, color = "red", size = 3) + # Populated places
+  geom_sf(data = nl_stats_border,
+          color = "black", fill = NA, linetype = "dotted") + # Province borders
+  geom_sf(data = nl_cities_border,
+          color = "black", fill = NA, linetype = "dashed") + # City borders
+  geom_sf(data = oppervlaktewater, 
+          color = "blue", fill = NA, lwd = 0.3) + # Surface water
+  geom_sf(data = other_mills,
+          color = "lightgray", size = 0.8, shape = 17) + # Other mills
+  geom_sf(data = ex_mills,
+          color = "gray", size = 0.8, shape = 15) + # Disappeared mills
+  geom_sf(data = mills,
+          color = "black", size = 0.8) + # Existing mills
+  geom_sf(data = nl_populated_palces,
+          color = "red", size = 3) + # Populated places
+  # Crop to Netherlands' bounding box
   coord_sf(xlim = c(bbox["xmin"], bbox["xmax"]), 
-           ylim = c(bbox["ymin"], bbox["ymax"]))  # Crop to Netherlands' bounding box
+           ylim = c(bbox["ymin"], bbox["ymax"]))  
 # Add centroids for labeling
 full_map <- full_map +
   geom_text(data = nl_stats_border, aes(x = x, y = y, label = NAME_1), 
@@ -143,31 +152,34 @@ full_map <- full_map +
 print(full_map)
 
 
-# SECTION 1: Existing and  Disappeared Mills ---------------------------------------------
+# SECTION 1: Existing and  Disappeared Mills Map -------------------------------
 
 #  +-+-+-+-+-+-+-+-+ +-+-+-+ +-+-+-+-+-+-+-+-+-+-+-+ +-+-+-+-+-+
 #  |E|x|i|s|t|i|n|g| |a|n|d| |D|i|s|a|p|p|e|a|r|e|d| |M|i|l|l|s|
 #  +-+-+-+-+-+-+-+-+ +-+-+-+ +-+-+-+-+-+-+-+-+-+-+-+ +-+-+-+-+-+
 
-
-#   ^   ^   ^   ^   ^   ^   ^   ^       ^   ^   ^         ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^       ^   ^   ^   ^   ^  
-#     /E\ /x\ /i\ /s\ /t\ /i\ /n\ /g\     /a\ /n\ /d\       /D\ /i\ /s\ /a\ /p\ /p\ /e\ /a\ /r\ /e\ /d\     /M\ /i\ /l\ /l\ /s\ 
-#   <___X___X___X___X___X___X___X___>   <___X___X___>     <___X___X___X___X___X___X___X___X___X___X___>   <___X___X___X___X___>
-  
 main_plot <- ggplot() +
   # Add geographic background features
-  geom_sf(data = north_sea, fill = "lightblue", color = NA, alpha = 0.5) + # North Sea
-  geom_sf(data = gr_border, color = NA, alpha = 0.5) +                     # Germany border
-  geom_sf(data = bl_border, color = NA, alpha = 0.5) +                     # Belgium border
-  geom_sf(data = oppervlaktewater, fill = "lightblue", color = NA, alpha = 0.5) +       # Surface water in Netherlands
-  geom_sf(data = nl_border, fill = "black", color = NA, alpha = 0.3) +     # Netherlands national border (dark mode)
-  # geom_sf(data = nl_border, fill = NA, color = "black") +     # Netherlands national border (light mode)
-  geom_sf(data = nl_stats_border, fill = NA , color = NA) +            # Netherlands Province borders
+  geom_sf(data = north_sea,
+          fill = "lightblue", color = NA, alpha = 0.5) + # North Sea
+  geom_sf(data = gr_border,
+          color = NA, alpha = 0.5) +                     # Germany border
+  geom_sf(data = bl_border, 
+          color = NA, alpha = 0.5) +                   # Belgium border
+  geom_sf(data = oppervlaktewater,
+          fill = "lightblue", color = NA, alpha = 0.5) + # Surface water in Nl
+  geom_sf(data = nl_border,
+          fill = "black", color = NA, alpha = 0.3) +     # Nl border(dark mode)
+  geom_sf(data = nl_stats_border,
+          fill = NA , color = NA) +            # Netherlands Province borders
   # Add mills data
-  geom_sf(data = ex_mills, aes(color = "Disappeared Mills"), size = 0.5) +  # Disappeared mills
-  geom_sf(data = mills, aes(color = "Existing Mills"), size = 0.5) +        # Existing mills
+  geom_sf(data = ex_mills,
+          aes(color = "Disappeared Mills"), size = 0.5) +  # Disappeared mills
+  geom_sf(data = mills,
+          aes(color = "Existing Mills"), size = 0.5) +     # Existing mills
   # Add populated cities 
-  geom_sf(data = nl_populated_palces, aes(shape = "circle"), size = 2, show.legend = FALSE) +
+  geom_sf(data = nl_populated_palces, 
+          aes(shape = "circle"), size = 2, show.legend = FALSE) +
   # Add main text labels (smaller, black text on top)       
   geom_text(data = nl_populated_palces, 
             aes(x = st_coordinates(geometry)[, 1], 
@@ -193,14 +205,16 @@ main_plot <- ggplot() +
       paste0("Existing Mills \n (", num_existing_mills, ")")
     )
   ) +
-  guides(
-    color = guide_legend(override.aes = list(size = 3))  # Customize legend symbols
+  guides( # Customize legend symbols
+    color = guide_legend(override.aes = list(size = 3)) 
   )+
   # Add title, subtitle, and captions
   labs(
     title = "▪ Mills' Memory",
     subtitle = "▪ Existing and Disappeared Mills in the Netherlands",
-    caption = "▪ Data Source: www.molendatabase.org | Map visualization by Massoud Ghaderian | R Studio | 2024",
+    caption = 
+    "▪ Data Source: https://www.molendatabase.nl | https://www.molendatabase.net
+    ▪ Map visualization by Massoud Ghaderian | R Studio | 2024",
     x = NULL,  # Remove x-axis label
     y = NULL   # Remove y-axis label
   ) +
@@ -213,24 +227,29 @@ main_plot <- ggplot() +
   theme_minimal() +
   theme(
     #Plot Elements
-    plot.title = element_text(hjust = -0.01, size = 18, face = "bold", margin = margin(b = 0)),
-    plot.subtitle = element_text(hjust = -0.01, size = 14, margin = margin(t = 0)),
-    plot.caption = element_text(hjust = -0.01, size = 10, face = "italic", margin = margin(t = 15)),
+    plot.title = element_text(hjust = -0.01, size = 18, face = "bold",
+                              margin = margin(b = 0)),
+    plot.subtitle = element_text(hjust = -0.01, size = 14,
+                                 margin = margin(t = 0)),
+    plot.caption = element_text(hjust = -0.01, size = 10, face = "italic", 
+                                margin = margin(t = 15)),
     plot.margin = margin(t = 30, r = 20, b = 50, l = 20),
    
     #Legend settings
     # legend.position = c(0.95, 0.05),  # x and y position (percent of plot)
-    legend.justification = c("right", "bottom"),  # Align legend's bottom-right corner
+    legend.justification = c("right", "bottom"),  # legend's bottom-right corner
     # legend.box.margin = margin(5, 5, 5, 5),  # Add some space around the legend
-    legend.background = element_rect(fill = "white", color = "white", size = 0.5),  # Optional: Add background and border to legend
-    legend.text = element_text(size = 10),  # Increase size to 10 (adjust as needed)
+    legend.background = element_rect(fill = "white", color = "white", size = 0.5), 
+    legend.text = element_text(size = 10),  # Increase size 
     legend.title = element_text(size = 12),  # Increase legend title size
     legend.spacing.y = unit(1, "cm"),  # Adjust vertical spacing
     
     
     # Customizing  grid lines (for finer latitude and longitude)
-    panel.grid.major = element_line(color = "lightgray", size = 0.5),  # Major grid lines: gray color, thickness 0.
-    panel.grid.minor = element_line(color = "lightgray", size = 0.5),  # Minor grid lines: light gray, thinner
+    panel.grid.major = element_line(color = "lightgray", size = 0.5),
+    # Major grid lines: gray color, thickness 0.
+    panel.grid.minor = element_line(color = "lightgray", size = 0.5), 
+    # Minor grid lines: light gray, thinner
     
     # Ticks for axis (optional)
     axis.ticks.x = element_line(color = "darkgray", size = 1),  # Ticks for top
@@ -244,18 +263,19 @@ main_plot <- ggplot() +
       family = "sans"  # Set font family (optional)
     ),
     # Moving axis labels inside the plot
-    axis.text.x = element_text(
-      size = 5, hjust = 0.5, vjust = 1 ,margin = margin(t = -10),  # Move x-axis labels to the right (hjust = 1)
+    axis.text.x = element_text(# Move x-axis labels to the right (hjust = 1)
+      size = 5, hjust = 0.5, vjust = 1 ,margin = margin(t = -10),
     ),
-    axis.text.y = element_text(
-      size = 5, hjust = 0.5, vjust =0.5,margin = margin(r = -20),  # Move y-axis labels up (vjust = 1.5)
+    axis.text.y = element_text(# Move y-axis labels up (vjust = 1.5)
+      size = 5, hjust = 0.5, vjust =0.5,margin = margin(r = -20),
     ),
   ) +
   # Add a north arrow
   annotation_north_arrow(
     location = "bl", # Position: 'tl' = top-left, 'tr' = top-right, etc.
     which_north = "true", # "true" for true north, "grid" for grid north
-    style = north_arrow_fancy_orienteering(fill = c("white", "white"), line_col = "black"),# Choose a style for the north arrow
+    style = north_arrow_fancy_orienteering(# Choose a style for the north arrow
+      fill = c("white", "white"), line_col = "black"),
     
     height = unit(1, "cm"),  # Adjust size
     width = unit(1, "cm"),
@@ -276,18 +296,15 @@ main_plot <- ggplot() +
 # Display the main plot
 main_plot
 
-
 # Read and convert logo to raster
-rbanism_logo <- image_read('https://rbanism.org/assets/imgs/about/vi_l.jpg')  # Download logo
+rbanism_logo <- image_read('https://rbanism.org/assets/imgs/about/vi_l.jpg')  
 rbanism_logo_raster <- grid::rasterGrob(rbanism_logo, interpolate = TRUE)
-
 # Combine main plot with logo using cowplot
 final_plot <- ggdraw(main_plot) +
   draw_grob(rbanism_logo_raster, x = 0.80, y = 0.75, width = 0.20, height = 0.20)
 
 # Display the final plot
 final_plot
-
 # Save the final plot as a PDF
 ggsave("Exiting and Disappeared Mills.jpg", plot = final_plot, 
        width = 8.27, height = 10, dpi = 300, 
