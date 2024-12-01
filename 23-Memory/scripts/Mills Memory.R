@@ -211,6 +211,7 @@ main_plot <- ggplot() +
             nudge_y = 0.05,  # Adjust vertical position
             nudge_x = 0, 
             check_overlap = FALSE) +  # Prevent overlap of labels
+  #add external label of North Sea,Germany and Belgium
   geom_text(data = external_labels, aes(x = x, y = y, label = name), 
             color = "darkgray", size = 3, fontface = "bold.italic")+
   # Customize color legend for mills
@@ -221,8 +222,8 @@ main_plot <- ggplot() +
       "Disappeared Mills" = "#fec44f"  # Lighter yellow for disappeared mills
     ),
     labels = c(
-      paste0("Disappeared Mills\n (", num_disappeared_mills, ")"),
-      paste0("Existing Mills \n (", num_existing_mills, ")")
+      paste0("Disappeared Mills\n No.= (", num_disappeared_mills, ")\n"),
+      paste0("Existing Mills \n No.= (", num_existing_mills, ")")
     )
   ) +
   guides( # Customize legend symbols
@@ -250,7 +251,7 @@ main_plot <- ggplot() +
     plot.title = element_text(hjust = -0.01, size = 18, face = "bold",
                               margin = margin(b = 0)),
     plot.subtitle = element_text(hjust = -0.01, size = 14,
-                                 margin = margin(t = 0)),
+                                 margin = margin(t = 0, b=8)),
     plot.caption = element_text(hjust = -0.01, size = 10, face = "italic", 
                                 margin = margin(t = 15)),
     plot.margin = margin(t = 30, r = 20, b = 50, l = 20),
@@ -320,15 +321,14 @@ rbanism_logo <- image_read('https://rbanism.org/assets/imgs/about/vi_l.jpg')
 rbanism_logo_raster <- grid::rasterGrob(rbanism_logo, interpolate = TRUE)
 # Combine main plot with logo using cowplot
 final_plot <- ggdraw(main_plot) +
-  draw_grob(rbanism_logo_raster, x = 0.80, y = 0.75, width = 0.20, height = 0.20)
+  draw_grob(rbanism_logo_raster, x = 0.80, y = 0.70, width = 0.20, height = 0.20)
 
 # Display the final plot
 final_plot
-# Save the final plot as a PDF
+# Save the final plot 
 ggsave("Exiting and Disappeared Mills.jpg", plot = final_plot, 
-       width = 8.27, height = 10, dpi = 300, 
+       width = 8, height = 10, dpi = 300, 
        path = here("23-Memory/outputs"))
-
 
 
 # 02 : Interactive Map of Disappeared Mills ------------------------------------
@@ -409,7 +409,8 @@ heatmap_plot <- ggplot() +
   geom_sf(data = netherlands_border, fill = NA, color = NA, size = 0.5) +
   geom_sf(data = nl_stats_border, fill = NA , color = "white") +    
   #Add populated cites and their labels 
-  geom_sf(data = nl_populated_palces, aes(shape = "circle"), size = 2,color = "white" ,show.legend = FALSE) +
+  geom_sf(data = nl_populated_palces, aes(shape = "circle"),
+          size = 2,color = "white" ,show.legend = FALSE) +
   geom_text(data = nl_populated_palces, 
             aes(x = st_coordinates(geometry)[, 1], 
                 y = st_coordinates(geometry)[, 2], 
@@ -421,30 +422,33 @@ heatmap_plot <- ggplot() +
             nudge_x = 0, 
             check_overlap = FALSE) +  # Prevent overlap of labels
   # Add title, subtitle, and captions
-  labs(title = "▪ Mills' Memory",
-       subtitle = "▪ Density Heatmap of Disappeared Mills in Netherlands ",
-       caption = "▪ Data Source: www.molendatabase.org | Map visualization by Massoud Ghaderian | 2024 | R Studio",
-       x = NULL,
-       y = NULL) +
+  labs(
+    title = "▪ Mills' Memory",
+    subtitle = "▪ Existing and Disappeared Mills in the Netherlands",
+    caption = 
+      "▪ Data : www.molendatabase.nl  |  www.molendatabase.net
+▪ Map visualization : Massoud Ghaderian | R Studio | 2024",
+    x = NULL,  # Remove x-axis label
+    y = NULL   # Remove y-axis label
+  ) +
   theme_minimal() +
   theme(
     #black background
     plot.background = element_rect(fill = "black", color = NA),
     # panel.background = element_rect(fill = "black", color = NA),
     
-    
     #Plot Elements
     plot.title = element_text(hjust = -0.01, size = 18, face = "bold",
                               margin = margin(b = 0), color = "white"),
     plot.subtitle = element_text(hjust = -0.01, size = 14,
-                                 margin = margin(t = 0), color = "white"),
+                                 margin = margin(t = 0 , b= 10), color = "white"),
     plot.caption = element_text(hjust = -0.01, size = 10, face = "italic",
                                 margin = margin(t = 15), color = "white"),
     plot.margin = margin(t = 30, r = 20, b = 50, l = 20),
     
     #Legend settings
     # legend.position = c(0.95, 0.05),  # x and y position (percent of plot)
-    legend.justification = c("right", "bottom"),  # Align legend's bottom-right corner
+    legend.justification = c("right", "bottom"),  #  legend's bottom-right corner
     # legend.box.margin = margin(5, 5, 5, 5),  # Add some space around the legend
     legend.background = element_rect(fill = "black", color = NA, size = 0.5),  
     legend.text = element_text(size = 10, color = "white"),  
@@ -469,11 +473,11 @@ heatmap_plot <- ggplot() +
     ),
     # Moving axis labels inside the plot
     axis.text.x = element_text(
-      size = 5, hjust = 0.5, vjust = 1 ,margin = margin(t = 0),
+      size = 5, hjust = 0.5, vjust = 0.5 ,margin = margin(t = -.01),
       # Move x-axis labels to the right (hjust = 1)
     ),
     axis.text.y = element_text(
-      size = 5, hjust = 0.5, vjust =0.5,margin = margin(r = 0),
+      size = 5, hjust = 0.5, vjust =0.5,margin = margin(r = -.01),
       # Move y-axis labels up (vjust = 1.5)
     ),
   ) +
@@ -488,27 +492,27 @@ heatmap_plot <- ggplot() +
     ),
     height = unit(1, "cm"),  # Adjust size
     width = unit(1, "cm"),
-    pad_x = unit(2.5, "cm"),# Horizontal padding
-    pad_y = unit(1, "cm")  # Vertical padding# Adjust size
+    pad_x = unit(2.8, "cm"),# Horizontal padding
+    pad_y = unit(1, "cm")  # Vertical padding
   ) +
   # Add a scale bar
   annotation_scale(
     location = "bl", # Position: 'bl' = bottom-left
-    width_hint = 0.2, # Adjust the width relative to the map
+    width_hint = 0.2, #  the width relative to the map
     line_width = 1,
-    height = unit(0.1, "cm"), # Adjust the height of the scale bar
-    pad_x = unit(1.7, "cm"),
+    height = unit(0.1, "cm"), #  the height of the scale bar
+    pad_x = unit(1.9, "cm"),
     pad_y = unit(.75, "cm"),
     bar_cols = c("white", "white"),
-    text_col = "white"  # Change the scale bar text color
+    text_col = "white"  #  the scale bar text color
     )
 
-# Display the heatmap
+# Display the heat map
 print(heatmap_plot)
 
-# Save the final plot as a PDF
+# Save the final plot 
 ggsave("Heat Map of  Disappeared Mills.jpg", plot = heatmap_plot, 
-       width = 8.27, height = 10, dpi = 300, 
+       width = 8, height = 10, dpi = 300, 
        path = here("23-Memory/outputs"))
 
 
