@@ -1,6 +1,6 @@
 
 
-# 0:  Necessary Packages -----------------------------------
+# 0:  Necessary Packages -------------------------------------------------------
 
 # List of required packages
 required_packages <- c("ggspatial", "ggplot2", "sf", "tmap", "here", "magick",
@@ -26,13 +26,13 @@ library(ggspatial)     # For scale bars and north arrows in ggplot maps
 library(leaflet)       # For building interactive maps
 library(leaflet.extras)# For Extends the capabilities of leaflet 
 library(viridis)       # For a visually appealing colors
-library(sf)         # For spatial data handling
-library(ggplot2)    # For visualization
-library(wordcloud2) # For word cloud
-library(dplyr)      # For data manipulation
-library(cowplot)    # For combining plots
-library(webshot)    # For saving wordcloud2 as an image
-library(png)        # For reading PNG images
+library(sf)            # For spatial data handling
+library(ggplot2)       # For visualization
+library(wordcloud2)    # For word cloud
+library(dplyr)         # For data manipulation
+library(cowplot)       # For combining plots
+library(webshot)       # For saving wordcloud2 as an image
+library(png)           # For reading PNG images
 
 
 #  00: Load Spatial Data ---------------------------
@@ -74,7 +74,7 @@ nl_stats_border <- nl_stats_border %>%
     y = st_coordinates(st_centroid(geometry))[, 2]
   )
 
-#  000: Data Inspection and exploring -----------------------------------
+#  000: Data Inspection and exploration ----------------------------------------
 
 # Inspect first few rows of each data set
 head(mills)
@@ -100,18 +100,18 @@ num_other_mills <- nrow(other_mills)
 cat("Total other mills:", num_other_mills, "\n")
 
 
-# make ggplot basic map for Overview of Mills data and Key Features
+# Make ggplot basic map for Overview of Mills data and Key Features
 
-# Get the bounding box of the Netherlands shape file
+# 1-Get the bounding box of the Netherlands shape file
 bbox <- st_bbox(nl_border)
 bbox
-# Create a data frame for external region labels
+# 2-Create a data frame for external region labels
 external_labels <- data.frame(
   name = c("North Sea", "Germany", "Belgium"),
   x = c(4.0, 7.0, 5),  # Approximate longitude for labels
   y = c(53.5, 51.5, 51) # Approximate latitude for labels
 )
-# Define a base map with Netherlands' border and North Sea
+# 3-Define a base map with Netherlands' border and North Sea
 base_map <- ggplot() +
   # North Sea,Netherlands',Germany' and Belgium' border
   geom_sf(data = north_sea, fill = "darkgrey", color = "black", lwd = 0.5) + 
@@ -120,7 +120,7 @@ base_map <- ggplot() +
   geom_sf(data = bl_border, fill = "lightgrey", color = "black", lwd = 0.5) + 
   theme_minimal() +
   labs(title = "Overview of Mills data and Key Features for data check")
-# Add other spatial features to the map
+# 4-Add other spatial features to the map
 full_map <- base_map +
   geom_sf(data = nl_stats_border,
           color = "black", fill = NA, linetype = "dotted") + # Province borders
@@ -139,20 +139,20 @@ full_map <- base_map +
   # Crop to Netherlands' bounding box
   coord_sf(xlim = c(bbox["xmin"], bbox["xmax"]), 
            ylim = c(bbox["ymin"], bbox["ymax"]))  
-# Add centroids for labeling
+# 5-Add centroids for labeling
 full_map <- full_map +
   geom_text(data = nl_stats_border, aes(x = x, y = y, label = NAME_1), 
             color = "black", size = 3, check_overlap = TRUE)
-# Add external region labels
+# 6-Add external region labels
 full_map <- full_map +
   geom_text(data = external_labels, aes(x = x, y = y, label = name), 
             color = "darkblue", size = 4, fontface = "italic")
 
-# Plot the first map to check data 
+# 7-Plot the first map to check data 
 print(full_map)
 
 
-#  01: Existing and  Disappeared Mills Map -------------------------------
+#  01 : Map of Existing and  Disappeared Mills  -------------------------------
 
 #  +-+-+-+-+-+-+-+-+ +-+-+-+ +-+-+-+-+-+-+-+-+-+-+-+ +-+-+-+-+-+
 #  |E|x|i|s|t|i|n|g| |a|n|d| |D|i|s|a|p|p|e|a|r|e|d| |M|i|l|l|s|
@@ -243,7 +243,6 @@ main_plot <- ggplot() +
     legend.text = element_text(size = 10),  # Increase size 
     legend.title = element_text(size = 12),  # Increase legend title size
     legend.spacing.y = unit(1, "cm"),  # Adjust vertical spacing
-    
     
     # Customizing  grid lines (for finer latitude and longitude)
     panel.grid.major = element_line(color = "lightgray", size = 0.5),
@@ -361,7 +360,7 @@ saveWidget(leaflet_map, "23-Memory/outputs/Disappeared Mills.html")
 
 
 
-# 03 : A Heat map of "Disappearanced milles"  --------------------------
+# 03 : Heat map of Disappeared mills  -----------------------------------------
 
 # Make sure it is projected for spatial analysis (e.g., EPSG: 3857 for meters)
 ex_mills <- st_transform(ex_mills, crs = 3857) 
@@ -488,7 +487,7 @@ ggsave("Heat Map of  Disappeared Mills.jpg", plot = heatmap_plot,
        path = here("23-Memory/outputs"))
 
 
-# 04 : Histogram of Disappearance Years --------------------------
+# 04 : Histogram of Disappearance Years ----------------------------------------
 
 #Data Preparation 
 head(ex_mills)
@@ -577,7 +576,7 @@ ggsave("Lineplot ex_mills.jpg", plot =Line_plot_ex_mills,
        path = here("23-Memory/outputs"))
 
 
-# 05 : Animation of  "Year OF Disappearance"  --------------------------
+# 05 : Animation of  Disappearance Years  --------------------------------------
 
 # Base plot setup (no animation yet)
 base_map <- ggplot() +
