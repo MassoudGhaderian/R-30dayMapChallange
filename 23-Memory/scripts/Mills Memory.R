@@ -1,6 +1,6 @@
 
 
-# SECTION 0:  Necessary Packages -----------------------------------
+# 0:  Necessary Packages -----------------------------------
 
 # List of required packages
 required_packages <- c("ggspatial", "ggplot2", "sf", "tmap", "here", "magick",
@@ -35,7 +35,7 @@ library(webshot)    # For saving wordcloud2 as an image
 library(png)        # For reading PNG images
 
 
-# SECTION 00: Load Spatial Data ---------------------------
+#  00: Load Spatial Data ---------------------------
 
 #  Disappeared (water and polder) mills shape file path
 disappeared_mills <- here("23-Memory", "data", "shp", "verdwenenmolens.shp")  
@@ -74,7 +74,7 @@ nl_stats_border <- nl_stats_border %>%
     y = st_coordinates(st_centroid(geometry))[, 2]
   )
 
-# SECTION 000: Data Inspection and exploring -----------------------------------
+#  000: Data Inspection and exploring -----------------------------------
 
 # Inspect first few rows of each data set
 head(mills)
@@ -152,7 +152,7 @@ full_map <- full_map +
 print(full_map)
 
 
-# SECTION 1: Existing and  Disappeared Mills Map -------------------------------
+#  01: Existing and  Disappeared Mills Map -------------------------------
 
 #  +-+-+-+-+-+-+-+-+ +-+-+-+ +-+-+-+-+-+-+-+-+-+-+-+ +-+-+-+-+-+
 #  |E|x|i|s|t|i|n|g| |a|n|d| |D|i|s|a|p|p|e|a|r|e|d| |M|i|l|l|s|
@@ -213,8 +213,8 @@ main_plot <- ggplot() +
     title = "▪ Mills' Memory",
     subtitle = "▪ Existing and Disappeared Mills in the Netherlands",
     caption = 
-    "▪ Data Source: https://www.molendatabase.nl | https://www.molendatabase.net
-    ▪ Map visualization by Massoud Ghaderian | R Studio | 2024",
+    "▪ Data Source: www.molendatabase.nl | www.molendatabase.net
+▪ Map visualization by Massoud Ghaderian | R Studio | 2024",
     x = NULL,  # Remove x-axis label
     y = NULL   # Remove y-axis label
   ) +
@@ -312,7 +312,7 @@ ggsave("Exiting and Disappeared Mills.jpg", plot = final_plot,
 
 
 
-# SECTION 2 : Interactive Map of Disappeared Mills --------------------------
+# 02 : Interactive Map of Disappeared Mills --------------------------
 
 # Load the necessary libraries
 library(leaflet)
@@ -361,7 +361,7 @@ saveWidget(leaflet_map, "23-Memory/outputs/Disappeared Mills.html")
 
 
 
-# SECTION 3 : A Heat map of "Disappearanced milles"  --------------------------
+# 03 : A Heat map of "Disappearanced milles"  --------------------------
 
 # Make sure it is projected for spatial analysis (e.g., EPSG: 3857 for meters)
 ex_mills <- st_transform(ex_mills, crs = 3857) 
@@ -488,7 +488,7 @@ ggsave("Heat Map of  Disappeared Mills.jpg", plot = heatmap_plot,
        path = here("23-Memory/outputs"))
 
 
-# SECTION 4 : Histogram of Disappearance Years --------------------------
+# 04 : Histogram of Disappearance Years --------------------------
 
 #Data Preparation 
 head(ex_mills)
@@ -577,7 +577,7 @@ ggsave("Lineplot ex_mills.jpg", plot =Line_plot_ex_mills,
        path = here("23-Memory/outputs"))
 
 
-# SECTION 5 : Animation of  "Year OF Disappearance"  --------------------------
+# 05 : Animation of  "Year OF Disappearance"  --------------------------
 
 # Base plot setup (no animation yet)
 base_map <- ggplot() +
@@ -763,7 +763,7 @@ animated_map_output <- animate(
 anim_save("/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/mills_timeline.mp4", animated_map_output)
 
 
-# SECTION 6 : Function of Existing Mills --------------------------
+# 06 : Function of Existing Mills --------------------------
 # بیان مسئله باید عوض شود ...می خواهیم لیبلگذاری کنیم با این شرط که عناوین مشابه اجماع شوند و سایزوشن بزرگتر شود
 # Ensure your dataset (mills) is loaded as an sf object and projected correctly
 mills <- st_transform(mills, crs = 3857)  # Transform to a projected CRS for spatial visualization
@@ -895,7 +895,7 @@ ggsave("Mills WordCloud .jpg", plot = wordcloud_map,
        width = 8.27, height = 12, dpi = 600, 
        path = "/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/")
 
-# SECTION 7  : existing mill on DSM  --------------------------
+# 07  : existing mill on DSM  --------------------------
 
 library(terra)
 library(sf)
@@ -935,7 +935,7 @@ points3d(mills_coords[, 1], mills_coords[, 2], col = "blue", size = 5)
 rayshader::render_camera(theta = 45, phi = 30, zoom = 0.8)
 
 
-# SECTION 6  : existing mill on DSM  --------------------------
+# 06  : existing mill on DSM  --------------------------
 
 # Load required libraries
 library(leaflet)
@@ -986,7 +986,7 @@ leaflet() %>%
 
 
 
-# SECTION 6  : existing mill on DSM  --------------------------
+# 06  : existing mill on DSM  --------------------------
 # Load required libraries
 library(leaflet)
 library(sf)
@@ -1030,7 +1030,7 @@ leaflet() %>%
   setView(lng = 5, lat = 52.3, zoom = 10)  # Centered on the Netherlands
 
 
-# SECTION 6  : existing mill on DSM in amsterdam --------------------------
+# 06  : existing mill on DSM in amsterdam --------------------------
 # Load required libraries
 library(leaflet)
 library(sf)
