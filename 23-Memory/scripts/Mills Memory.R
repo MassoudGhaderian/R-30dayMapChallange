@@ -4,8 +4,9 @@
 
 # List of required packages
 required_packages <- c("ggspatial", "ggplot2", "sf", "tmap", "here", "magick",
-                       "grid", "cowplot" , "gganimate","gifski","leaflet","png",
-                       "leaflet.extras", "viridis" ,"dplyr","wordcloud2","webshot")
+                       "grid", "cowplot" , "gganimate","gifski","leaflet",
+                       "png","leaflet.extras", "viridis" ,"dplyr","wordcloud2",
+                       "webshot" , "htmltools")
 
 # Install packages that are not already installed
 for (pkg in required_packages) {
@@ -33,7 +34,8 @@ library(dplyr)         # For data manipulation
 library(cowplot)       # For combining plots
 library(webshot)       # For saving wordcloud2 as an image
 library(png)           # For reading PNG images
-
+library(htmlwidgets)   # For working with HTML files
+library(htmltools)     # For Tools of  HTML files
 
 #  00 : Load Spatial Data ---------------------------
 
@@ -343,43 +345,67 @@ ex_mills <- st_read(here(disappeared_mills)) |>
   st_transform(crs = st_crs(nl_border)) |> 
   st_crop(sf::st_bbox(nl_border))  # Crop to Netherlands' bounding box
 head(ex_mills) 
-
-#plotting map
-main_plot <- ggplot() +
-  # Add mills data
-  geom_sf(data = ex_mills, aes(color = "Disappeared Mills"), size = 0.5)   # Disappeared mills
-
-main_plot  
   
-  # Create the map
+  # Create interactive map
 leaflet_map <- leaflet(data = ex_mills) %>%
   addTiles() %>%
   addCircleMarkers(
     lat = ~st_coordinates(ex_mills)[, 2],   # Latitude from geometry
     lng = ~st_coordinates(ex_mills)[, 1],   # Longitude from geometry
     color = "#fec44f",                      # Circle color (yellow)
-    radius = 8,                            # Size of the yellow circle
+    radius = 2,                            # Size of the yellow circle
     popup = ~paste("<b>", molen_naam, "</b><br>",  # Show the name of the mill
-                   "<a href='", infolink, "' target='_blank'>Click here for more info</a>")  # Link to website
-  ) %>%
+                   "<a href='", infolink, "' target='_blank'>Click here for more info</a>")
+    )%>%  
+  addProviderTiles(providers$CartoDB.Positron) %>%  # Lighter and clean tile
   addCircleMarkers(
-    lat = ~st_coordinates(ex_mills)[, 2],   # Latitude for black point
-    lng = ~st_coordinates(ex_mills)[, 1],   # Longitude for black point
-    color = "black",                        # Color of the small black point
-    radius = 1,                             # Smaller size of the black point
-    opacity = 1
+    lat = ~st_coordinates(ex_mills)[, 2],  
+    lng = ~st_coordinates(ex_mills)[, 1],  
+    color = "#fec44f", 
+    radius = 6,
+    clusterOptions = markerClusterOptions(),
+    popup = ~paste("<b>", molen_naam, "</b><br>",  
+                   "<a href='", infolink, "' target='_blank'>Click here for more info</a>")
+  ) %>%
+  addLegend(
+    "bottomright",
+    colors = c("#fec44f"),
+    labels = c("Disappeared Mills"),
+    title = "Legend"
+  ) %>%
+  addScaleBar(position = "bottomleft") %>%  # Add a scale bar
+  addEasyButton(easyButton(
+    icon = "fa-crosshairs", title = "Zoom to Fit",
+    onClick = JS("function(btn, map){ map.fitBounds(map.getBounds()); }")
+  ))  # Add a zoom-to-fit button 
+
+# Define  titles and caption
+leaflet_map <- tags$html(
+  tags$head(
+    tags$style(HTML("
+      body, html { margin: 0; padding: 0; height: 100%; width: 100%; } /* Ensure no scroll bars */
+      .map-container { height: 100%; width: 100%; display: flex; flex-direction: column; }
+      .map-title { font-size: 24px; font-weight: bold; text-align: center; margin: 10px 0 5px; }
+      .map-subtitle { font-size: 18px; color: gray; text-align: center; margin-bottom: 10px; }
+      .map-caption { font-size: 14px; text-align: center; margin-top: 10px; color: darkslategray; }
+      #map { flex-grow: 1; } /* Make the map fill remaining space */
+    "))
+  ),
+  tags$body(
+    div(class = "map-container",
+        div(class = "map-title", "Disappeared Mills in the Netherlands"),
+        div(class = "map-subtitle", "A geospatial visualization of historical mill locations"),
+        div(id = "map", leaflet_map),  # Map div
+        div(class = "map-caption", "Source: Dutch Heritage Dataset | Created by Your Name")
+    )
   )
-
-
-# Display the map
-leaflet_map
-
+)
 
 # Save the map as an HTML file
-library(htmlwidgets)
-saveWidget(leaflet_map, "23-Memory/outputs/Disappeared Mills.html")
+# saveWidget(leaflet_map, "23-Memory/outputs/Disappeared Mills.html" , selfcontained = TRUE)
 
-
+# Save the map with titles and caption
+save_html(leaflet_map, "23-Memory/outputs/Disappeared_Mills_with_Titles.html")
 
 # 03 : Heat map of Disappeared mills  -----------------------------------------
 
