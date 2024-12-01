@@ -1,6 +1,6 @@
 
 
-# 0:  Necessary Packages -------------------------------------------------------
+# 0 :  Necessary Packages -------------------------------------------------------
 
 # List of required packages
 required_packages <- c("ggspatial", "ggplot2", "sf", "tmap", "here", "magick",
@@ -35,7 +35,7 @@ library(webshot)       # For saving wordcloud2 as an image
 library(png)           # For reading PNG images
 
 
-#  00: Load Spatial Data ---------------------------
+#  00 : Load Spatial Data ---------------------------
 
 #  Disappeared (water and polder) mills shape file path
 disappeared_mills <- here("23-Memory", "data", "shp", "verdwenenmolens.shp")  
@@ -74,7 +74,7 @@ nl_stats_border <- nl_stats_border %>%
     y = st_coordinates(st_centroid(geometry))[, 2]
   )
 
-#  000: Data Inspection and exploration ----------------------------------------
+#  000 : Data Inspection --------------------------------------------------------
 
 # Inspect first few rows of each data set
 head(mills)
@@ -152,7 +152,7 @@ full_map <- full_map +
 print(full_map)
 
 
-#  01 : Map of Existing and  Disappeared Mills  -------------------------------
+#  01 : Map of Existing and Disappeared Mills  -------------------------------
 
 #  +-+-+-+-+-+-+-+-+ +-+-+-+ +-+-+-+-+-+-+-+-+-+-+-+ +-+-+-+-+-+
 #  |E|x|i|s|t|i|n|g| |a|n|d| |D|i|s|a|p|p|e|a|r|e|d| |M|i|l|l|s|
@@ -762,7 +762,7 @@ animated_map_output <- animate(
 anim_save("/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/mills_timeline.mp4", animated_map_output)
 
 
-# 06 : Function of Existing Mills --------------------------
+# 06 : Word Cloud Map of Existing Mills' Function ------------------------------
 # بیان مسئله باید عوض شود ...می خواهیم لیبلگذاری کنیم با این شرط که عناوین مشابه اجماع شوند و سایزوشن بزرگتر شود
 # Ensure your dataset (mills) is loaded as an sf object and projected correctly
 mills <- st_transform(mills, crs = 3857)  # Transform to a projected CRS for spatial visualization
@@ -894,7 +894,7 @@ ggsave("Mills WordCloud .jpg", plot = wordcloud_map,
        width = 8.27, height = 12, dpi = 600, 
        path = "/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/")
 
-# 07  : existing mill on DSM  --------------------------
+# 07  : 3D Map of Existing Mills on DSM  ---------------------------------------
 
 library(terra)
 library(sf)
