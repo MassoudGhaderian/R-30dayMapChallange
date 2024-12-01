@@ -99,6 +99,26 @@ cat("Total existing mills:", num_existing_mills, "\n")
 num_other_mills <- nrow(other_mills)
 cat("Total other mills:", num_other_mills, "\n")
 
+# List all spatial datasets
+spatial_data <- list(
+  "North Sea" = north_sea,
+  "GR Border" = gr_border,
+  "BL Border" = bl_border,
+  "NL Border" = nl_border,
+  "NL Provinces" = nl_stats_border,
+  "NL Cities" = nl_cities_border,
+  "Surface Water" = oppervlaktewater,
+  "Populated Places" = nl_populated_palces,
+  "Existing Mills" = mills,
+  "Disappeared Mills" = ex_mills,
+  "Other Mills" = other_mills
+)
+
+# Check and print the CRS for each dataset
+for (name in names(spatial_data)) {
+  crs_name <- st_crs(spatial_data[[name]])$Name
+  cat(name, "Coordinate System:", crs_name, "\n")
+}
 
 # Make ggplot basic map for Overview of Mills data and Key Features
 
@@ -317,9 +337,6 @@ ggsave("Exiting and Disappeared Mills.jpg", plot = final_plot,
 # |I|n|t|e|r|a|c|t|i|v|e| |M|a|p| |o|f| |D|i|s|a|p|p|e|a|r|e|d| |M|i|l|l|s| #
 # +-+-+-+-+-+-+-+-+-+-+-+ +-+-+-+ +-+-+ +-+-+-+-+-+-+-+-+-+-+-+ +-+-+-+-+-+ #
 
-# Load the necessary libraries
-library(leaflet)
-library(sf)
 
 # Load and preprocess shape files for disappeared mills
 ex_mills <- st_read(here(disappeared_mills)) |> 
