@@ -550,7 +550,6 @@ ggsave("Heat Map of  Disappeared Mills.jpg", plot = heatmap_plot,
   
 #Data Preparation 
 head(ex_mills)
-st_crs(ex_mills)
 num_disappeared_mills <- nrow(ex_mills)
 cat("Total disappeared mills:", num_disappeared_mills, "\n")
 
@@ -559,33 +558,6 @@ ex_mills <- ex_mills[ex_mills$verdwenen1 != 0, ] #to reject 0 values
 ex_mills$year <- as.integer(ex_mills$verdwenen1)  #to reject NA and invalid values
 ex_mills$year
 summary(ex_mills$year)
-
-#outliers checking and histogram 
-
-# Boxplot to check for outliers in general
-boxplot(ex_mills$year, main = "Boxplot of Year", ylab = "Year")
-
-# Identify outliers with Z-scores greater than 3 or less than -3
-# Calculate Z-scores
-z_scores <- scale(ex_mills$year)
-outliers_Z <- ex_mills$year[abs(z_scores) > 3]
-outliers_Z
-
-
-# Plot histogram of 'year' and highlight outliers
-hist(ex_mills$year, main = "Histogram of Year and numbers of Disapperance", 
-     xlab = "Year", col = "#fec44f", breaks = 30, 
-     xlim = c(min(ex_mills$year) - 10, max(ex_mills$year) + 10),
-     border = NA)  # Change the border color  
-# Highlight the outliers
-points(outliers_Z, rep(0, length(outliers_Z)), col = "#fec44f", pch = 19)
-
-
-# Plot histogram zoomed in on a specific range
-hist(ex_mills$year, main = "Zoomed-In Histogram", 
-     xlab = "Year", col = "#fec44f", breaks = 30, 
-     xlim = c(1800, 2024),  # Focus on years between 1800 and 2000
-     border = NA)
 
 # Calculate the frequency of each year
 year_freq <- table(ex_mills$year)
@@ -599,16 +571,9 @@ max_years
 sum_freq <- sum(year_freq)
 print(sum_freq)
 
-# Add text annotations to the histogram for the years with maximum frequency
-text(x = as.numeric(max_years), y = max_freq, labels = max_years, 
-     col = "blue", pos = 3, cex = 0.8)  # Add text above the bars
-
 
 # Load necessary libraries
 library(ggplot2)
-
-# Assuming you have a data frame 'ex_mills_data' with columns 'Year' and 'Count'
-# ex_mills_data <- data.frame(Year = c(1850, 1900, 1950, ...), Count = c(1111, 800, 950, ...))
 
 # Create a line chart
 # Aggregate data to count the number of ex-mills per year
