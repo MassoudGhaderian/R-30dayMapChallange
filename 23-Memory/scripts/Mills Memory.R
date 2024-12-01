@@ -6,7 +6,8 @@
 required_packages <- c("ggspatial", "ggplot2", "sf", "tmap", "here", "magick",
                        "grid", "cowplot" , "gganimate","gifski","leaflet",
                        "png","leaflet.extras", "viridis" ,"dplyr","wordcloud2",
-                       "webshot" , "htmltools")
+                       "webshot" , "htmltools" , "rnaturalearthdata" , "grid",
+                       "patchwork")
 
 # Install packages that are not already installed
 for (pkg in required_packages) {
@@ -32,10 +33,13 @@ library(ggplot2)       # For visualization
 library(wordcloud2)    # For word cloud
 library(dplyr)         # For data manipulation
 library(cowplot)       # For combining plots
-library(webshot)       # For saving wordcloud2 as an image
+library(webshot)       # For saving web as an image
 library(png)           # For reading PNG images
 library(htmlwidgets)   # For working with HTML files
 library(htmltools)     # For Tools of  HTML files
+library (rnaturalearthdata)
+library(grid)          # For annotation_custom
+library(patchwork)     # For arranging plots
 
 #  00 : Load Spatial Data ---------------------------
 
@@ -562,20 +566,20 @@ summary(ex_mills$year)
 # Calculate the frequency of each year
 year_freq <- table(ex_mills$year)
 year_freq
-# Find the year(s) with the maximum frequency
+# Find the maximum frequency and  associated  year(s)  
 max_freq <- max(year_freq)
 max_freq
 max_years <- names(year_freq[year_freq == max_freq])
 max_years
-
+# find maximum valid frequency ( not NA or 0 or not mentioned)
 sum_freq <- sum(year_freq)
 print(sum_freq)
 
 
-# Load necessary libraries
-library(ggplot2)
 
-# Create a line chart
+
+## A-Create a line chart-----------------------------------------------------------
+
 # Aggregate data to count the number of ex-mills per year
 ex_mills_data_aggregated <- ex_mills %>%
   group_by(year) %>%
@@ -597,6 +601,214 @@ Line_plot_ex_mills
 # Save the final plot
 ggsave("Lineplot ex_mills.jpg", plot =Line_plot_ex_mills, 
        width = 10, height = 8, dpi = 300, 
+       path = here("23-Memory/outputs"))
+
+
+
+##  B-Disappeared mills between 1800 and 2024 -------------------------------------
+
+
+# Filter dataset for mills disappeared between 1800 and 2024
+ex_mills_filtered <- ex_mills %>%
+  filter(year >= 1800 & year <= 2024)
+
+# Check if data contains latitude and longitude columns
+head(ex_mills_filtered)
+
+# Convert data to an sf object
+ex_mills_sf <- st_as_sf(ex_mills_filtered, coords = c("longitude", "latitude"), crs = 4326)
+
+# Load a basemap for the Netherlands
+# For simplicity, we will use a freely available shapefile or world map and crop to the Netherlands' bounding box.
+netherlands_map <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf") %>%
+  filter(admin == "Netherlands")
+
+# Create the map
+Map_plot_ex_mills <- ggplot() +
+  geom_sf(data = netherlands_map, fill = "#f7f7f7", color = "#cccccc", size = 0.3) +  # Basemap
+  geom_sf(data = ex_mills_sf, aes(color = year), size = 2, alpha = 0.7) +  # Mills points
+  scale_color_viridis_c(option = "plasma", name = "Year") +  # Color scale for years
+  labs(
+    title = "▪ Disappeared Mills (1800-2024)",
+    subtitle = "▪ Locations of disappeared mills in the Netherlands",
+    caption = "▪ Data Source: www.molendatabase.org | Map visualization by Massoud Ghaderian | R Studio | 2024"
+  ) +
+  # Set the map extent to the bounding box
+  coord_sf(xlim = c(bbox["xmin"], bbox["xmax"]), 
+           ylim = c(bbox["ymin"], bbox["ymax"])) +
+  theme_minimal() +
+  theme(
+    legend.position = "right",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+
+# Print the map
+Map_plot_ex_mills
+
+# Save the map
+ggsave("Map_plot_ex_mills(1800-2024).jpg", plot = Map_plot_ex_mills, 
+       width = 12, height = 10, dpi = 300, 
+       path = here("23-Memory/outputs"))
+
+##  C-Combine ------------------------------------------------------------
+
+
+# Filter dataset for mills disappeared between 1800 and 2024
+ex_mills_filtered <- ex_mills %>%
+  filter(year >= 1800 & year <= 2024)
+
+# Check if data contains latitude and longitude columns
+head(ex_mills_filtered)
+
+# Convert data to an sf object (spatial format)
+ex_mills_sf <- st_as_sf(ex_mills_filtered, coords = c("longitude", "latitude"), crs = 4326)
+
+# Load a basemap for the Netherlands (using rnaturalearth)
+netherlands_map <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf") %>%
+  filter(admin == "Netherlands")
+
+# Create the map plot (foreground)
+Map_plot_ex_mills <- ggplot() +
+  geom_sf(data = netherlands_map, fill = "#f7f7f7", color = "#cccccc", size = 0.3) +  # Basemap
+  geom_sf(data = ex_mills_sf, aes(color = year), size = 2, alpha = 0.7) +  # Mills points
+  scale_color_viridis_c(option = "plasma", name = "Year") +  # Color scale for years
+  labs(
+    title = "▪ Disappeared Mills (1800-2024)",
+    subtitle = "▪ Locations of disappeared mills in the Netherlands",
+    caption = "▪ Data Source: www.molendatabase.org | Map visualization by Massoud Ghaderian | R Studio | 2024"
+  ) +
+  # Set the map extent to the bounding box
+  coord_sf(xlim = c(bbox["xmin"], bbox["xmax"]), 
+           ylim = c(bbox["ymin"], bbox["ymax"])) +
+  theme_minimal() +
+  theme(
+    legend.position = "right",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+
+# Create the line plot (background)
+Line_plot_ex_mills <- ggplot(ex_mills_data_aggregated, aes(x = year, y = Count)) +
+  geom_line(color = "gray", size = 1) +  # Line plot
+  geom_point(color = "black", size = 2) +  # Optional: Add points to show data point
+  theme_minimal() +  # Use minimal theme
+  theme(
+    panel.grid = element_blank(),  # Remove gridlines
+    axis.text.y = element_blank(),  # Remove y-axis numbers
+    axis.title.x = element_blank(),  # Remove x-axis label
+    axis.title.y = element_blank()   # Remove y-axis label
+  ) +
+  scale_x_continuous(
+    breaks = c(min(ex_mills_data_aggregated$year), 1800, 2000, max(ex_mills_data_aggregated$year)),  # Set breaks
+    labels = c(min(ex_mills_data_aggregated$year), "1800", "2000", max(ex_mills_data_aggregated$year))  # Set labels
+  )+
+  theme(
+    panel.grid = element_blank(),  # Remove gridlines
+    axis.text.y = element_blank(),  # Remove y-axis numbers
+    axis.title.x = element_blank(),  # Remove x-axis label
+    axis.title.y = element_blank(),  # Remove y-axis label
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)  # Rotate x-axis labels 90 degrees
+  )
+# Save Line plot as a rasterized object
+line_rasterized <- ggplotGrob(Line_plot_ex_mills)
+
+# Combine the map and line plot (line plot in the background)
+combined_plot <- ggplot() +
+  geom_sf(data = netherlands_map, fill = "#f7f7f7", color = "#cccccc", size = 0.3) +  # Map plot
+  geom_sf(data = ex_mills_sf, aes(color = year), size = 2, alpha = 0.7) +  # Mills points
+  scale_color_viridis_c(option = "plasma", name = "Year") +  # Color scale for years
+  annotation_custom(grob = line_rasterized,
+                    xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = Inf )+
+  labs(
+    title = "▪ Disappeared Mills (1800-2024)",
+    subtitle = "▪ Locations of disappeared mills in the Netherlands",
+    caption = "▪ Data Source: www.molendatabase.org | Map visualization by Massoud Ghaderian | R Studio | 2024"
+  ) +
+  theme_minimal() +
+  # Set the map extent to the bounding box
+  coord_sf(xlim = c(bbox["xmin"], bbox["xmax"]), 
+           ylim = c(bbox["ymin"], bbox["ymax"])) +
+  theme(
+    legend.position = "right",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+
+# Print the combined plot
+print(combined_plot)
+
+# Save the combined plot
+ggsave("Combined_plot_ex_mills.jpg", plot = combined_plot, 
+       width = 12, height = 10, dpi = 300, 
+       path = here("23-Memory/outputs"))
+
+##  C-Combine ------------------------------------------------------------
+
+
+
+# Filter dataset for mills disappeared between 1800 and 2024
+ex_mills_filtered <- ex_mills %>%
+  filter(year >= 1800 & year <= 2024)
+
+# Convert data to an sf object (spatial format)
+ex_mills_sf <- st_as_sf(ex_mills_filtered, coords = c("longitude", "latitude"), crs = 4326)
+
+# Load a basemap for the Netherlands (using rnaturalearth)
+netherlands_map <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf") %>%
+  filter(admin == "Netherlands")
+
+# Create the map plot (foreground)
+Map_plot_ex_mills <- ggplot() +
+  geom_sf(data = netherlands_map, fill = "#f7f7f7", color = "#cccccc", size = 0.3) +  # Basemap
+  geom_sf(data = ex_mills_sf, aes(color = year), size = 2, alpha = 0.7) +  # Mills points
+  scale_color_viridis_c(option = "plasma", name = "Year") +  # Color scale for years
+  labs(
+    title = "▪ Disappeared Mills (1800-2024)",
+    subtitle = "▪ Locations of disappeared mills in the Netherlands",
+  ) +
+  # Set the map extent to the bounding box
+  coord_sf(xlim = c(bbox["xmin"], bbox["xmax"]), 
+           ylim = c(bbox["ymin"], bbox["ymax"])) +
+  theme_minimal() +
+  theme(
+    legend.position = "right",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(hjust = 0),  # Left-align title
+    plot.subtitle = element_text(hjust = 0),  # Left-align subtitle
+    plot.caption = element_text(hjust = 0)  # Left-align caption
+  )
+
+# Create the line plot (background)
+Line_plot_ex_mills <- ggplot(ex_mills_data_aggregated, aes(x = year, y = Count)) +
+  geom_line(color = "#fec44f", size = 1) +  # Line plot
+  geom_point(color = "red", size = 2) +  # Optional: Add points to show data points
+  labs(
+    title = "▪ Mills' Memory",
+    subtitle = "▪ Timeline of Disappeared Mills in Netherlands",
+    caption = "▪ Data Source: www.molendatabase.org | Map visualization by Massoud Ghaderian | R Studio | 2024 ",
+    x = NULL,  # Remove x-axis label
+    y = NULL  # Remove y-axis label
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0),  # Left-align title
+    plot.subtitle = element_text(hjust = 0),  # Left-align subtitle
+    plot.caption = element_text(hjust = 0)  # Left-align caption
+  )
+
+# Use patchwork to combine the map and line plot
+combined_plot <- Map_plot_ex_mills + 
+  Line_plot_ex_mills + 
+  plot_layout(ncol = 1, heights = c(3, 1))  # Place line plot below the map plot
+
+# Print the combined plot
+print(combined_plot)
+
+# Save the combined plot
+ggsave("Combined_plot_ex_mills_left_aligned.jpg", plot = combined_plot, 
+       width = 12, height = 10, dpi = 300, 
        path = here("23-Memory/outputs"))
 
 
