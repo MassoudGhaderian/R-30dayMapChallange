@@ -13,6 +13,7 @@ for (pkg in required_packages) {
     install.packages(pkg)
   }
 }
+
 # Load required libraries
 library(ggplot2)       # For creating plots
 library(sf)            # For working with spatial data
@@ -36,24 +37,23 @@ library(png)        # For reading PNG images
 
 # SECTION 00: Load Spatial Data ---------------------------
 
-
 #  Disappeared (water and polder) mills shape file path
 disappeared_mills <- here("23-Memory", "data", "shp", "verdwenenmolens.shp")  
 #  Existing (water and Polder) mills shape file  path
 existing_mills <- here("23-Memory", "data", "shp", "Molens.shp")  
-#  Existing (water and Polder) mills shape file path
+#  other types of mills shape file path
 other_mills <- here("23-Memory", "data", "shp", "weidemolens en windmotoren.shp") 
 
 # Read shape files for various spatial features
 north_sea <- st_read(here("23-Memory", "data", "shp", "NorthSea.shp"))
-# Netherlands, Germany and Belgium border shape file reading
+# Netherlands, Germany and Belgium border shape file path
 gr_border <- st_read(here("23-Memory", "data", "shp", "GR.shp"))
 bl_border <- st_read(here("23-Memory", "data", "shp", "BG.shp"))
 nl_border <- st_read(here("23-Memory", "data", "shp", "gadm41_NLD_0.shp"))
-#border of stats and cities in Netherlands shape file reading
+#border of provinces and cities in Netherlands shape file path
 nl_stats_border <- st_read(here("23-Memory", "data", "shp", "gadm41_NLD_1.shp"))
 nl_cities_border <- st_read(here("23-Memory", "data", "shp", "gadm41_NLD_2.shp"))
-#Surface water and Populated places shape file in Netherlands shape file reading
+#Surface water and Populated places  in Netherlands shape file path
 oppervlaktewater <- st_read(here("23-Memory", "data", "shp", "oppervlaktewater.shp"))
 nl_populated_palces <- st_read(here("23-Memory", "data", "shp", "populated_places.shp"))
 
@@ -63,18 +63,18 @@ ex_mills <- st_read(here(disappeared_mills)) |>
   st_transform(crs = st_crs(nl_border)) |> 
   st_crop(sf::st_bbox(nl_border))  # Crop to Netherlands' bounding box
 
-# Load existing mills shapefile
+# Load existing mills shape file
 mills <- st_read(existing_mills)
 other_mills <- st_read(other_mills)
 
-# Calculate centroids for the borders for labling and other..
+# Calculate centroids for the borders for labling and other usages ..
 nl_stats_border <- nl_stats_border %>%
   mutate(
     x = st_coordinates(st_centroid(geometry))[, 1],
     y = st_coordinates(st_centroid(geometry))[, 2]
   )
 
-# SECTION 000: Data Inspection ----------------------------------------------
+# SECTION 000: Data Inspection and exploring ----------------------------------------------
 
 # Inspect first few rows of each data set
 head(mills)
@@ -83,6 +83,8 @@ head(other_mills)
 
 print(nl_populated_palces)
 head(nl_stats_border)
+head(gr_border)
+head(north_sea)
 
 # Summarize datasets
 summary(mills)
@@ -97,15 +99,61 @@ cat("Total existing mills:", num_existing_mills, "\n")
 num_other_mills <- nrow(other_mills)
 cat("Total other mills:", num_other_mills, "\n")
 
-bbox <- st_bbox(nl_border)
-bbox
-# make ggpolot balck and waht just to check data ...
 
-# SECTION 1: Existing and  Disappeared Mills Maps ---------------------------------------------
+# make ggplot basic map for Overview of Mills data and Key Features
 
 # Get the bounding box of the Netherlands shape file
+bbox <- st_bbox(nl_border)
+bbox
+# Create a data frame for external region labels
+external_labels <- data.frame(
+  name = c("North Sea", "Germany", "Belgium"),
+  x = c(4.0, 7.0, 5),  # Approximate longitude for labels
+  y = c(53.5, 51.5, 51) # Approximate latitude for labels
+)
+# Define a base map with Netherlands' border and North Sea
+base_map <- ggplot() +
+  geom_sf(data = north_sea, fill = "darkgrey", color = "black", lwd = 0.5) + # North Sea
+  geom_sf(data = nl_border, fill = "white", color = "black", lwd = 0.5) + # Netherlands' border
+  geom_sf(data = gr_border, fill = "lightgrey", color = "black", lwd = 0.5) + # Germany' border
+  geom_sf(data = bl_border, fill = "lightgrey", color = "black", lwd = 0.5) + # Belgium' border
+  theme_minimal() +
+  labs(title = "Overview of Mills data and Key Features for data check")
+# Add other spatial features to the map
+full_map <- base_map +
+  geom_sf(data = nl_stats_border, color = "black", fill = NA, linetype = "dotted") + # Province borders
+  geom_sf(data = nl_cities_border, color = "black", fill = NA, linetype = "dashed") + # City borders
+  geom_sf(data = oppervlaktewater, color = "blue", fill = NA, lwd = 0.3) + # Surface water
+  geom_sf(data = other_mills, color = "lightgray", size = 0.8, shape = 17) + # Other mills
+  geom_sf(data = ex_mills, color = "gray", size = 0.8, shape = 15) + # Disappeared mills
+  geom_sf(data = mills, color = "black", size = 0.8) + # Existing mills
+  geom_sf(data = nl_populated_palces, color = "red", size = 3) + # Populated places
+  coord_sf(xlim = c(bbox["xmin"], bbox["xmax"]), 
+           ylim = c(bbox["ymin"], bbox["ymax"]))  # Crop to Netherlands' bounding box
+# Add centroids for labeling
+full_map <- full_map +
+  geom_text(data = nl_stats_border, aes(x = x, y = y, label = NAME_1), 
+            color = "black", size = 3, check_overlap = TRUE)
+# Add external region labels
+full_map <- full_map +
+  geom_text(data = external_labels, aes(x = x, y = y, label = name), 
+            color = "darkblue", size = 4, fontface = "italic")
+
+# Plot the first map to check data 
+print(full_map)
 
 
+# SECTION 1: Existing and  Disappeared Mills ---------------------------------------------
+
+#  +-+-+-+-+-+-+-+-+ +-+-+-+ +-+-+-+-+-+-+-+-+-+-+-+ +-+-+-+-+-+
+#  |E|x|i|s|t|i|n|g| |a|n|d| |D|i|s|a|p|p|e|a|r|e|d| |M|i|l|l|s|
+#  +-+-+-+-+-+-+-+-+ +-+-+-+ +-+-+-+-+-+-+-+-+-+-+-+ +-+-+-+-+-+
+
+
+#   ^   ^   ^   ^   ^   ^   ^   ^       ^   ^   ^         ^   ^   ^   ^   ^   ^   ^   ^   ^   ^   ^       ^   ^   ^   ^   ^  
+#     /E\ /x\ /i\ /s\ /t\ /i\ /n\ /g\     /a\ /n\ /d\       /D\ /i\ /s\ /a\ /p\ /p\ /e\ /a\ /r\ /e\ /d\     /M\ /i\ /l\ /l\ /s\ 
+#   <___X___X___X___X___X___X___X___>   <___X___X___>     <___X___X___X___X___X___X___X___X___X___X___>   <___X___X___X___X___>
+  
 main_plot <- ggplot() +
   # Add geographic background features
   geom_sf(data = north_sea, fill = "lightblue", color = NA, alpha = 0.5) + # North Sea
@@ -120,20 +168,7 @@ main_plot <- ggplot() +
   geom_sf(data = mills, aes(color = "Existing Mills"), size = 0.5) +        # Existing mills
   # Add populated cities 
   geom_sf(data = nl_populated_palces, aes(shape = "circle"), size = 2, show.legend = FALSE) +
-  # geom_text(data = nl_populated_palces,                     #white laabeling
-  #           aes(x = st_coordinates(geometry)[, 1], 
-  #               y = st_coordinates(geometry)[, 2], 
-  #               label = name),
-  #           size = 3.5,  # Adjust size of halo text
-  #           color = "white",  # Halo color
-  #           fontface = "bold", 
-  #           nudge_y = 0.05,  # Adjust vertical position
-  #           nudge_x = 0, 
-  #           check_overlap = TRUE,
-  #           family = "sans",
-  #           alpha = 0.7) +  # Slight transparency for halo effect
-  
-  # Add main text labels (smaller, black text on top)       #dark labaling
+  # Add main text labels (smaller, black text on top)       
   geom_text(data = nl_populated_palces, 
             aes(x = st_coordinates(geometry)[, 1], 
                 y = st_coordinates(geometry)[, 2], 
@@ -144,6 +179,8 @@ main_plot <- ggplot() +
             nudge_y = 0.05,  # Adjust vertical position
             nudge_x = 0, 
             check_overlap = FALSE) +  # Prevent overlap of labels
+  geom_text(data = external_labels, aes(x = x, y = y, label = name), 
+            color = "darkgray", size = 3, fontface = "bold.italic")+
   # Customize color legend for mills
   scale_color_manual(
     name = "▪ Legend",  # Legend title
@@ -162,7 +199,7 @@ main_plot <- ggplot() +
   # Add title, subtitle, and captions
   labs(
     title = "▪ Mills' Memory",
-    subtitle = "▪ Existing and Disappeared Mills in Netherlands",
+    subtitle = "▪ Existing and Disappeared Mills in the Netherlands",
     caption = "▪ Data Source: www.molendatabase.org | Map visualization by Massoud Ghaderian | R Studio | 2024",
     x = NULL,  # Remove x-axis label
     y = NULL   # Remove y-axis label
