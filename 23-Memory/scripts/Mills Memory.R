@@ -152,12 +152,12 @@ full_map <- full_map +
 print(full_map)
 
 
-#  01 : Map of Existing and Disappeared Mills  -------------------------------
+#  01 : Map of Existing and Disappeared Mills  ---------------------------------
 
-#  +-+-+-+-+-+-+-+-+ +-+-+-+ +-+-+-+-+-+-+-+-+-+-+-+ +-+-+-+-+-+
-#  |E|x|i|s|t|i|n|g| |a|n|d| |D|i|s|a|p|p|e|a|r|e|d| |M|i|l|l|s|
-#  +-+-+-+-+-+-+-+-+ +-+-+-+ +-+-+-+-+-+-+-+-+-+-+-+ +-+-+-+-+-+
-
+# +-+-+-+ +-+-+ +-+-+-+-+-+-+-+-+ +-+-+-+ +-+-+-+-+-+-+-+-+-+-+-+ +-+-+-+-+-+ #
+# |M|a|p| |o|f| |E|x|i|s|t|i|n|g| |a|n|d| |D|i|s|a|p|p|e|a|r|e|d| |M|i|l|l|s| #
+# +-+-+-+ +-+-+ +-+-+-+-+-+-+-+-+ +-+-+-+ +-+-+-+-+-+-+-+-+-+-+-+ +-+-+-+-+-+ #
+  
 main_plot <- ggplot() +
   # Add geographic background features
   geom_sf(data = north_sea,
@@ -213,8 +213,8 @@ main_plot <- ggplot() +
     title = "▪ Mills' Memory",
     subtitle = "▪ Existing and Disappeared Mills in the Netherlands",
     caption = 
-    "▪ Data Source: www.molendatabase.nl | www.molendatabase.net
-▪ Map visualization by Massoud Ghaderian | R Studio | 2024",
+    "▪ Data : www.molendatabase.nl  |  www.molendatabase.net
+▪ Map visualization : Massoud Ghaderian | R Studio | 2024",
     x = NULL,  # Remove x-axis label
     y = NULL   # Remove y-axis label
   ) +
@@ -311,7 +311,11 @@ ggsave("Exiting and Disappeared Mills.jpg", plot = final_plot,
 
 
 
-# 02 : Interactive Map of Disappeared Mills --------------------------
+# 02 : Interactive Map of Disappeared Mills ------------------------------------
+
+# +-+-+-+-+-+-+-+-+-+-+-+ +-+-+-+ +-+-+ +-+-+-+-+-+-+-+-+-+-+-+ +-+-+-+-+-+ #
+# |I|n|t|e|r|a|c|t|i|v|e| |M|a|p| |o|f| |D|i|s|a|p|p|e|a|r|e|d| |M|i|l|l|s| #
+# +-+-+-+-+-+-+-+-+-+-+-+ +-+-+-+ +-+-+ +-+-+-+-+-+-+-+-+-+-+-+ +-+-+-+-+-+ #
 
 # Load the necessary libraries
 library(leaflet)
@@ -362,11 +366,14 @@ saveWidget(leaflet_map, "23-Memory/outputs/Disappeared Mills.html")
 
 # 03 : Heat map of Disappeared mills  -----------------------------------------
 
+   #    +-+-+-+-+ +-+-+-+ +-+-+ +-+-+-+-+-+-+-+-+-+-+-+ +-+-+-+-+-+   #
+   #    |H|e|a|t| |m|a|p| |o|f| |D|i|s|a|p|p|e|a|r|e|d| |m|i|l|l|s|   #
+   #    +-+-+-+-+ +-+-+-+ +-+-+ +-+-+-+-+-+-+-+-+-+-+-+ +-+-+-+-+-+   #
+  
 # Make sure it is projected for spatial analysis (e.g., EPSG: 3857 for meters)
 ex_mills <- st_transform(ex_mills, crs = 3857) 
 
 # Load the Netherlands border shapefile
-# Replace "path_to_netherlands_shapefile" with the actual path to your shapefile
 netherlands_border <- st_read("23-Memory/data/shp/gadm41_NLD_0.shp")
 netherlands_border <- st_transform(netherlands_border, crs = 3857)
 
@@ -378,7 +385,8 @@ mills_df <- data.frame(x = mills_coords[, 1], y = mills_coords[, 2])
 # Create the heat map with the Netherlands border
 heatmap_plot <- ggplot() +
   # Add the heat map
-  stat_density_2d(data = mills_df, aes(x = x, y = y, fill = ..density..), geom = "raster", contour = FALSE,alpha = .8) +
+  stat_density_2d(data = mills_df, aes(
+    x = x, y = y, fill = ..density..), geom = "raster", contour = FALSE,alpha = .8) +
   scale_fill_viridis(option = "magma", name = "Density") +  # Use a magma color palette
   # Add the  border of Netherlands and Province
   geom_sf(data = netherlands_border, fill = NA, color = NA, size = 0.5) +
@@ -489,6 +497,10 @@ ggsave("Heat Map of  Disappeared Mills.jpg", plot = heatmap_plot,
 
 # 04 : Histogram of Disappearance Years ----------------------------------------
 
+#    +-+-+-+-+-+-+-+-+-+ +-+-+ +-+-+-+-+-+-+-+-+-+-+-+-+-+ +-+-+-+-+-+   #
+#    |H|i|s|t|o|g|r|a|m| |o|f| |D|i|s|a|p|p|e|a|r|a|n|c|e| |Y|e|a|r|s|   #
+#    +-+-+-+-+-+-+-+-+-+ +-+-+ +-+-+-+-+-+-+-+-+-+-+-+-+-+ +-+-+-+-+-+   #
+  
 #Data Preparation 
 head(ex_mills)
 st_crs(ex_mills)
@@ -578,6 +590,10 @@ ggsave("Lineplot ex_mills.jpg", plot =Line_plot_ex_mills,
 
 # 05 : Animation of  Disappearance Years  --------------------------------------
 
+  #   +-+-+-+-+-+-+-+-+-+ +-+-+ +-+-+-+-+-+-+-+-+-+-+-+-+-+ +-+-+-+-+-+   #
+  #   |A|n|i|m|a|t|i|o|n| |o|f| |D|i|s|a|p|p|e|a|r|a|n|c|e| |Y|e|a|r|s|   #
+  #   +-+-+-+-+-+-+-+-+-+ +-+-+ +-+-+-+-+-+-+-+-+-+-+-+-+-+ +-+-+-+-+-+   #
+  
 # Base plot setup (no animation yet)
 base_map <- ggplot() +
   # Netherlands national border (dark mode)
@@ -763,6 +779,12 @@ anim_save("/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/mills_timeline.mp
 
 
 # 06 : Word Cloud Map of Existing Mills' Function ------------------------------
+
+   # +-+-+-+-+ +-+-+-+-+-+ +-+-+-+ +-+-+ +-+-+-+-+-+-+ +-+-+-+-+-+-+-+-+ #
+   # |W|o|r|d| |C|l|o|u|d| |M|a|p| |o|f| |M|i|l|l|s|'| |F|u|n|c|t|i|o|n| #
+   # +-+-+-+-+ +-+-+-+-+-+ +-+-+-+ +-+-+ +-+-+-+-+-+-+ +-+-+-+-+-+-+-+-+ #
+
+
 # بیان مسئله باید عوض شود ...می خواهیم لیبلگذاری کنیم با این شرط که عناوین مشابه اجماع شوند و سایزوشن بزرگتر شود
 # Ensure your dataset (mills) is loaded as an sf object and projected correctly
 mills <- st_transform(mills, crs = 3857)  # Transform to a projected CRS for spatial visualization
@@ -896,6 +918,10 @@ ggsave("Mills WordCloud .jpg", plot = wordcloud_map,
 
 # 07  : 3D Map of Existing Mills on DSM  ---------------------------------------
 
+  #    +-+-+ +-+-+-+ +-+-+ +-+-+-+-+-+-+-+-+ +-+-+-+-+-+ +-+-+ +-+-+-+   #
+  #    |3|D| |M|a|p| |o|f| |E|x|i|s|t|i|n|g| |M|i|l|l|s| |o|n| |D|S|M|   #
+  #    +-+-+ +-+-+-+ +-+-+ +-+-+-+-+-+-+-+-+ +-+-+-+-+-+ +-+-+ +-+-+-+   #
+  
 library(terra)
 library(sf)
 library(rayshader)
