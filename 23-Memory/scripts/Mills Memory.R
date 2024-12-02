@@ -651,18 +651,16 @@ ggsave("Map_plot_ex_mills(1800-2024).jpg", plot = Map_plot_ex_mills,
        width = 12, height = 10, dpi = 300, 
        path = here("23-Memory/outputs"))
 
-##  C-Combine ------------------------------------------------------------
+##  C-Combine 1 ------------------------------------------------------------
 
 
 # Filter dataset for mills disappeared between 1800 and 2024
 ex_mills_filtered <- ex_mills %>%
   filter(year >= 1800 & year <= 2024)
-
-# Check if data contains latitude and longitude columns
 head(ex_mills_filtered)
-
 # Convert data to an sf object (spatial format)
-ex_mills_sf <- st_as_sf(ex_mills_filtered, coords = c("longitude", "latitude"), crs = 4326)
+ex_mills_sf <- st_as_sf(ex_mills_filtered, coords =
+                          c("longitude", "latitude"), crs = 4326)
 
 # Load a basemap for the Netherlands (using rnaturalearth)
 netherlands_map <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf") %>%
@@ -670,14 +668,9 @@ netherlands_map <- rnaturalearth::ne_countries(scale = "medium", returnclass = "
 
 # Create the map plot (foreground)
 Map_plot_ex_mills <- ggplot() +
-  geom_sf(data = netherlands_map, fill = "#f7f7f7", color = "#cccccc", size = 0.3) +  # Basemap
+  geom_sf(data = netherlands_map, fill = "#f7f7f7", color = "black", size = 1) +  # Basemap
   geom_sf(data = ex_mills_sf, aes(color = year), size = 2, alpha = 0.7) +  # Mills points
   scale_color_viridis_c(option = "plasma", name = "Year") +  # Color scale for years
-  labs(
-    title = "▪ Disappeared Mills (1800-2024)",
-    subtitle = "▪ Locations of disappeared mills in the Netherlands",
-    caption = "▪ Data Source: www.molendatabase.org | Map visualization by Massoud Ghaderian | R Studio | 2024"
-  ) +
   # Set the map extent to the bounding box
   coord_sf(xlim = c(bbox["xmin"], bbox["xmax"]), 
            ylim = c(bbox["ymin"], bbox["ymax"])) +
@@ -693,22 +686,16 @@ Line_plot_ex_mills <- ggplot(ex_mills_data_aggregated, aes(x = year, y = Count))
   geom_line(color = "gray", size = 1) +  # Line plot
   geom_point(color = "black", size = 2) +  # Optional: Add points to show data point
   theme_minimal() +  # Use minimal theme
-  theme(
-    panel.grid = element_blank(),  # Remove gridlines
-    axis.text.y = element_blank(),  # Remove y-axis numbers
-    axis.title.x = element_blank(),  # Remove x-axis label
-    axis.title.y = element_blank()   # Remove y-axis label
-  ) +
   scale_x_continuous(
-    breaks = c(min(ex_mills_data_aggregated$year), 1800, 2000, max(ex_mills_data_aggregated$year)),  # Set breaks
-    labels = c(min(ex_mills_data_aggregated$year), "1800", "2000", max(ex_mills_data_aggregated$year))  # Set labels
+    breaks = c(min(ex_mills_data_aggregated$year), 1800, 2000, 2020),  # Set breaks
+    labels = c(min(ex_mills_data_aggregated$year), "1800", "2000", 2020)  # Set labels
   )+
   theme(
     panel.grid = element_blank(),  # Remove gridlines
     axis.text.y = element_blank(),  # Remove y-axis numbers
     axis.title.x = element_blank(),  # Remove x-axis label
     axis.title.y = element_blank(),  # Remove y-axis label
-    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)  # Rotate x-axis labels 90 degrees
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)  
   )
 # Save Line plot as a rasterized object
 line_rasterized <- ggplotGrob(Line_plot_ex_mills)
@@ -725,14 +712,84 @@ combined_plot <- ggplot() +
     subtitle = "▪ Locations of disappeared mills in the Netherlands",
     caption = "▪ Data Source: www.molendatabase.org | Map visualization by Massoud Ghaderian | R Studio | 2024"
   ) +
+  # Add title, subtitle, and captions
+  labs(
+    title = "▪ Mills' Memory",
+    subtitle = "▪ Locations/TimeNumber of disappeared mills in the Netherlands (1800-2024)",
+    caption = "▪ Data : www.molendatabase.nl  |  www.molendatabase.net
+▪ Map visualization : Massoud Ghaderian | R Studio | 2024",
+    x = NULL,  # Remove x-axis label
+    y = NULL   # Remove y-axis label
+  ) +
   theme_minimal() +
   # Set the map extent to the bounding box
   coord_sf(xlim = c(bbox["xmin"], bbox["xmax"]), 
            ylim = c(bbox["ymin"], bbox["ymax"])) +
   theme(
-    legend.position = "right",
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank()
+    #Plot Elements
+    plot.title = element_text(hjust = -0.01, size = 18, face = "bold",
+                              margin = margin(b = 0)),
+    plot.subtitle = element_text(hjust = -0.01, size = 14,
+                                 margin = margin(t = 0, b=8)),
+    plot.caption = element_text(hjust = -0.01, size = 10, face = "italic", 
+                                margin = margin(t = 15)),
+    plot.margin = margin(t = 30, r = 20, b = 50, l = 20),
+    
+    #Legend settings
+    # legend.position = c(0.95, 0.05),  # x and y position (percent of plot)
+    legend.justification = c("right", "bottom"),  # legend's bottom-right corner
+    # legend.box.margin = margin(5, 5, 5, 5),  # Add some space around the legend
+    legend.background = element_rect(fill = "white", color = "white", size = 0.5), 
+    legend.text = element_text(size = 10),  # Increase size 
+    legend.title = element_text(size = 12),  # Increase legend title size
+    legend.spacing.y = unit(1, "cm"),  # Adjust vertical spacing
+    
+    # Customizing  grid lines (for finer latitude and longitude)
+    panel.grid.major = element_line(color = "lightgray", size = 0.5),
+    # Major grid lines: gray color, thickness 0.
+    panel.grid.minor = element_line(color = "lightgray", size = 0.5), 
+    # Minor grid lines: light gray, thinner
+    
+    # Ticks for axis (optional)
+    axis.ticks.x = element_line(color = "darkgray", size = 1),  # Ticks for top
+    axis.ticks.y = element_line(color = "darkgray", size = 1),  # Ticks for right
+    
+    # change axis labels style
+    axis.text = element_text(
+      size = 7,  # Change font size of numbers
+      color = "darkgray",  # Change font color
+      face = "italic",  # Make numbers bold (optional)
+      family = "sans"  # Set font family (optional)
+    ),
+    # Moving axis labels inside the plot
+    axis.text.x = element_text(# Move x-axis labels to the right (hjust = 1)
+      size = 5, hjust = 0.5, vjust = 1 ,margin = margin(t = -10),
+    ),
+    axis.text.y = element_text(# Move y-axis labels up (vjust = 1.5)
+      size = 5, hjust = 0.5, vjust =0.5,margin = margin(r = -20),
+    ),
+  ) +
+  # Add a north arrow
+  annotation_north_arrow(
+    location = "bl", # Position: 'tl' = top-left, 'tr' = top-right, etc.
+    which_north = "true", # "true" for true north, "grid" for grid north
+    style = north_arrow_fancy_orienteering(# Choose a style for the north arrow
+      fill = c("white", "white"), line_col = "black"),
+    
+    height = unit(1, "cm"),  # Adjust size
+    width = unit(1, "cm"),
+    pad_x = unit(2.5, "cm"),# Horizontal padding
+    pad_y = unit(1, "cm")  # Vertical padding# Adjust size
+  ) +
+  # Add a scale bar
+  annotation_scale(
+    location = "bl", # Position: 'bl' = bottom-left
+    width_hint = 0.2, # Adjust the width relative to the map
+    line_width = 1,
+    height = unit(0.1, "cm"), # Adjust the height of the scale bar
+    pad_x = unit(1.7, "cm"),
+    pad_y = unit(.75, "cm"),
+    bar_cols = c("white", "white")
   )
 
 # Print the combined plot
@@ -740,10 +797,10 @@ print(combined_plot)
 
 # Save the combined plot
 ggsave("Combined_plot_ex_mills.jpg", plot = combined_plot, 
-       width = 12, height = 10, dpi = 300, 
+       width = 8 , height = 10, dpi = 300, 
        path = here("23-Memory/outputs"))
 
-##  C-Combine ------------------------------------------------------------
+##  C-Combine3 ------------------------------------------------------------
 
 
 
