@@ -1,0 +1,43 @@
+name: Sync Folder to New Repo
+
+on:
+  push:
+    paths:
+      - '23-Memory/**'
+
+jobs:
+  sync-folder:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the source repository
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Git
+      - name: Set up Git
+        run: |
+          git config --global user.name "MassoudGhaderian"
+          git config --global user.email "massoud.ghaderian@outlook.com"
+        
+      # Step 3: Clone the destination repository
+      - name: Clone the destination repository
+        run: |
+          git clone --depth=1 https://github.com/MassoudGhaderian/Mills-Memory-Water_and_Wind.git new-repo
+          cd new-repo
+
+      # Step 4: Copy the folder to the new repository
+      - name: Copy folder to the new repository
+        run: |
+          rsync -a --delete ../23-Memory/ new-repo/ # Sync folder to the new repo
+          cd new-repo
+
+      # Step 5: Commit and push changes to the new repository
+      - name: Commit and Push Changes
+        run: |
+          cd new-repo
+          git add .
+          git commit -m "Sync 23-Memory folder from R-30dayMapChallange"
+          git push https://github.com/MassoudGhaderian/Mills-Memory-Water_and_Wind.git HEAD:main
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
