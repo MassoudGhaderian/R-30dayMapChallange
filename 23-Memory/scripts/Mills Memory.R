@@ -910,21 +910,27 @@ base_map <- ggplot() +
   theme_minimal() +
   theme(
     #Plot Elements
-    plot.title = element_text(hjust = -0.01, size = 18, face = "bold", margin = margin(b = 0)),
-    plot.subtitle = element_text(hjust = -0.01, size = 14, margin = margin(t = 0)),
-    plot.caption = element_text(hjust = -0.01, size = 10, face = "italic", margin = margin(t = 15)),
+    plot.title = element_text(
+      hjust = -0.01, size = 18, face = "bold", margin = margin(b = 0)),
+    plot.subtitle = element_text(
+      hjust = -0.01, size = 14, margin = margin(t = 0)),
+    plot.caption = element_text(
+      hjust = -0.01, size = 10, face = "italic", margin = margin(t = 15)),
     plot.margin = margin(t = 30, r = 20, b = 50, l = 20),
     
     #Legend settings
     legend.justification = c("right", "bottom"),  # Align legend's bottom-right corner
-    legend.background = element_rect(fill = "white", color = "white", size = 0.5),  # Optional: Add background and border to legend
+    legend.background = element_rect(fill = "white", color = "white", size = 0.5),
+    # Optional: Add background and border to legend
     legend.text = element_text(size = 10),  # Increase size to 10 (adjust as needed)
     legend.title = element_text(size = 12),  # Increase legend title size
     legend.spacing.y = unit(1, "cm"),  # Adjust vertical spacing
     
     # Customizing  grid lines (for finer latitude and longitude)
-    panel.grid.major = element_line(color = "lightgray", size = 0.5),  # Major grid lines: gray color, thickness 0.
+    panel.grid.major = element_line(color = "lightgray", size = 0.5), 
+    # Major grid lines: gray color, thickness 0.
     
+  
     # Ticks for axis (optional)
     axis.ticks.x = element_line(color = "darkgray", size = 1),  # Ticks for top
     axis.ticks.y = element_line(color = "darkgray", size = 1),  # Ticks for right
@@ -938,17 +944,21 @@ base_map <- ggplot() +
     ),
     # Moving axis labels inside the plot
     axis.text.x = element_text(
-      size = 5, hjust = 0.5, vjust = 1 ,margin = margin(t = -10),  # Move x-axis labels to the right (hjust = 1)
+      size = 5, hjust = 0.5, vjust = 1 ,margin = margin(t = -10), 
+      # Move x-axis labels to the right (hjust = 1)
     ),
     axis.text.y = element_text(
-      size = 5, hjust = 0.5, vjust =0.5,margin = margin(r = -20),  # Move y-axis labels up (vjust = 1.5)
+      size = 5, hjust = 0.5, vjust =0.5,margin = margin(r = -20),
+      # Move y-axis labels up (vjust = 1.5)
     ),
   ) +
   # Add a north arrow
   annotation_north_arrow(
     location = "bl", # Position: 'tl' = top-left, 'tr' = top-right, etc.
     which_north = "true", # "true" for true north, "grid" for grid north
-    style = north_arrow_fancy_orienteering(fill = c("white", "white"), line_col = "black"),# Choose a style for the north arrow
+    style = north_arrow_fancy_orienteering(fill = c("white", "white"),
+                                           line_col = "black"),
+    # Choose a style for the north arrow
     height = unit(1, "cm"),  # Adjust size
     width = unit(1, "cm"),
     pad_x = unit(2.8, "cm"),# Horizontal padding
@@ -988,11 +998,16 @@ animated_map_output <- animate(
   fps = 15, 
   duration = 30, 
   res =150,
-  renderer = av_renderer()  # Use av_renderer to create a video
+  # renderer = av_renderer()  # Use av_renderer to create a video
 )
 
+# Optionally, save the animation as a GIF
+anim_save("/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/ex_millsAni.gif"
+          , animated_map_output)
+
 # Optionally, save the animation as an MP4 file
-anim_save("/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/ex_mills timeline Animation1.mp4", animated_map_output)
+anim_save("/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/ex_millsAni.mp4"
+          , animated_map_output)
 
 
 ##  Animation 2 --------------------------------------------
