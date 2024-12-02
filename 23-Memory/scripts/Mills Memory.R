@@ -1021,7 +1021,8 @@ str(ex_mills)
 head(ex_mills)
 ex_mills
 # Create a sequence of years
-years_list <- seq(min(ex_mills$year, na.rm = TRUE), max(ex_mills$year, na.rm = TRUE))
+years_list <- seq(min(ex_mills$year, na.rm = TRUE),
+                  max(ex_mills$year, na.rm = TRUE))
 years_list
 # Expand data for each mill and year
 expanded_data <- expand.grid(mill_id = 1:nrow(ex_mills), year = years_list) %>%
@@ -1036,7 +1037,7 @@ head(expanded_data)
 
 # Base Map Setup
 base_map <- ggplot() +
-  geom_sf(data = nl_border, fill = "black", color = NA, alpha = 0.8) +  # Netherlands border
+  geom_sf(data = nl_border, fill = "black", color = NA, alpha = 0.8) +  
   geom_sf(data = expanded_data %>% filter(visible), 
           aes(geometry = geometry, group = mill_id), 
           size = 0.7, col = "#fec44f") +
@@ -1069,7 +1070,8 @@ animated_map_output <- animate(
   renderer = av_renderer()
 )
 # Save the Animation
-anim_save("/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/mills_timeline.mp4", animated_map_output)
+anim_save("/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/mills_timeline.mp4"
+          , animated_map_output)
 
 
 # 06 : Word Cloud Map of Existing Mills' Function ------------------------------
@@ -1174,10 +1176,12 @@ wordcloud_map <- ggplot() +
     ),
     # Moving axis labels inside the plot
     axis.text.x = element_text(
-      size = 5, hjust = 0.5, vjust = 1 ,margin = margin(t = -10),  # Move x-axis labels to the right (hjust = 1)
+      size = 5, hjust = 0.5, vjust = 1 ,margin = margin(t = -10), 
+      # Move x-axis labels to the right (hjust = 1)
     ),
     axis.text.y = element_text(
-      size = 5, hjust = 0.5, vjust =0.5,margin = margin(r = -20),  # Move y-axis labels up (vjust = 1.5)
+      size = 5, hjust = 0.5, vjust =0.5,margin = margin(r = -20),
+      # Move y-axis labels up (vjust = 1.5)
     ),
   ) +
   # Add a north arrow
@@ -1254,102 +1258,8 @@ points3d(mills_coords[, 1], mills_coords[, 2], col = "blue", size = 5)
 rayshader::render_camera(theta = 45, phi = 30, zoom = 0.8)
 
 
-# 06  : existing mill on DSM  --------------------------
 
-# Load required libraries
-library(leaflet)
-library(sf)
-library(raster)
-
-# Define the WMS URL for DSM
-wms_url <- "https://service.pdok.nl/rws/ahn/wms/v1_0?SERVICE=WMS&request=GetCapabilities&version=1.3.0"
-
-# Load mill locations (replace with your file path)
-mills_shapefile <- st_read("23-Memory/data/shp/Molens.shp")
-
-# Check the structure of the shapefile (optional)
-head(mills_shapefile)
-
-# Transform the CRS to match WGS 84 (EPSG:4326)
-mills_shapefile <- st_transform(mills_shapefile, crs = 4326)
-
-# Verify mill locations by plotting them (optional)
-plot(st_geometry(mills_shapefile))
-
-# Create a leaflet map
-leaflet() %>%
-  # Add WMS basemap for DSM using the defined parameters
-  addWMSTiles(
-    url = wms_url,
-    layers = "ahn3_05m_dsm",   # Ensure this layer name is correct
-    options = WMSTileOptions(
-      format = "image/png", 
-      transparent = TRUE
-    ),
-    # Set bounding box for Netherlands area
-    bbox = c(3.3, 50.8, 7.3, 53.7), # Adjust the bounding box if necessary
-    crs = "EPSG:4326",
-    version = "1.3.0"
-  ) %>%
-  # Add existing mills as points (use the correct CRS)
-  addCircleMarkers(
-    data = mills_shapefile,
-    color = "red",
-    radius = 5,
-    popup = ~NAAM,  # Pop-up with the name of the mill
-    fillOpacity = 0.8
-  ) %>%
-  # Customize map view (adjust zoom level and center to fit your area)
-  setView(lng = 5, lat = 52.3, zoom = 10)  # Centered on the Netherlands
-
-
-
-
-# 06  : existing mill on DSM  --------------------------
-# Load required libraries
-library(leaflet)
-library(sf)
-library(raster)
-
-# Define the WMS URL for DSM
-wms_url <- "https://service.pdok.nl/rws/ahn/wms/v1_0?SERVICE=WMS&request=GetCapabilities&version=1.3.0"
-
-# Load mill locations (replace with your file path)
-mills_shapefile <- st_read("23-Memory/data/shp/Molens.shp")
-
-# Check the structure of the shapefile (optional)
-head(mills_shapefile)
-
-# Transform the CRS to match WGS 84 (EPSG:4326)
-mills_shapefile <- st_transform(mills_shapefile, crs = 4326)
-
-# Verify mill locations by plotting them (optional)
-plot(st_geometry(mills_shapefile))
-
-# Create a leaflet map
-leaflet() %>%
-  # Add WMS basemap for DSM using the defined parameters
-  addWMSTiles(
-    wms_url,
-    layers = "ahn3_05m_dsm",   # Ensure this layer name is correct
-    options = WMSTileOptions(
-      format = "image/png", 
-      transparent = TRUE
-    )
-  ) %>%
-  # Add existing mills as points (use the correct CRS)
-  addCircleMarkers(
-    data = mills_shapefile,
-    color = "red",
-    radius = 5,
-    popup = ~NAAM,  # Pop-up with the name of the mill
-    fillOpacity = 0.8
-  ) %>%
-  # Customize map view (adjust zoom level and center to fit your area)
-  setView(lng = 5, lat = 52.3, zoom = 10)  # Centered on the Netherlands
-
-
-# 06  : existing mill on DSM in amsterdam --------------------------
+# 06  : existing mill on DSM in Amsterdam -------------------------------------
 # Load required libraries
 library(leaflet)
 library(sf)
