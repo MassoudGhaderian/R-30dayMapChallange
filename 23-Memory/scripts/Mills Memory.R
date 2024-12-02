@@ -575,6 +575,10 @@ max_years
 sum_freq <- sum(year_freq)
 print(sum_freq)
 
+# Aggregate data to count the number of ex-mills per year
+ex_mills_data_aggregated <- ex_mills %>%
+  group_by(year) %>%
+  summarise(Count = n())  # Count the number of records per year
 
 ##  Combine 1 ------------------------------------------------------------
 
@@ -981,8 +985,8 @@ animated_map_output <- animate(
   animated_map, 
   width = 800, 
   height = 600, 
-  fps = 30, 
-  duration = 40, 
+  fps = 15, 
+  duration = 30, 
   res =150,
   renderer = av_renderer()  # Use av_renderer to create a video
 )
@@ -1002,11 +1006,10 @@ str(ex_mills)
 head(ex_mills)
 ex_mills
 # Create a sequence of years
-years <- seq(min(ex_mills$year, na.rm = TRUE), max(ex_mills$year, na.rm = TRUE))
-
-years
+years_list <- seq(min(ex_mills$year, na.rm = TRUE), max(ex_mills$year, na.rm = TRUE))
+years_list
 # Expand data for each mill and year
-expanded_data <- expand.grid(mill_id = 1:nrow(ex_mills), year = years) %>%
+expanded_data <- expand.grid(mill_id = 1:nrow(ex_mills), year = years_list) %>%
   left_join(ex_mills %>% mutate(mill_id = row_number()), by = "mill_id") %>%
   mutate(
     year = as.integer(year),  # Explicitly convert 'year' to integer
