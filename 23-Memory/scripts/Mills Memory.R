@@ -1176,12 +1176,10 @@ wordcloud_map <- ggplot() +
     ),
     # Moving axis labels inside the plot
     axis.text.x = element_text(
-      size = 5, hjust = 0.5, vjust = 1 ,margin = margin(t = -10), 
-      # Move x-axis labels to the right (hjust = 1)
+      size = 5, hjust = 0.5, vjust = 1 ,margin = margin(t = -10),  # Move x-axis labels to the right (hjust = 1)
     ),
     axis.text.y = element_text(
-      size = 5, hjust = 0.5, vjust =0.5,margin = margin(r = -20),
-      # Move y-axis labels up (vjust = 1.5)
+      size = 5, hjust = 0.5, vjust =0.5,margin = margin(r = -20),  # Move y-axis labels up (vjust = 1.5)
     ),
   ) +
   # Add a north arrow
