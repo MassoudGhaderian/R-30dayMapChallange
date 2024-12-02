@@ -40,7 +40,7 @@ library(htmltools)     # For Tools of  HTML files
 library (rnaturalearthdata)
 library(grid)          # For annotation_custom
 library(patchwork)     # For arranging plots
-
+library(gganimate)     # For making animation
 #  00 : Load Spatial Data ---------------------------
 
 #  Disappeared (water and polder) mills shape file path
@@ -237,7 +237,7 @@ main_plot <- ggplot() +
   )+
   # Add title, subtitle, and captions
   labs(
-    title = "▪ Mills' Memory",
+    title = "▪ Mills' Memory : Water and Wind",
     subtitle = "▪ Existing and Disappeared Mills in the Netherlands",
     caption = 
     "▪ Data : www.molendatabase.nl  |  www.molendatabase.net
@@ -305,7 +305,7 @@ main_plot <- ggplot() +
     
     height = unit(1, "cm"),  # Adjust size
     width = unit(1, "cm"),
-    pad_x = unit(2.5, "cm"),# Horizontal padding
+    pad_x = unit(2.4, "cm"),# Horizontal padding
     pad_y = unit(1, "cm")  # Vertical padding# Adjust size
   ) +
   # Add a scale bar
@@ -314,7 +314,7 @@ main_plot <- ggplot() +
     width_hint = 0.2, # Adjust the width relative to the map
     line_width = 1,
     height = unit(0.1, "cm"), # Adjust the height of the scale bar
-    pad_x = unit(1.7, "cm"),
+    pad_x = unit(1.6, "cm"),
     pad_y = unit(.75, "cm"),
     bar_cols = c("white", "white")
   )
@@ -397,8 +397,8 @@ leaflet_map <- tags$html(
   ),
   tags$body(
     div(class = "map-container",
-        div(class = "map-title", "Disappeared Mills in the Netherlands"),
-        div(class = "map-subtitle", "A geospatial visualization of historical mill locations"),
+        div(class = "map-title", "▪ Mills' Memory : Water and Wind"),
+        div(class = "map-subtitle", "▪ A geospatial visualization of Disappeared Mills in the Netherlands"),
         div(id = "map", leaflet_map),  # Map div
         div(class = "map-caption", "Source: Dutch Heritage Dataset | Created by Your Name")
     )
@@ -439,8 +439,8 @@ heatmap_plot <- ggplot() +
   geom_sf(data = netherlands_border, fill = NA, color = NA, size = 0.5) +
   geom_sf(data = nl_stats_border, fill = NA , color = "white") +    
   #Add populated cites and their labels 
-  geom_sf(data = nl_populated_palces, aes(shape = "circle"),
-          size = 2,color = "white" ,show.legend = FALSE) +
+  # geom_sf(data = nl_populated_palces, aes(shape = "circle"),
+  #         size = 2,color = "white" ,show.legend = FALSE) +
   geom_text(data = nl_populated_palces, 
             aes(x = st_coordinates(geometry)[, 1], 
                 y = st_coordinates(geometry)[, 2], 
@@ -453,8 +453,8 @@ heatmap_plot <- ggplot() +
             check_overlap = FALSE) +  # Prevent overlap of labels
   # Add title, subtitle, and captions
   labs(
-    title = "▪ Mills' Memory",
-    subtitle = "▪ Existing and Disappeared Mills in the Netherlands",
+    title = "▪ Mills' Memory : Water and Wind",
+    subtitle = "▪ Heat Map of  Disappeared Mills in the Netherlands",
     caption = 
       "▪ Data : www.molendatabase.nl  |  www.molendatabase.net
 ▪ Map visualization : Massoud Ghaderian | R Studio | 2024",
@@ -522,7 +522,7 @@ heatmap_plot <- ggplot() +
     ),
     height = unit(1, "cm"),  # Adjust size
     width = unit(1, "cm"),
-    pad_x = unit(2.8, "cm"),# Horizontal padding
+    pad_x = unit(2.6, "cm"),# Horizontal padding
     pad_y = unit(1, "cm")  # Vertical padding
   ) +
   # Add a scale bar
@@ -531,7 +531,7 @@ heatmap_plot <- ggplot() +
     width_hint = 0.2, #  the width relative to the map
     line_width = 1,
     height = unit(0.1, "cm"), #  the height of the scale bar
-    pad_x = unit(1.9, "cm"),
+    pad_x = unit(1.7, "cm"),
     pad_y = unit(.75, "cm"),
     bar_cols = c("white", "white"),
     text_col = "white"  #  the scale bar text color
@@ -576,83 +576,7 @@ sum_freq <- sum(year_freq)
 print(sum_freq)
 
 
-
-
-## A-Create a line chart-----------------------------------------------------------
-
-# Aggregate data to count the number of ex-mills per year
-ex_mills_data_aggregated <- ex_mills %>%
-  group_by(year) %>%
-  summarise(Count = n())  # Count the number of records per year
-
-Line_plot_ex_mills <-  ggplot(ex_mills_data_aggregated, aes(x = year, y = Count)) +
-  geom_line(color = "#fec44f", size = 1) +  # Line plot
-  geom_point(color = "red", size = 2) +  # Optional: Add points to show data points
-  labs(
-    title = "▪ Mills' Memory",
-    subtitle = "▪ Timeline of Disappeared Mills in Netherlands",
-    caption = "▪ Data Source: www.molendatabase.org | Map visualization by Massoud Ghaderian | R Studio | 2024 ",
-    x = NULL,  # Remove x-axis label
-    y = NULL)+ # Remove y-axis label 
-  theme_minimal()  # Optional: Use minimal theme for clean aesthetics
-
-Line_plot_ex_mills
-
-# Save the final plot
-ggsave("Lineplot ex_mills.jpg", plot =Line_plot_ex_mills, 
-       width = 10, height = 8, dpi = 300, 
-       path = here("23-Memory/outputs"))
-
-
-
-##  B-Disappeared mills between 1800 and 2024 -------------------------------------
-
-
-# Filter dataset for mills disappeared between 1800 and 2024
-ex_mills_filtered <- ex_mills %>%
-  filter(year >= 1800 & year <= 2024)
-
-# Check if data contains latitude and longitude columns
-head(ex_mills_filtered)
-
-# Convert data to an sf object
-ex_mills_sf <- st_as_sf(ex_mills_filtered, coords = c("longitude", "latitude"), crs = 4326)
-
-# Load a basemap for the Netherlands
-# For simplicity, we will use a freely available shapefile or world map and crop to the Netherlands' bounding box.
-netherlands_map <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf") %>%
-  filter(admin == "Netherlands")
-
-# Create the map
-Map_plot_ex_mills <- ggplot() +
-  geom_sf(data = netherlands_map, fill = "#f7f7f7", color = "#cccccc", size = 0.3) +  # Basemap
-  geom_sf(data = ex_mills_sf, aes(color = year), size = 2, alpha = 0.7) +  # Mills points
-  scale_color_viridis_c(option = "plasma", name = "Year") +  # Color scale for years
-  labs(
-    title = "▪ Disappeared Mills (1800-2024)",
-    subtitle = "▪ Locations of disappeared mills in the Netherlands",
-    caption = "▪ Data Source: www.molendatabase.org | Map visualization by Massoud Ghaderian | R Studio | 2024"
-  ) +
-  # Set the map extent to the bounding box
-  coord_sf(xlim = c(bbox["xmin"], bbox["xmax"]), 
-           ylim = c(bbox["ymin"], bbox["ymax"])) +
-  theme_minimal() +
-  theme(
-    legend.position = "right",
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank()
-  )
-
-# Print the map
-Map_plot_ex_mills
-
-# Save the map
-ggsave("Map_plot_ex_mills(1800-2024).jpg", plot = Map_plot_ex_mills, 
-       width = 12, height = 10, dpi = 300, 
-       path = here("23-Memory/outputs"))
-
-##  C-Combine 1 ------------------------------------------------------------
-
+##  Combine 1 ------------------------------------------------------------
 
 # Filter dataset for mills disappeared between 1800 and 2024
 ex_mills_filtered <- ex_mills %>%
@@ -670,7 +594,7 @@ netherlands_map <- rnaturalearth::ne_countries(scale = "medium", returnclass = "
 Map_plot_ex_mills <- ggplot() +
   geom_sf(data = netherlands_map, fill = "#f7f7f7", color = "black", size = 1) +  # Basemap
   geom_sf(data = ex_mills_sf, aes(color = year), size = 2, alpha = 0.7) +  # Mills points
-  scale_color_viridis_c(option = "plasma", name = "Year") +  # Color scale for years
+  scale_color_viridis_c(option = "plasma", name = "Year", direction = -1) +  # Color scale for years
   # Set the map extent to the bounding box
   coord_sf(xlim = c(bbox["xmin"], bbox["xmax"]), 
            ylim = c(bbox["ymin"], bbox["ymax"])) +
@@ -704,18 +628,28 @@ line_rasterized <- ggplotGrob(Line_plot_ex_mills)
 combined_plot <- ggplot() +
   geom_sf(data = netherlands_map, fill = "#f7f7f7", color = "#cccccc", size = 0.3) +  # Map plot
   geom_sf(data = ex_mills_sf, aes(color = year), size = 2, alpha = 0.7) +  # Mills points
+  # Add populated cities 
+  geom_sf(data = nl_populated_palces, 
+          aes(shape = "circle"), size = 2, show.legend = FALSE) +
+  geom_text(data = nl_populated_palces, 
+            aes(x = st_coordinates(geometry)[, 1], 
+                y = st_coordinates(geometry)[, 2], 
+                label = name),
+            size = 3,  # Adjust size of label
+            color = "black",  # Main label color
+            fontface = "bold", 
+            nudge_y = 0.05,  # Adjust vertical position
+            nudge_x = 0, 
+            check_overlap = FALSE) +  # Prevent overlap of labels
   scale_color_viridis_c(option = "plasma", name = "Year") +  # Color scale for years
   annotation_custom(grob = line_rasterized,
-                    xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = Inf )+
-  labs(
-    title = "▪ Disappeared Mills (1800-2024)",
-    subtitle = "▪ Locations of disappeared mills in the Netherlands",
-    caption = "▪ Data Source: www.molendatabase.org | Map visualization by Massoud Ghaderian | R Studio | 2024"
-  ) +
+                    xmin = bbox["xmin"] + 0, xmax = bbox["xmax"] + 1, 
+                    ymin = bbox["ymin"] -0.5, ymax = bbox["ymin"] + 3
+  )+
   # Add title, subtitle, and captions
   labs(
-    title = "▪ Mills' Memory",
-    subtitle = "▪ Locations/TimeNumber of disappeared mills in the Netherlands (1800-2024)",
+    title = "▪ Mills' Memory : Water and Wind",
+    subtitle = "▪ Location/Time/Number of disappeared mills in the Netherlands (1800-2020)",
     caption = "▪ Data : www.molendatabase.nl  |  www.molendatabase.net
 ▪ Map visualization : Massoud Ghaderian | R Studio | 2024",
     x = NULL,  # Remove x-axis label
@@ -725,6 +659,107 @@ combined_plot <- ggplot() +
   # Set the map extent to the bounding box
   coord_sf(xlim = c(bbox["xmin"], bbox["xmax"]), 
            ylim = c(bbox["ymin"], bbox["ymax"])) +
+  theme(
+    #Plot Elements
+    plot.title = element_text(hjust = -0.01, size = 18, face = "bold",
+                              margin = margin(b = 0)),
+    plot.subtitle = element_text(hjust = -0.01, size = 14,
+                                 margin = margin(t = 0, b=8)),
+    plot.caption = element_text(hjust = -0.01, size = 10, face = "italic", 
+                                margin = margin(t = 15)),
+    plot.margin = margin(t = 30, r = 20, b = 50, l = 20),
+    
+    #Legend settings
+    # legend.position = c(0.95, 0.05),  # x and y position (percent of plot)
+    legend.justification = c("right", "top"),  # legend's top-right corner
+    # legend.box.margin = margin(5, 5, 5, 5),  # Add some space around the legend
+    legend.background = element_rect(fill = "white", color = "white", size = 0.5), 
+    legend.text = element_text(size = 10),  # Increase size 
+    legend.title = element_text(size = 12),  # Increase legend title size
+    legend.spacing.y = unit(1, "cm"),  # Adjust vertical spacing
+    
+    # Customizing  grid lines (for finer latitude and longitude)
+    panel.grid.major = element_line(color = "lightgray", size = 0.5),
+    # Major grid lines: gray color, thickness 0.
+    panel.grid.minor = element_line(color = "lightgray", size = 0.5), 
+    # Minor grid lines: light gray, thinner
+    
+    # Ticks for axis (optional)
+    axis.ticks.x = element_line(color = "darkgray", size = 1),  # Ticks for top
+    axis.ticks.y = element_line(color = "darkgray", size = 1),  # Ticks for right
+    
+    # change axis labels style
+    axis.text = element_text(
+      size = 7,  # Change font size of numbers
+      color = "darkgray",  # Change font color
+      face = "italic",  # Make numbers bold (optional)
+      family = "sans"  # Set font family (optional)
+    ),
+    # Moving axis labels inside the plot
+    axis.text.x = element_text(# Move x-axis labels to the right (hjust = 1)
+      size = 5, hjust = 0.5, vjust = 1 ,margin = margin(t = -10),
+    ),
+    axis.text.y = element_text(# Move y-axis labels up (vjust = 1.5)
+      size = 5, hjust = 0.5, vjust =0.5,margin = margin(r = -20),
+    ),
+  ) +
+  # Add a north arrow
+  annotation_north_arrow(
+    location = "bl", # Position: 'tl' = top-left, 'tr' = top-right, etc.
+    which_north = "true", # "true" for true north, "grid" for grid north
+    style = north_arrow_fancy_orienteering(# Choose a style for the north arrow
+      fill = c("white", "white"), line_col = "black"),
+    
+    height = unit(1, "cm"),  # Adjust size
+    width = unit(1, "cm"),
+    pad_x = unit(2.5, "cm"),# Horizontal padding
+    pad_y = unit(1, "cm")  # Vertical padding# Adjust size
+  ) +
+  # Add a scale bar
+  annotation_scale(
+    location = "bl", # Position: 'bl' = bottom-left
+    width_hint = 0.2, # Adjust the width relative to the map
+    line_width = 1,
+    height = unit(0.1, "cm"), # Adjust the height of the scale bar
+    pad_x = unit(1.7, "cm"),
+    pad_y = unit(.75, "cm"),
+    bar_cols = c("white", "white")
+  )
+
+# Print the combined plot
+print(combined_plot)
+
+# Save the combined plot
+ggsave("Combined plot ex_mills.jpg", plot = combined_plot, 
+       width = 8 , height = 10, dpi = 300, 
+       path = here("23-Memory/outputs"))
+
+##  Combine 2 ------------------------------------------------------------
+
+# Filter dataset for mills disappeared between 1800 and 2024
+ex_mills_filtered <- ex_mills %>%
+  filter(year >= 1800 & year <= 2024)
+
+# Convert data to an sf object (spatial format)
+ex_mills_sf <- st_as_sf(ex_mills_filtered, coords = c("longitude", "latitude"), crs = 4326)
+
+# Load a basemap for the Netherlands (using rnaturalearth)
+netherlands_map <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf") %>%
+  filter(admin == "Netherlands")
+
+# Create the map plot (foreground)
+Map_plot_ex_mills <- ggplot() +
+  geom_sf(data = netherlands_map, fill = "#f7f7f7", color = "#cccccc", size =1) +  # Basemap
+  geom_sf(data = ex_mills_sf, aes(color = year), size = 2, alpha = 0.7) +  # Mills points
+  scale_color_viridis_c(option = "plasma", name = "Year") +  # Color scale for years
+  labs(
+    title = "▪ Mills' Memory : Water and Wind",
+    subtitle = "▪ Locations/Time/Number of disappeared mills in the Netherlands (1800-2020)",
+  ) +
+  # Set the map extent to the bounding box
+  coord_sf(xlim = c(bbox["xmin"], bbox["xmax"]), 
+           ylim = c(bbox["ymin"], bbox["ymax"])) +
+  theme_minimal() +
   theme(
     #Plot Elements
     plot.title = element_text(hjust = -0.01, size = 18, face = "bold",
@@ -792,68 +827,23 @@ combined_plot <- ggplot() +
     bar_cols = c("white", "white")
   )
 
-# Print the combined plot
-print(combined_plot)
-
-# Save the combined plot
-ggsave("Combined_plot_ex_mills.jpg", plot = combined_plot, 
-       width = 8 , height = 10, dpi = 300, 
-       path = here("23-Memory/outputs"))
-
-##  C-Combine3 ------------------------------------------------------------
-
-
-
-# Filter dataset for mills disappeared between 1800 and 2024
-ex_mills_filtered <- ex_mills %>%
-  filter(year >= 1800 & year <= 2024)
-
-# Convert data to an sf object (spatial format)
-ex_mills_sf <- st_as_sf(ex_mills_filtered, coords = c("longitude", "latitude"), crs = 4326)
-
-# Load a basemap for the Netherlands (using rnaturalearth)
-netherlands_map <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf") %>%
-  filter(admin == "Netherlands")
-
-# Create the map plot (foreground)
-Map_plot_ex_mills <- ggplot() +
-  geom_sf(data = netherlands_map, fill = "#f7f7f7", color = "#cccccc", size = 0.3) +  # Basemap
-  geom_sf(data = ex_mills_sf, aes(color = year), size = 2, alpha = 0.7) +  # Mills points
-  scale_color_viridis_c(option = "plasma", name = "Year") +  # Color scale for years
-  labs(
-    title = "▪ Disappeared Mills (1800-2024)",
-    subtitle = "▪ Locations of disappeared mills in the Netherlands",
-  ) +
-  # Set the map extent to the bounding box
-  coord_sf(xlim = c(bbox["xmin"], bbox["xmax"]), 
-           ylim = c(bbox["ymin"], bbox["ymax"])) +
-  theme_minimal() +
-  theme(
-    legend.position = "right",
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    plot.title = element_text(hjust = 0),  # Left-align title
-    plot.subtitle = element_text(hjust = 0),  # Left-align subtitle
-    plot.caption = element_text(hjust = 0)  # Left-align caption
-  )
-
 # Create the line plot (background)
 Line_plot_ex_mills <- ggplot(ex_mills_data_aggregated, aes(x = year, y = Count)) +
-  geom_line(color = "#fec44f", size = 1) +  # Line plot
-  geom_point(color = "red", size = 2) +  # Optional: Add points to show data points
-  labs(
-    title = "▪ Mills' Memory",
-    subtitle = "▪ Timeline of Disappeared Mills in Netherlands",
-    caption = "▪ Data Source: www.molendatabase.org | Map visualization by Massoud Ghaderian | R Studio | 2024 ",
-    x = NULL,  # Remove x-axis label
-    y = NULL  # Remove y-axis label
-  ) +
-  theme_minimal() +
+  geom_line(color = "gray", size = 1) +  # Line plot
+  geom_point(color = "black", size = 2) +  # Optional: Add points to show data point
+  theme_minimal() +  # Use minimal theme
+  scale_x_continuous(
+    breaks = c(min(ex_mills_data_aggregated$year), 1800, 2000, 2020),  # Set breaks
+    labels = c(min(ex_mills_data_aggregated$year), "1800", "2000", 2020)  # Set labels
+  )+
   theme(
-    plot.title = element_text(hjust = 0),  # Left-align title
-    plot.subtitle = element_text(hjust = 0),  # Left-align subtitle
-    plot.caption = element_text(hjust = 0)  # Left-align caption
+    panel.grid = element_blank(),  # Remove gridlines
+    axis.text.y = element_blank(),  # Remove y-axis numbers
+    axis.title.x = element_blank(),  # Remove x-axis label
+    axis.title.y = element_blank(),  # Remove y-axis label
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)  
   )
+
 
 # Use patchwork to combine the map and line plot
 combined_plot <- Map_plot_ex_mills + 
@@ -893,12 +883,16 @@ base_map <- ggplot() +
             nudge_x = .2, 
             check_overlap = FALSE) +  # Prevent overlap of labels
   labs(
-    title = "▪ Mills' Memory",
-    subtitle = "▪ Timeline of Disappeared Mills in Netherlands: {frame_time}",
-    caption = "▪ Data Source: www.molendatabase.org | Map visualization by Massoud Ghaderian | R Studio | 2024 ",
+    title = "▪ Mills' Memory : Water and Wind",
+    subtitle = "▪ Time-Animationa of Disappeared Mills in the Netherlands: {frame_time}",
+    caption = "▪ Data : www.molendatabase.nl  |  www.molendatabase.net
+▪ Map visualization : Massoud Ghaderian | R Studio | 2024",
     x = NULL,  # Remove x-axis label
     y = NULL   # Remove y-axis label
   )+
+  #add external label of North Sea,Germany and Belgium
+  geom_text(data = external_labels, aes(x = x, y = y, label = name), 
+            color = "darkgray", size = 4, fontface = "bold.italic")+
   scale_color_manual(
     name = "▪ Legend",  # Legend title
     values = c("Disappeared Mills" = "#fec44f"),
@@ -953,7 +947,7 @@ base_map <- ggplot() +
     style = north_arrow_fancy_orienteering(fill = c("white", "white"), line_col = "black"),# Choose a style for the north arrow
     height = unit(1, "cm"),  # Adjust size
     width = unit(1, "cm"),
-    pad_x = unit(2.5, "cm"),# Horizontal padding
+    pad_x = unit(2.8, "cm"),# Horizontal padding
     pad_y = unit(1, "cm")  # Vertical padding# Adjust size
   ) +
   # Add a scale bar
@@ -962,17 +956,18 @@ base_map <- ggplot() +
     width_hint = 0.2, # Adjust the width relative to the map
     line_width = 1,
     height = unit(0.1, "cm"), # Adjust the height of the scale bar
-    pad_x = unit(1.7, "cm"),
+    pad_x = unit(1.9, "cm"),
     pad_y = unit(.75, "cm"),
     bar_cols = c("white", "white")
   )
 #show static map
 base_map
+# Save the 3d base map to check
+ggsave("3D basemap.jpg", plot = base_map, 
+       width = 12, height = 10, dpi = 300, 
+       path = here("23-Memory/outputs"))
 
 ##  Animation 1 --------------------------------------------
-
-# Now we set up the animation using gganimate
-library(gganimate)
 
 # Add transition for animation using the 'year' field for time-based animation
 animated_map <- base_map +
@@ -993,7 +988,7 @@ animated_map_output <- animate(
 )
 
 # Optionally, save the animation as an MP4 file
-anim_save("/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/ex_mills_timeline_Animation1.mp4", animated_map_output)
+anim_save("/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/ex_mills timeline Animation1.mp4", animated_map_output)
 
 
 ##  Animation 2 --------------------------------------------
