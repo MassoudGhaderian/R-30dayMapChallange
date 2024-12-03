@@ -580,6 +580,11 @@ ex_mills_data_aggregated <- ex_mills %>%
   group_by(year) %>%
   summarise(Count = n())  # Count the number of records per year
 
+
+# Filter years where the count of disappeared mills is greater than 300
+ex_mills_above_300 <- ex_mills_data_aggregated %>%
+  filter(Count > 300)
+
 ##  Combine 1 ------------------------------------------------------------
 
 # Filter dataset for mills disappeared between 1800 and 2024
@@ -613,6 +618,13 @@ Map_plot_ex_mills <- ggplot() +
 Line_plot_ex_mills <- ggplot(ex_mills_data_aggregated, aes(x = year, y = Count)) +
   geom_line(color = "gray", size = 1) +  # Line plot
   geom_point(color = "black", size = 2) +  # Optional: Add points to show data point
+    # Add labels for years with more than 300 disappeared mills
+  geom_text(data = ex_mills_above_300, 
+            aes(label = Count), 
+            color = "red", 
+            size = 3, 
+            vjust = -0.5,  # Adjust vertical position of the label
+            fontface = "bold") +  # Make labels bold
   theme_minimal() +  # Use minimal theme
   scale_x_continuous(
     breaks = c(min(ex_mills_data_aggregated$year), 1800, 2000, 2020),  # Set breaks
@@ -623,7 +635,17 @@ Line_plot_ex_mills <- ggplot(ex_mills_data_aggregated, aes(x = year, y = Count))
     axis.text.y = element_blank(),  # Remove y-axis numbers
     axis.title.x = element_blank(),  # Remove x-axis label
     axis.title.y = element_blank(),  # Remove y-axis label
-    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)  
+    axis.text.x = element_text(
+      angle = 90, 
+      vjust = 0.5, 
+      hjust = 3,
+      size = 10,  # Adjust font size
+      color = ifelse(
+        c(min(ex_mills_data_aggregated$year), 1200, 1800, 2000, 2020) %in% c(1200, 1800, 2000, 2020), 
+        "red", 
+        "black"
+      )  # Apply red color to specific years
+    )
   )
 # Save Line plot as a rasterized object
 line_rasterized <- ggplotGrob(Line_plot_ex_mills)
@@ -716,7 +738,7 @@ combined_plot <- ggplot() +
     
     height = unit(1, "cm"),  # Adjust size
     width = unit(1, "cm"),
-    pad_x = unit(2.5, "cm"),# Horizontal padding
+    pad_x = unit(2.8, "cm"),# Horizontal padding
     pad_y = unit(1, "cm")  # Vertical padding# Adjust size
   ) +
   # Add a scale bar
