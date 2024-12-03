@@ -1103,7 +1103,6 @@ anim_save("/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/mills_timeline.mp
    # +-+-+-+-+ +-+-+-+-+-+ +-+-+-+ +-+-+ +-+-+-+-+-+-+ +-+-+-+-+-+-+-+-+ #
 
 
-# بیان مسئله باید عوض شود ...می خواهیم لیبلگذاری کنیم با این شرط که عناوین مشابه اجماع شوند و سایزوشن بزرگتر شود
 # Ensure your dataset (mills) is loaded as an sf object and projected correctly
 mills <- st_transform(mills, crs = 3857)  # Transform to a projected CRS for spatial visualization
 head(mills)
