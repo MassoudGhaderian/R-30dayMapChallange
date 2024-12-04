@@ -4,7 +4,7 @@
 
 # List of required packages
 required_packages <- c("ggspatial", "ggplot2", "sf", "tmap", "here", "magick",
-                       "grid", "cowplot" , "gganimate","gifski","leaflet",
+                       "grid", "cowplot", "gganimate","gifski","leaflet",
                        "png","leaflet.extras", "viridis" ,"dplyr","wordcloud2",
                        "webshot" , "htmltools" , "rnaturalearthdata" , "grid",
                        "patchwork")
@@ -16,17 +16,18 @@ for (pkg in required_packages) {
   }
 }
 
+install.packages("styler")
 # Load required libraries
 library(ggplot2)       # For creating plots
 library(sf)            # For working with spatial data
 library(tmap)          # For thematic mapping
 library(here)          # For managing file paths
-library(magick)        # For image manipulation 
+library(magick)        # For image manipulation
 library(grid)          # For working with grid graphics
 library(cowplot)       # For combining plots and adding elements (e.g., logos)
 library(ggspatial)     # For scale bars and north arrows in ggplot maps
 library(leaflet)       # For building interactive maps
-library(leaflet.extras)# For Extends the capabilities of leaflet 
+library(leaflet.extras)# For Extends the capabilities of leaflet
 library(viridis)       # For a visually appealing colors
 library(sf)            # For spatial data handling
 library(ggplot2)       # For visualization
@@ -37,7 +38,7 @@ library(webshot)       # For saving web as an image
 library(png)           # For reading PNG images
 library(htmlwidgets)   # For working with HTML files
 library(htmltools)     # For Tools of  HTML files
-library (rnaturalearthdata)
+library(rnaturalearthdata)
 library(grid)          # For annotation_custom
 library(patchwork)     # For arranging plots
 library(gganimate)     # For making animation
