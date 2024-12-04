@@ -4,9 +4,9 @@
 
 # List of required packages
 required_packages <- c("ggspatial", "ggplot2", "sf", "tmap", "here", "magick",
-                       "grid", "cowplot", "gganimate","gifski","leaflet",
-                       "png","leaflet.extras", "viridis" ,"dplyr","wordcloud2",
-                       "webshot" , "htmltools" , "rnaturalearthdata" , "grid",
+                       "grid", "cowplot", "gganimate", "gifski", "leaflet",
+                       "png", "leaflet.extras", "viridis", "dplyr", "wordcloud2",
+                       "webshot", "htmltools", "rnaturalearthdata", "grid",
                        "patchwork")
 
 # Install packages that are not already installed
@@ -16,7 +16,6 @@ for (pkg in required_packages) {
   }
 }
 
-install.packages("styler")
 # Load required libraries
 library(ggplot2)       # For creating plots
 library(sf)            # For working with spatial data
@@ -45,9 +44,9 @@ library(gganimate)     # For making animation
 #  00 : Load Spatial Data ---------------------------
 
 #  Disappeared (water and polder) mills shape file path
-disappeared_mills <- here("23-Memory", "data", "shp", "verdwenenmolens.shp")  
+disappeared_mills <- here("23-Memory", "data", "shp", "verdwenenmolens.shp")
 #  Existing (water and Polder) mills shape file  path
-existing_mills <- here("23-Memory", "data", "shp", "Molens.shp")  
+existing_mills <- here("23-Memory", "data", "shp", "Molens.shp")
 #  other types of mills shape file path
 other_mills <- here("23-Memory", "data", "shp", "weidemolens en windmotoren.shp") 
 
@@ -66,8 +65,8 @@ nl_populated_palces <- st_read(here("23-Memory", "data", "shp", "populated_place
 
 
 # Load and preprocess shape files for disappeared mills
-ex_mills <- st_read(here(disappeared_mills)) |> 
-  st_transform(crs = st_crs(nl_border)) |> 
+ex_mills <- st_read(here(disappeared_mills)) |>
+  st_transform(crs = st_crs(nl_border)) |>
   st_crop(sf::st_bbox(nl_border))  # Crop to Netherlands' bounding box
 
 # Load existing mills shape file
@@ -175,7 +174,7 @@ full_map <- full_map +
   geom_text(data = external_labels, aes(x = x, y = y, label = name), 
             color = "darkblue", size = 4, fontface = "italic")
 
-# 7-Plot the first map to check data 
+# 7-Plot the first map to check data
 print(full_map)
 
 
