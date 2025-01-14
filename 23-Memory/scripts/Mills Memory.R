@@ -319,7 +319,7 @@ main_plot <- ggplot() +
     bar_cols = c("white", "white")
   )
 
-# Display the main plot
+# Display  main plot
 main_plot
 
 # Read and convert logo to raster
