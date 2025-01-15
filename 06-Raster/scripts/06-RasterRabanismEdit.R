@@ -38,3 +38,4 @@ ggplot(dsm_df, aes(x = x, y = y, fill = fct_elevation_cb)) +
     plot.caption = element_text(hjust = 0.5, size = 10, color = "black"),
     plot.margin = margin(t = 5, r = 5, b = 5, l = 5)
   )
+
