@@ -120,7 +120,7 @@ spatial_data <- list(
   "Other Mills" = other_mills
 )
 
-# Check and print the CRS for each dataset
+# Check and print the CRS for each data set
 for (name in names(spatial_data)) {
   crs_name <- st_crs(spatial_data[[name]])$Name
   cat(name, "Coordinate System:", crs_name, "\n")
