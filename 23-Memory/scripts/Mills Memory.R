@@ -762,7 +762,7 @@ ggsave("Combined plot ex_mills.jpg", plot = combined_plot,
 
 ##  Combine 2 ------------------------------------------------------------
 
-# Filter dataset for mills disappeared between 1800 and 2024
+# Filter data set for mills disappeared between 1800 and 2024
 ex_mills_filtered <- ex_mills %>%
   filter(year >= 1800 & year <= 2024)
 
