@@ -52,9 +52,10 @@ other_mills <- here("23-Memory", "data", "shp", "weidemolens en windmotoren.shp"
 # Read shape files for various spatial features
 north_sea <- st_read(here("23-Memory", "data", "shp", "NorthSea.shp"))
 # Netherlands, Germany and Belgium border shape file path
+nl_border <- st_read(here("23-Memory", "data", "shp", "gadm41_NLD_0.shp"))
 gr_border <- st_read(here("23-Memory", "data", "shp", "GR.shp"))
 bl_border <- st_read(here("23-Memory", "data", "shp", "BG.shp"))
-nl_border <- st_read(here("23-Memory", "data", "shp", "gadm41_NLD_0.shp"))
+
 #border of provinces and cities in Netherlands shape file path
 nl_stats_border <- st_read(here("23-Memory", "data", "shp", "gadm41_NLD_1.shp"))
 nl_cities_border <- st_read(here("23-Memory", "data", "shp", "gadm41_NLD_2.shp"))
