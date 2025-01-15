@@ -26,8 +26,8 @@ ggplot(dsm_df, aes(x = x, y = y, fill = fct_elevation_cb)) +
   theme_minimal() +
   labs(
     title = "Elevation Map of TU Delft by Digital Surface Model (DSM)",
-    x = NULL,  # Remove x-axis title
-    y = NULL,  # Remove y-axis title
+    x = NULL,  # Remove x- axis title
+    y = NULL,  # Remove y- axis title
     caption = "#30DayMapChallenge | Data Source: PDOK-DSM | Map by Massoud Ghaderian, 2024"
   ) +
   theme(
