@@ -46,25 +46,25 @@ library(gganimate)
 #  00 : Load Spatial Data ---------------------------
 
 #  Disappeared (water and polder) mills shape file path
-disappeared_mills <- here("23-Memory", "data", "shp", "verdwenenmolens.shp")
+disappeared_mills <- here("00-Mills Memory", "data", "shp", "verdwenenmolens.shp")
 #  Existing (water and Polder) mills shape file  path
-existing_mills <- here("23-Memory", "data", "shp", "Molens.shp")
+existing_mills <- here("00-Mills Memory", "data", "shp", "Molens.shp")
 #  other types of mills shape file path
-other_mills <- here("23-Memory", "data", "shp", "weidemolens en windmotoren.shp") 
+other_mills <- here("00-Mills Memory", "data", "shp", "weidemolens en windmotoren.shp") 
 
 # Read shape files for various spatial features
-north_sea <- st_read(here("23-Memory", "data", "shp", "NorthSea.shp"))
+north_sea <- st_read(here("00-Mills Memory", "data", "shp", "NorthSea.shp"))
 # Netherlands, Germany and Belgium border shape file path
-nl_border <- st_read(here("23-Memory", "data", "shp", "gadm41_NLD_0.shp"))
-gr_border <- st_read(here("23-Memory", "data", "shp", "GR.shp"))
-bl_border <- st_read(here("23-Memory", "data", "shp", "BG.shp"))
+nl_border <- st_read(here("00-Mills Memory", "data", "shp", "gadm41_NLD_0.shp"))
+gr_border <- st_read(here("00-Mills Memory", "data", "shp", "GR.shp"))
+bl_border <- st_read(here("00-Mills Memory", "data", "shp", "BG.shp"))
 
 #border of provinces and cities in Netherlands shape file path
-nl_stats_border <- st_read(here("23-Memory", "data", "shp", "gadm41_NLD_1.shp"))
-nl_cities_border <- st_read(here("23-Memory", "data", "shp", "gadm41_NLD_2.shp"))
+nl_stats_border <- st_read(here("00-Mills Memory", "data", "shp", "gadm41_NLD_1.shp"))
+nl_cities_border <- st_read(here("00-Mills Memory", "data", "shp", "gadm41_NLD_2.shp"))
 #Surface water and Populated places  in Netherlands shape file path
-oppervlaktewater <- st_read(here("23-Memory", "data", "shp", "oppervlaktewater.shp"))
-nl_populated_palces <- st_read(here("23-Memory", "data", "shp", "populated_places.shp"))
+oppervlaktewater <- st_read(here("00-Mills Memory", "data", "shp", "oppervlaktewater.shp"))
+nl_populated_palces <- st_read(here("00-Mills Memory", "data", "shp", "populated_places.shp"))
 
 
 # Load and preprocess shape files for disappeared mills
@@ -337,7 +337,7 @@ final_plot
 # Save the final plot 
 ggsave("Exiting and Disappeared Mills.jpg", plot = final_plot, 
        width = 8, height = 10, dpi = 300, 
-       path = here("23-Memory/outputs"))
+       path = here("00-Mills Memory/outputs"))
 
 
 # 02 : Interactive Map of Disappeared Mills ------------------------------------
@@ -409,10 +409,10 @@ leaflet_map <- tags$html(
 )
 
 # Save the map as an HTML file
-# saveWidget(leaflet_map, "23-Memory/outputs/Disappeared Mills.html" , selfcontained = TRUE)
+# saveWidget(leaflet_map, "00-Mills Memory/outputs/Disappeared Mills.html" , selfcontained = TRUE)
 
 # Save the map with titles and caption
-save_html(leaflet_map, "23-Memory/outputs/Disappeared_Mills_with_Titles.html")
+save_html(leaflet_map, "00-Mills Memory/outputs/Disappeared_Mills_with_Titles.html")
 
 # 03 : Heat map of Disappeared mills  -----------------------------------------
 
@@ -424,7 +424,7 @@ save_html(leaflet_map, "23-Memory/outputs/Disappeared_Mills_with_Titles.html")
 ex_mills <- st_transform(ex_mills, crs = 3857) 
 
 # Load the Netherlands border shape file
-netherlands_border <- st_read("23-Memory/data/shp/gadm41_NLD_0.shp")
+netherlands_border <- st_read("00-Mills Memory/data/shp/gadm41_NLD_0.shp")
 netherlands_border <- st_transform(netherlands_border, crs = 3857)
 
 # Extract coordinates for disappeared mills
@@ -546,7 +546,7 @@ print(heatmap_plot)
 # Save the final plot 
 ggsave("Heat Map of  Disappeared Mills.jpg", plot = heatmap_plot, 
        width = 8, height = 10, dpi = 300, 
-       path = here("23-Memory/outputs"))
+       path = here("00-Mills Memory/outputs"))
 
 
 # 04 : Histogram of Disappearance Years ----------------------------------------
@@ -761,7 +761,7 @@ print(combined_plot)
 # Save the combined plot
 ggsave("Combined plot ex_mills.jpg", plot = combined_plot, 
        width = 8 , height = 10, dpi = 300, 
-       path = here("23-Memory/outputs"))
+       path = here("00-Mills Memory/outputs"))
 
 ##  Combine 2 ------------------------------------------------------------
 
@@ -885,7 +885,7 @@ print(combined_plot)
 # Save the combined plot
 ggsave("Combined_plot_ex_mills_left_aligned.jpg", plot = combined_plot, 
        width = 12, height = 10, dpi = 300, 
-       path = here("23-Memory/outputs"))
+       path = here("00-Mills Memory/outputs"))
 
 
 # 05 : Animation of  Disappearance Years  --------------------------------------
@@ -1004,7 +1004,7 @@ base_map
 # Save the 3d base map to check
 ggsave("3D basemap.jpg", plot = base_map, 
        width = 12, height = 10, dpi = 300, 
-       path = here("23-Memory/outputs"))
+       path = here("00-Mills Memory/outputs"))
 
 ##  Animation 1 --------------------------------------------
 
@@ -1027,11 +1027,11 @@ animated_map_output <- animate(
 )
 
 # Optionally, save the animation as a GIF
-anim_save("/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/ex_millsAni.gif"
+anim_save("/R-WorkSpaces/R-30dayMapChallange/00-Mills Memory/outputs/ex_millsAni.gif"
           , animated_map_output)
 
 # Optionally, save the animation as an MP4 file
-anim_save("/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/ex_millsAni.mp4"
+anim_save("/R-WorkSpaces/R-30dayMapChallange/00-Mills Memory/outputs/ex_millsAni.mp4"
           , animated_map_output)
 
 
@@ -1091,7 +1091,7 @@ animated_map_output <- animate(
   renderer = av_renderer()
 )
 # Save the Animation
-anim_save("/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/mills_timeline.mp4"
+anim_save("/R-WorkSpaces/R-30dayMapChallange/00-Mills Memory/outputs/mills_timeline.mp4"
           , animated_map_output)
 
 
@@ -1112,7 +1112,7 @@ unique(mills$FUNCTIE)
 unique(mills$TYPE)
 
 # Load the Netherlands boundary shapefile (assumed to be a shapefile)
-netherlands_shapefile <- st_read("23-Memory/data/shp/gadm41_NLD_0.shp")  # Adjust path accordingly
+netherlands_shapefile <- st_read("00-Mills Memory/data/shp/gadm41_NLD_0.shp")  # Adjust path accordingly
 netherlands <- st_transform(netherlands_shapefile, crs = 3857)  # Transform to the same CRS
 
 # # Generate the frequency of each mill function
@@ -1139,11 +1139,11 @@ wordcloud_html <- wordcloud2(data = mill_function_freq,
                              rotateRatio = 0 ) # Prevent rotation of words
 
 # Save the word cloud as HTML
-html_file <- "/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/wordcloud.html"
+html_file <- "/R-WorkSpaces/R-30dayMapChallange/00-Mills Memory/outputs/wordcloud.html"
 htmlwidgets::saveWidget(wordcloud_html, file = html_file, selfcontained = TRUE)
 
 # Convert the HTML to PNG
-png_file <- "/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/wordcloud.png"
+png_file <- "/R-WorkSpaces/R-30dayMapChallange/00-Mills Memory/outputs/wordcloud.png"
 webshot(html_file, file = png_file, vwidth = 800, vheight = 600)  # Larger width and height
 
 # Read the PNG image into R
@@ -1231,7 +1231,7 @@ wordcloud_map
 # Save the final combined plot with the word cloud surrounded by the Netherlands boundary
 ggsave("Mills WordCloud .jpg", plot = wordcloud_map, 
        width = 8.27, height = 12, dpi = 600, 
-       path = "/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/")
+       path = "/R-WorkSpaces/R-30dayMapChallange/00-Mills Memory/outputs/")
 
 # 07  : 3D Map of Existing Mills on DSM  ---------------------------------------
 
@@ -1244,7 +1244,7 @@ library(sf)
 library(rayshader)
 
 # Load the mills data
-mills <- st_read("23-Memory/data/shp/Molens.shp")
+mills <- st_read("00-Mills Memory/data/shp/Molens.shp")
 
 # Get the bounding box of the mills (expand it slightly for better context)
 mills_bbox <- st_bbox(mills)
@@ -1288,7 +1288,7 @@ library(raster)
 wms_url <- "https://service.pdok.nl/rws/ahn/wms/v1_0?SERVICE=WMS&request=GetCapabilities&version=1.3.0"
 
 # Load mill locations (replace with your file path)
-mills_shapefile <- st_read("23-Memory/data/shp/Molens.shp")
+mills_shapefile <- st_read("00-Mills Memory/data/shp/Molens.shp")
 
 # Check the structure of the shapefile (optional)
 head(mills_shapefile)
