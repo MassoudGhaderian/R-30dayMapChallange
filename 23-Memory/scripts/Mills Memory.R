@@ -17,7 +17,7 @@ for (pkg in required_packages) {
 }
 
 # Load required libraries
-library(ggplot2)       # For creating plots
+library(ggplot2)       # For creating plots and visualization
 library(sf)            # For working with spatial data
 library(tmap)          # For thematic mapping
 library(here)          # For managing file paths
@@ -29,7 +29,6 @@ library(leaflet)       # For building interactive maps
 library(leaflet.extras)# For Extends the capabilities of leaflet
 library(viridis)       # For a visually appealing colors
 library(sf)            # For spatial data handling
-library(ggplot2)       # For visualization
 library(wordcloud2)    # For word cloud
 library(dplyr)         # For data manipulation
 library(cowplot)       # For combining plots
