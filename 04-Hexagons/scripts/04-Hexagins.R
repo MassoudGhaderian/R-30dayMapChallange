@@ -11,7 +11,7 @@ library(spatstat)
 library(hexbin)
 
 # Replace with your file path
-setwd("D:/R-WorkSpace")
+setwd("F:/R-WorkSpace")
 netherlands_water <- st_read("R-30dayMapChallange/04-Hexagons/data/waterINholland.shp")
 netherlands_land <- st_read("R-30dayMapChallange/04-Hexagons/data/NLBorder.shp")
 
