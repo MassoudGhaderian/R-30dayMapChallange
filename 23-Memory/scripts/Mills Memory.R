@@ -40,6 +40,9 @@ library(rnaturalearthdata)
 library(grid)          # For annotation_custom
 library(patchwork)     # For arranging plots
 library(gganimate)     # For making animation
+library(tidyverse)
+library(gganimate)
+
 #  00 : Load Spatial Data ---------------------------
 
 #  Disappeared (water and polder) mills shape file path
@@ -1033,10 +1036,6 @@ anim_save("/R-WorkSpaces/R-30dayMapChallange/23-Memory/outputs/ex_millsAni.mp4"
 
 
 ##  Animation 2 --------------------------------------------
-# Load Required Libraries
-library(tidyverse)
-library(sf)
-library(gganimate)
 
 # Prepare Cumulative Data
 str(ex_mills)
