@@ -420,7 +420,7 @@ save_html(leaflet_map, "23-Memory/outputs/Disappeared_Mills_with_Titles.html")
 # Make sure it is projected for spatial analysis (e.g., EPSG: 3857 for meters)
 ex_mills <- st_transform(ex_mills, crs = 3857) 
 
-# Load the Netherlands border shapefile
+# Load the Netherlands border shape file
 netherlands_border <- st_read("23-Memory/data/shp/gadm41_NLD_0.shp")
 netherlands_border <- st_transform(netherlands_border, crs = 3857)
 
