@@ -595,7 +595,7 @@ head(ex_mills_filtered)
 ex_mills_sf <- st_as_sf(ex_mills_filtered, coords =
                           c("longitude", "latitude"), crs = 4326)
 
-# Load a basemap for the Netherlands (using rnaturalearth)
+# Load a base map for the Netherlands (using rnaturalearth)
 netherlands_map <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf") %>%
   filter(admin == "Netherlands")
 
