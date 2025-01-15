@@ -11,7 +11,7 @@ library(spatstat)
 library(hexbin)
 
 # Replace with your file path
-setwd("F:/R-WorkSpace")
+setwd("F:/R-WorkSpaces")
 netherlands_water <- st_read("R-30dayMapChallange/04-Hexagons/data/waterINholland.shp")
 netherlands_land <- st_read("R-30dayMapChallange/04-Hexagons/data/NLBorder.shp")
 
@@ -52,4 +52,5 @@ ggplot() +
   theme(legend.position = "bottom")
 
 # Save the Map
-ggsave("hexagon_map_netherlands.png", width = 10, height = 8)
+ggsave("R-30dayMapChallange/04-Hexagons/outputs/hexagon_map_netherlands.jpg", width = 10, height = 8)
+
