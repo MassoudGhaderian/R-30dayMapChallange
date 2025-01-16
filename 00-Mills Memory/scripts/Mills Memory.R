@@ -40,7 +40,7 @@ library(rnaturalearthdata)
 library(grid)          # For annotation_custom
 library(patchwork)     # For arranging plots
 library(gganimate)     # For making animation
-library(tidyverse)
+library(tidyverse)     #for data manipulation and visualization
 library(gganimate)
 
 #  00 : Load Spatial Data ---------------------------
