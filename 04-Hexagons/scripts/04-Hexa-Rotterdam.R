@@ -57,7 +57,7 @@ labels <- labels %>%
 rbanism_logo <- image_read(here("04Nov_Hexagon/fig/Logo_Rbanism_White.png"))
 logo_grob <- rasterGrob(rbanism_logo, interpolate = TRUE)
 
-# 3. Create Hexagonal Fishnet
+# 3. Create  Hexagonal Fishnet
 # Calculate side length for a 5-hectare hexagon
 t_area <- 50000  # 5 hectares in square meters
 s_length <- sqrt((2 * t_area) / (3 * sqrt(3)))

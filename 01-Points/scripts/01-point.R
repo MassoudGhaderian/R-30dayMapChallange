@@ -29,7 +29,7 @@ ggplot(data = molens) +
   labs(title = "Basic Map Of Molens")
 
 
-# basic map(color full)
+# basic map(colorfull)
 
 ggplot(data = molens) +
   geom_sf(fill = "blue", color = "red") + # Sets fill and border color
