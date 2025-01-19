@@ -31,7 +31,7 @@ hex_water <- st_intersection(hex_grid, netherlands_water) %>%
 hex_land <- st_intersection(hex_grid, netherlands_land) %>%
   mutate(area_land = st_area(.))
 
-# Join the data back to hex_grid and calculate the proportion of water/land
+# Join the data back to hex_grid and ca lculate the proportion of water/land
 hex_grid <- hex_grid %>%
   st_join(hex_water) %>%
   st_join(hex_land) %>%
