@@ -24,7 +24,7 @@ hex_grid <- st_make_grid(netherlands_land, cellsize = 10000, square = FALSE) %>%
   st_as_sf() %>%
   st_cast("POLYGON")
 
-# Calculate intersection areas
+# Calculate intersection area
 hex_water <- st_intersection(hex_grid, netherlands_water) %>%
   mutate(area_water = st_area(.))
 
