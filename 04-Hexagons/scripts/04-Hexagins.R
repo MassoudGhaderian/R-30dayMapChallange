@@ -19,7 +19,7 @@ netherlands_land <- st_read("R-30dayMapChallange/04-Hexagons/data/NLBorder.shp")
 netherlands_water <- st_transform(netherlands_water, 28992)
 netherlands_land <- st_transform(netherlands_land, 28992)
 
-# Define grid size and create hexagons
+# Define grid size and create  hexagons
 hex_grid <- st_make_grid(netherlands_land, cellsize = 10000, square = FALSE) %>%
   st_as_sf() %>%
   st_cast("POLYGON")
