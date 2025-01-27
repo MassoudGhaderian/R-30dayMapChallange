@@ -13,7 +13,7 @@ for (pkg in required_packages) {
 }
 # Load required libraries
 library(ggplot2)       # For creating plot s
-library(sf)            # For working with spatial data
+library(sf)            # For working with spatial dat a
 library(tmap)          # For thematic mapping
 library(here)          # For managing file paths
 library(magick)        # For image manipulation (logo)
