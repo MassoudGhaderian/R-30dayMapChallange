@@ -23,7 +23,7 @@ library(ggspatial)     # For scale bars and north arrows in ggplot maps
 
            
 
-# SECTION 1: DEFINE PATHS AND LOAD SPATIAL DATA ---------------------------
+# SECTION 1: DEFINE PATHS AND LOAD SPATIAL DATA --------------------------
 
 # Set working directory (modify as needed)
 setwd("F:/R-WorkSpaces/R-30dayMapChallange/")
