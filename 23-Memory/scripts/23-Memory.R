@@ -18,7 +18,7 @@ library(tmap)          # For thematic mapping
 library(here)          # For managing file paths
 library(magick)        # For image manipulation (logo)
 library(grid)          # For working with grid graphics
-library(cowplot)       # For combining plots and adding elements (e.g., logos)
+library(cowplot)       # For combining plots and adding elements (e.g.  logos)
 library(ggspatial)     # For scale bars and north arrows in ggplot maps
 
            
