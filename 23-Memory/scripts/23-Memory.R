@@ -33,7 +33,7 @@ setwd("F:/R-WorkSpaces/R-30dayMapChallange/")
 disappeared_molen <- "23-Memory/data/shp/verdwenenmolens.shp"  # Disappeared mills
 existing_molen <- "23-Memory/data/shp/Molens.shp"             # Existing mills
 
-# Read shapefiles for various spatial features
+# Read shapefiles for various spatial feature
 north_sea <- st_read("F:/R-WorkSpaces/R-30dayMapChallange/23-Memory/data/shp/NorthSea.shp")
 gr_border <- st_read("23-Memory/data/shp/GR.shp")            # Germany border
 bl_border <- st_read("23-Memory/data/shp/BG.shp")            # Belgium border
