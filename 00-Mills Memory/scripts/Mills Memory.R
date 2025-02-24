@@ -19,7 +19,7 @@ for (pkg in required_packages) {
 #Load required libraries
 library(ggplot2)       # For creating plots and visualization
 library(sf)            # For working with spatial data
-library(tmap)          # For thematic mapping
+library(tmap)          # For thematic mappin g
 library(here)          # For managing file paths
 library(magick)        # For image manipulation
 library(grid)          # For working with grid graphics 
