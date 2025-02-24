@@ -22,7 +22,7 @@ library(sf)            # For working with spatial data
 library(tmap)          # For thematic mapping
 library(here)          # For managing file paths
 library(magick)        # For image manipulation
-library(grid)          # For working with grid graphics
+library(grid)          # For working with grid graphics 
 library(cowplot)       # For combining plots and adding elements (e.g., logos)
 library(ggspatial)     # For scale bars and north arrows in ggplot maps
 library(leaflet)       # For building interactive maps
