@@ -20,7 +20,7 @@ for (pkg in required_packages) {
 library(ggplot2)       # For creating plots and visualization
 library(sf)            # For working with spatial data
 library(tmap)          # For thematic mappin g
-library(here)          # For managing file paths
+library(here)          # For managing file path s
 library(magick)        # For image manipulation
 library(grid)          # For working with grid graphics 
 library(cowplot)       # For combining plots and adding elements (e.g., logos)
